@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-<defs><filter id="t_sam-day"><feTurbulence type="fractalNoise" baseFrequency="1.0" numOctaves="2" stitchTiles="stitch" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.1 0"/></filter><linearGradient id="tg_sam-day" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2c2a27"/><stop offset="1" stop-color="#b9532f"/></linearGradient></defs>
-<rect width="200" height="200" fill="url(#tg_sam-day)"/>
-<text x="100" y="128" text-anchor="middle" font-family="Georgia, serif" font-size="72" fill="#e2dedb" opacity="0.9">SD</text>
-<rect width="200" height="200" filter="url(#t_sam-day)"/>
-</svg>

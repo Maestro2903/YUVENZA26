@@ -1,0 +1,2838 @@
+/* ============================================================
+   Yuvenza - Paper design language
+   Base rules ported from the original site's inline styles; the
+   Yuvenza work index, case-study and about blocks are further down.
+   ============================================================ */
+
+*,
+*::after,
+*::before {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #1d1d1b;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-scroll-chaining: none;
+  overscroll-behavior: none;
+}
+
+@media (min-width: 991px) {
+  * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+::-webkit-scrollbar {
+  -ms-overflow-style: none;
+  display: none;
+  overflow: -moz-scrollbars-none;
+  scrollbar-width: none;
+}
+
+.grid {
+  display: none;
+}
+
+.c-scrollbar_thumb {
+  margin: 3px;
+  width: 5px;
+  z-index: 99999;
+  background-color: #69645f;
+}
+
+canvas {
+  height: 100% !important;
+  width: 100% !important;
+  position: absolute;
+  top: 0%;
+  bottom: 0%;
+  right: 0%;
+  left: 0%;
+  pointer-events: none;
+}
+
+.gl-canvas {
+  display: block;
+  pointer-events: none;
+  height: 100vh !important;
+  width: 100vw !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* ============================================================
+   Hamburger menu paper curtain (CSS-driven, replacing the
+   unreliable WebGL effect). The same paper panel and easing sweep
+   in on open and back out on close, the links stagger in, and the
+   hamburger morphs to an X.
+   ============================================================ */
+.menu {
+  display: flex !important; /* keep in the DOM so it can animate */
+  background-color: #1d1d1b !important;
+  transform: translateY(-100%);
+  transition: transform 0.7s cubic-bezier(0.76, 0, 0.24, 1);
+  pointer-events: none;
+}
+.nav.is-open .menu {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* links rise + fade, staggered, once the overlay is in place */
+.menu-title {
+  opacity: 0;
+  transform: translateY(2.5vh);
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    letter-spacing 0.3s ease-in-out;
+}
+.nav.is-open .menu-title {
+  opacity: 1;
+  transform: translateY(0);
+}
+.nav.is-open .menu-link.m1 .menu-title {
+  transition-delay: 0.22s;
+}
+.nav.is-open .menu-link.m2 .menu-title {
+  transition-delay: 0.3s;
+}
+.nav.is-open .menu-link.m3 .menu-title {
+  transition-delay: 0.38s;
+}
+.nav.is-open .menu-link.m4 .menu-title {
+  transition-delay: 0.46s;
+}
+
+/* socials fade in last */
+.menu .f-block.li {
+  opacity: 0;
+  transition: opacity 0.5s ease 0.5s;
+}
+.nav.is-open .f-block.li {
+  opacity: 1;
+}
+
+/* While the menu is open, flip the top-bar chrome to paper so it stays visible
+   on the ink overlay. */
+.nav.is-open .brand-text,
+.nav.is-open .n-text {
+  color: #cdc6be;
+}
+
+/* hamburger morphs into an X while open */
+.nav-line {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.3s ease;
+}
+.nav.is-open .nav-line {
+  background-color: #cdc6be;
+}
+.nav.is-open .nav-line.up {
+  transform: translateY(0.28rem) rotate(45deg);
+}
+.nav.is-open .nav-line.bottom {
+  transform: translateY(-0.28rem) rotate(-45deg);
+}
+
+.dg.ac {
+  z-index: 10000 !important;
+  pointer-events: none;
+}
+
+.dg.main.a {
+  float: left !important;
+  pointer-events: all;
+}
+
+@media (max-width: 1440px) {
+  .menu {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
+}
+
+.marquee {
+  will-change: transform;
+  -webkit-transform: translateZ(0px);
+  transform: translateZ(0px);
+}
+
+.nav.hide .nav-inner {
+  -webkit-transform: translateY(-100%);
+  -ms-transform: translateY(-100%);
+  transform: translateY(-100%);
+}
+
+.paper-background {
+  will-change: transform;
+}
+
+body:not(.index):not(.work-case) #app {
+  -webkit-transition: opacity 1s ease-out;
+  -o-transition: opacity 1s ease-out;
+  transition: opacity 1s ease-out;
+}
+
+body:not(.index):not(.work-case) #app:not(.appear) {
+  opacity: 0 !important;
+}
+
+.gl-canvas.below {
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+/* NOTE: the original had `perspective: 2000px; will-change: transform` here
+   for Locomotive's 3D scroll. Both create a containing block for fixed-position
+   descendants, which made the fixed nav scroll away with the page. Locomotive
+   is gone, so this is intentionally left empty to keep the nav truly fixed. */
+[data-scroll-container] {
+  will-change: auto;
+}
+
+/* Keep the top nav pinned on every page, on scroll. */
+.nav.default {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+/* --- brand wordmark (blackletter text logo) --- */
+@font-face {
+  font-family: "Youth Blackletter";
+  src: url("/fonts/UnifrakturMaguntia.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.nav-head {
+  width: auto !important;
+}
+
+.brand-text {
+  font-family: "Youth Blackletter", "Canopee", serif;
+  color: #1d1d1b;
+  font-size: 3.4vh;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.nav.work .brand-text {
+  font-size: 2.2vh;
+}
+
+/* ============================================================
+   Redesigned Work index (/work) - editorial table-of-contents
+   in the site's paper design language. CSS-only hover reveal.
+   ============================================================ */
+.wk {
+  position: relative;
+  z-index: 2;
+  padding: 16vh 2vw 5vw;
+}
+.wk-masthead {
+  padding-bottom: 1vw;
+}
+.wk-kicker {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.2vw;
+  letter-spacing: 0.02em;
+  padding-bottom: 1vw;
+  border-bottom: 1px solid #1d1d1b;
+}
+.wk-h1 {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  font-size: 13vw;
+  line-height: 0.92;
+  margin: 2vw 0 0;
+  padding: 0;
+}
+.wk-lead {
+  max-width: 46vw;
+  margin: 2vw 0 0;
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: 1.8vw;
+  line-height: 2.2vw;
+  letter-spacing: -0.01em;
+}
+.wk-list {
+  list-style: none;
+  margin: 5vw 0 0;
+  padding: 0;
+  border-top: 1px solid rgba(29, 29, 27, 0.4);
+}
+.wk-item {
+  border-bottom: 1px solid rgba(29, 29, 27, 0.4);
+}
+.wk-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 5vw 1fr auto;
+  align-items: center;
+  gap: 2vw;
+  padding: 1.7vw 1vw;
+  color: #1d1d1b;
+  transition: padding 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.4s ease;
+}
+.wk-num {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  font-size: 1.4vw;
+  opacity: 0.5;
+}
+.wk-name {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 4.8vw;
+  line-height: 1;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.wk-rowthumb {
+  position: absolute;
+  right: 15vw;
+  top: 50%;
+  width: 18vw;
+  height: 11vw;
+  transform: translateY(-50%) scale(0.7) rotate(-3deg);
+  transform-origin: center;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border: 1px solid #1d1d1b;
+  box-shadow: -6px 8px 18px rgba(29, 29, 27, 0.25);
+  z-index: 4;
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.wk-rowthumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.wk-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.4vw;
+  font-family: "Editorial New", serif;
+  font-size: 1.4vw;
+}
+.wk-year {
+  opacity: 0.6;
+}
+.wk-arrow {
+  font-family: "Canopee", sans-serif;
+  font-size: 2vw;
+  opacity: 0;
+  transform: translate(-0.6vw, 0.3vw);
+  transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.wk-item:hover .wk-row {
+  padding-left: 2.4vw;
+  background-color: rgba(29, 29, 27, 0.05);
+}
+.wk-item:hover .wk-name {
+  transform: translateX(1.4vw);
+}
+.wk-item:hover .wk-rowthumb {
+  opacity: 1;
+  transform: translateY(-50%) scale(1) rotate(-3deg);
+}
+.wk-item:hover .wk-arrow {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+.wk-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 3vw;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.1vw;
+  letter-spacing: 0.02em;
+  opacity: 0.75;
+}
+
+@media (max-width: 767px) {
+  .wk {
+    padding: 14vh 4vw 8vw;
+  }
+  .wk-kicker {
+    font-size: 3vw;
+  }
+  .wk-h1 {
+    font-size: 24vw;
+  }
+  .wk-lead {
+    max-width: 100%;
+    font-size: 4.6vw;
+    line-height: 5.6vw;
+  }
+  .wk-list {
+    margin-top: 8vw;
+  }
+  .wk-row {
+    grid-template-columns: 9vw 1fr auto;
+    padding: 4vw 0;
+    gap: 3vw;
+  }
+  .wk-num {
+    font-size: 3.5vw;
+  }
+  .wk-name {
+    font-size: 9vw;
+  }
+  .wk-meta {
+    font-size: 3vw;
+  }
+  .wk-arrow {
+    font-size: 5vw;
+    opacity: 1;
+    transform: none;
+  }
+  .wk-rowthumb {
+    display: none;
+  }
+  .wk-foot {
+    font-size: 3vw;
+  }
+}
+
+/* --- underline / decoration --- */
+.under {
+  text-underline-offset: 0.3vw;
+  text-decoration-thickness: 0.6vw;
+}
+
+.aw-desc,
+.under {
+  text-decoration: underline;
+  text-underline-offset: 0.3vw;
+  text-decoration-thickness: 0.5px;
+  text-decoration-color: #0000007a;
+}
+
+/* --- menu active-page indicator ---
+   The original bar was orange (#c03f13). It's now a subtle beige underline
+   that shows only under the current page's link (works for every route). --- */
+.m-active {
+  background-color: #cdc6be !important;
+  height: 0.6vh !important;
+  display: none !important;
+}
+.menu-link.w--current .m-active {
+  display: block !important;
+}
+
+[data-gl-image] canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+}
+
+[data-gl-image] img {
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+}
+
+html.no-scroll,
+html.no-scroll body {
+  overflow: hidden;
+}
+
+html.no-scroll nav.nav {
+  transform: unset !important;
+}
+
+#app > header [data-butter-slidable] {
+  transform: translateX(-62vw);
+}
+
+/* --- paper background blend --- */
+.paper-background {
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* --- dropcap (home intro paragraphs) --- */
+.has-dropcap {
+  font-size: 2.25vw;
+  line-height: 2.7vw;
+  text-align: left;
+}
+
+.has-dropcap:first-letter {
+  font-family: "Canopee", sans-serif;
+  font-feature-settings: "ss03";
+  float: left;
+  font-size: 7vw;
+  line-height: 5vw;
+  margin: 0.7vw 1vw 1vw 0vw;
+  background-color: #1d1d1b;
+  color: #cdc6be;
+  padding: 0.75vw 0.4vw 0.5vw 0.5vw;
+}
+
+@media (max-width: 479px) {
+  .has-dropcap {
+    font-size: 6vw;
+    line-height: 7.5vw;
+    text-align: left;
+    letter-spacing: -0.02em;
+  }
+
+  .has-dropcap:first-letter {
+    font-family: "Canopee", sans-serif;
+    font-feature-settings: "ss03";
+    float: left;
+    font-size: 20vw;
+    line-height: 17vw;
+    margin: 1vw 2vw 1vw 0vw;
+    background-color: #1d1d1b;
+    color: #cdc6be;
+    padding: 1.5vw 0.8vw 0.5vw 1vw;
+  }
+}
+
+/* --- "All Work!" doodle headline --- */
+.head {
+  fill: none;
+  stroke: #96b59f;
+  stroke-miterlimit: 10;
+}
+
+.head-embed #headline .doodle-hover {
+  fill: none;
+  stroke: #96b59f;
+  stroke-miterlimit: 10;
+  stroke-dashoffset: 1100;
+  stroke-dasharray: 1100;
+  transition: stroke-dashoffset 600ms cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+
+.head-wrap:hover .head-embed #headline .doodle-hover {
+  stroke-dashoffset: 0;
+}
+
+/* --- testimonial award cards: stacked deck; hovering a card lifts it and
+   brings it to the front so its full quote is readable (re-creates the
+   original Webflow IX2 hover interaction now that the engine isn't loaded) --- */
+.aw-block {
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.aw-block:hover {
+  z-index: 30;
+  box-shadow: -8px 12px 26px rgba(29, 29, 27, 0.3) !important;
+}
+.aw-block.s-1:hover {
+  transform: translate(0, -1.2vw) scale(1.015);
+}
+.aw-block.s-2:hover {
+  transform: translate(-22vw, -1.2vw) scale(1.015);
+}
+.aw-block.s-3:hover {
+  transform: translate(-43vw, -1.2vw) scale(1.015);
+}
+.aw-block.s-4:hover {
+  transform: translate(-65vw, -1.2vw) scale(1.015);
+}
+
+/* --- dashed border used on the award/testimonial cards --- */
+.dash {
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23333' stroke-width='2.5' stroke-dasharray='11%2c11' stroke-dashoffset='30' stroke-linecap='square'/%3e%3c/svg%3e");
+  pointer-events: none;
+}
+
+.aw-inner {
+  pointer-events: none;
+}
+
+/* --- footer marquee --- */
+.marquee {
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.marquee--inner {
+  display: flex;
+  position: absolute;
+  animation-duration: 4s;
+  animation-name: bettermarquee;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+/* Keep every marquee row on a single line (matches the original shrink-to-fit). */
+.marquee-content {
+  flex: 0 0 auto;
+}
+
+.marquee-content .f-news,
+.marquee-text {
+  white-space: nowrap;
+}
+
+.marquee--inner:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0% {
+    left: 0%;
+  }
+  100% {
+    left: -100%;
+  }
+}
+
+@keyframes bettermarquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-30%, 0, 0);
+  }
+}
+
+@media (max-width: 479px) {
+  .sidebar {
+    padding-left: 0px;
+  }
+}
+
+/* ============================================================
+   Webflow IX2 pre-interaction states.
+   These match `html.w-mod-js:not(.w-mod-ix) [data-w-id=...]`
+   rules from the original head so the awards cards start
+   stacked and the app enters at scale before the JS engine
+   plays the interactions.
+   ============================================================ */
+@media (min-width: 992px) {
+  html.w-mod-js:not(.w-mod-ix) [data-w-id="3fadac9e-248c-ccc4-f19a-f9a9abc7fc52"] {
+    transform: translate3d(0vw, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+    background-color: rgb(205, 198, 190);
+  }
+  html.w-mod-js:not(.w-mod-ix) [data-w-id="bd11d9d3-1f38-30c7-f551-269d5b645351"] {
+    transform: translate3d(-22vw, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+    background-color: rgb(205, 198, 190);
+  }
+  html.w-mod-js:not(.w-mod-ix) [data-w-id="66416161-20e0-82bc-15a2-33062ba7c6d0"] {
+    transform: translate3d(-43vw, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+    background-color: rgb(205, 198, 190);
+  }
+  html.w-mod-js:not(.w-mod-ix) [data-w-id="7721f517-f1c7-aa27-99c8-ce4315523ae0"] {
+    transform: translate3d(-65vw, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+    background-color: rgb(205, 198, 190);
+  }
+  html.w-mod-js:not(.w-mod-ix) [data-w-id="a4f20c94-f77d-5612-6f88-8ba669c39129"] {
+    transform: translate3d(0, 25vw, 0) scale3d(0.4, 0.4, 1) rotateX(0) rotateY(0) rotateZ(720deg) skew(0, 0);
+  }
+}
+
+@media (max-width: 991px) and (min-width: 768px) {
+  html.w-mod-js:not(.w-mod-ix) [data-w-id="3fadac9e-248c-ccc4-f19a-f9a9abc7fc52"] {
+    transform: translate3d(0vw, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+    background-color: rgb(205, 198, 190);
+  }
+  html.w-mod-js:not(.w-mod-ix) [data-w-id="bd11d9d3-1f38-30c7-f551-269d5b645351"] {
+    transform: translate3d(-22vw, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+    background-color: rgb(205, 198, 190);
+  }
+  html.w-mod-js:not(.w-mod-ix) [data-w-id="66416161-20e0-82bc-15a2-33062ba7c6d0"] {
+    transform: translate3d(-43vw, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+    background-color: rgb(205, 198, 190);
+  }
+  html.w-mod-js:not(.w-mod-ix) [data-w-id="7721f517-f1c7-aa27-99c8-ce4315523ae0"] {
+    transform: translate3d(-65vw, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);
+    background-color: rgb(205, 198, 190);
+  }
+}
+
+/* header slidable initial offset (butter-slider) */
+#app > header [data-butter-slidable] {
+  transform: translateX(-62vw);
+}
+
+/* ============================================================
+   Single case-study template (/work/[slug]) - the shared
+   layout every project page renders through. Self-contained
+   `.cs-` styling: title + meta overlay on the ripped cover,
+   a hairline rule and a previous/next pager. Ink-on-beige
+   paper language, CSS-only so it survives the smooth-scroll
+   layer just like the /work index.
+   ============================================================ */
+.cover {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- cover title + meta overlay --- */
+.cs-hero {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  padding: 12vw 3vw 3vw;
+  color: #cdc6be;
+  background: linear-gradient(
+    to top,
+    rgba(29, 29, 27, 0.62) 0%,
+    rgba(29, 29, 27, 0.28) 45%,
+    rgba(29, 29, 27, 0) 100%
+  );
+  pointer-events: none;
+}
+.cs-hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.cs-eyebrow {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 1.1vw;
+  opacity: 0.85;
+  padding-bottom: 0.6vw;
+}
+.cs-title {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  font-size: 8.4vw;
+  line-height: 0.9;
+  margin: 0;
+  padding: 0;
+  color: #cdc6be;
+}
+.cs-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 2vw;
+  margin-top: 1.8vw;
+  padding-top: 1.1vw;
+  border-top: 1px solid rgba(205, 198, 190, 0.4);
+}
+.cs-bar-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3vw;
+  flex: 1;
+}
+.cs-bar-cell.center {
+  align-items: center;
+  text-align: center;
+}
+.cs-bar-cell.right {
+  align-items: flex-end;
+  text-align: right;
+}
+.cs-bar-key {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.85vw;
+  opacity: 0.6;
+}
+.cs-bar-val {
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  font-size: 1.5vw;
+  line-height: 1.1;
+}
+
+/* --- hairline rule (replaces the unstyled .divider) --- */
+.cs-rule {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(29, 29, 27, 0.45);
+  margin-bottom: 2vw;
+}
+
+/* --- previous / next pager --- */
+.cs-more {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 2vw;
+  margin: 6vw 4vw 2vw;
+  padding-top: 3vw;
+  border-top: 1px solid #1d1d1b;
+}
+.cs-pager-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.6vw;
+  color: #1d1d1b;
+  border: 1px solid #1d1d1b;
+  background-color: rgba(29, 29, 27, 0.015);
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.4s ease, box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cs-pager-card.next {
+  text-align: right;
+  align-items: flex-end;
+}
+.cs-pager-card:hover {
+  transform: translateY(-0.5vw);
+  background-color: rgba(29, 29, 27, 0.05);
+  box-shadow: -6px 10px 22px rgba(29, 29, 27, 0.22);
+}
+.cs-pager-label {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 1vw;
+  opacity: 0.55;
+}
+.cs-pager-thumb {
+  display: block;
+  width: 100%;
+  height: 12vw;
+  margin: 1vw 0;
+  overflow: hidden;
+  border: 1px solid #1d1d1b;
+}
+.cs-pager-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cs-pager-card:hover .cs-pager-thumb img {
+  transform: scale(1.05);
+}
+.cs-pager-name {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 3vw;
+  line-height: 1;
+}
+.cs-pager-meta {
+  font-family: "Editorial New", serif;
+  font-size: 1.1vw;
+  opacity: 0.65;
+  margin-top: 0.5vw;
+}
+.cs-dot {
+  padding: 0 0.3vw;
+}
+.cs-more-mid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.5vw;
+}
+.cs-more-kicker {
+  font-family: "Editorial New", serif;
+  font-size: 1.3vw;
+  opacity: 0.6;
+}
+.cs-more-head {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  font-size: 5vw;
+  line-height: 0.9;
+}
+
+@media (max-width: 767px) {
+  .cs-hero {
+    padding: 22vw 5vw 6vw;
+  }
+  .cs-eyebrow {
+    font-size: 3vw;
+  }
+  .cs-title {
+    font-size: 15vw;
+  }
+  .cs-bar {
+    gap: 3vw;
+    margin-top: 5vw;
+    padding-top: 3vw;
+  }
+  .cs-bar-key {
+    font-size: 2.4vw;
+  }
+  .cs-bar-val {
+    font-size: 3.4vw;
+  }
+  .cs-more {
+    grid-template-columns: 1fr;
+    gap: 5vw;
+    margin: 12vw 5vw 4vw;
+    padding-top: 6vw;
+  }
+  .cs-more-mid {
+    order: -1;
+    align-items: flex-start;
+    padding: 0;
+  }
+  .cs-more-kicker {
+    font-size: 4vw;
+  }
+  .cs-more-head {
+    font-size: 14vw;
+  }
+  .cs-pager-card,
+  .cs-pager-card.next {
+    text-align: left;
+    align-items: flex-start;
+    padding: 5vw;
+  }
+  .cs-pager-label {
+    font-size: 3vw;
+  }
+  .cs-pager-thumb {
+    height: 40vw;
+    margin: 3vw 0;
+  }
+  .cs-pager-name {
+    font-size: 9vw;
+  }
+  .cs-pager-meta {
+    font-size: 3vw;
+  }
+}
+
+/* ============================================================
+   About (/about) - editorial youth-club story in the paper
+   design language. Self-contained `.ab-` styling, ink on beige,
+   CSS-only so it holds up under the smooth-scroll layer.
+   ============================================================ */
+.ab {
+  position: relative;
+  z-index: 2;
+  padding: 16vh 2vw 5vw;
+}
+
+/* --- masthead --- */
+.ab-masthead {
+  padding-bottom: 1vw;
+}
+.ab-kicker {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2vw;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.2vw;
+  letter-spacing: 0.02em;
+  padding-bottom: 1vw;
+  border-bottom: 1px solid #1d1d1b;
+}
+.ab-h1 {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  font-size: 15vw;
+  line-height: 0.9;
+  margin: 2vw 0 0;
+  padding: 0;
+}
+.ab-lead-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 3vw;
+  margin-top: 2vw;
+}
+.ab-lead {
+  max-width: 44vw;
+  margin: 0;
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: 1.9vw;
+  line-height: 2.3vw;
+  letter-spacing: -0.01em;
+}
+.ab-lead-mark {
+  flex: 0 0 auto;
+}
+.ab-logo {
+  width: 12vw;
+  height: auto;
+  display: block;
+  opacity: 0.9;
+}
+
+/* --- manifesto --- */
+.ab-manifesto {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 4vw;
+  align-items: center;
+  margin-top: 8vw;
+  padding-top: 3vw;
+  border-top: 1px solid rgba(29, 29, 27, 0.4);
+}
+.ab-manifesto-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5vw;
+}
+.ab-stamp {
+  width: 13vw;
+  height: auto;
+  mix-blend-mode: multiply;
+}
+.ab-tagline {
+  position: relative;
+  display: inline-block;
+  padding: 1.2vw 2vw;
+}
+.ab-tagline-text {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 2.6vw;
+  line-height: 1;
+}
+
+/* --- shared section heading --- */
+.ab-sec-head {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  font-size: 7vw;
+  line-height: 0.9;
+  margin: 0 0 3vw;
+  padding: 0;
+}
+
+/* --- pillars / values --- */
+.ab-values {
+  margin-top: 9vw;
+}
+.ab-values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #1d1d1b;
+}
+.ab-value {
+  padding: 2vw 2vw 3vw 0;
+  border-right: 1px solid rgba(29, 29, 27, 0.35);
+}
+.ab-value:last-child {
+  border-right: none;
+}
+.ab-value + .ab-value {
+  padding-left: 2vw;
+}
+.ab-value-num {
+  display: block;
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  font-size: 1.4vw;
+  opacity: 0.5;
+}
+.ab-value-title {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 3.4vw;
+  line-height: 1;
+  margin: 1.2vw 0 1vw;
+}
+.ab-value-body {
+  margin: 0;
+  max-width: 92%;
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: 1.2vw;
+  line-height: 1.6vw;
+}
+
+/* --- stats --- */
+.ab-stats {
+  display: flex;
+  margin-top: 9vw;
+  border-top: 1px solid #1d1d1b;
+  border-bottom: 1px solid #1d1d1b;
+}
+.ab-stat {
+  flex: 1;
+  padding: 2.4vw 1vw;
+  text-align: center;
+  border-right: 1px solid rgba(29, 29, 27, 0.35);
+}
+.ab-stat:last-child {
+  border-right: none;
+}
+.ab-stat-num {
+  display: block;
+  font-family: "Canopee", sans-serif;
+  letter-spacing: -0.04em;
+  font-size: 5.5vw;
+  line-height: 1;
+}
+.ab-stat-label {
+  display: block;
+  margin-top: 0.8vw;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1vw;
+  letter-spacing: 0.03em;
+  opacity: 0.65;
+}
+
+/* --- what we do --- */
+.ab-do {
+  margin-top: 10vw;
+}
+.ab-do-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(29, 29, 27, 0.4);
+}
+.ab-do-item {
+  display: grid;
+  grid-template-columns: 5vw 1fr 1.2fr;
+  align-items: baseline;
+  gap: 2vw;
+  padding: 1.8vw 1vw;
+  border-bottom: 1px solid rgba(29, 29, 27, 0.4);
+  transition: padding 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.4s ease;
+}
+.ab-do-item:hover {
+  padding-left: 2vw;
+  background-color: rgba(29, 29, 27, 0.05);
+}
+.ab-do-num {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  font-size: 1.4vw;
+  opacity: 0.5;
+}
+.ab-do-title {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 2.6vw;
+  line-height: 1.05;
+}
+.ab-do-body {
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: 1.2vw;
+  line-height: 1.6vw;
+}
+
+/* --- join CTA (inverted ink panel) --- */
+.ab-join {
+  margin-top: 10vw;
+  background-color: #1d1d1b;
+  color: #cdc6be;
+  border-radius: 0.6vw;
+}
+.ab-join-inner {
+  padding: 6vw 2vw;
+  text-align: center;
+}
+.ab-join-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  letter-spacing: 0.04em;
+  font-size: 1.1vw;
+  opacity: 0.7;
+}
+.ab-join-head {
+  margin: 1.2vw 0 0;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  font-size: 9vw;
+  line-height: 0.9;
+  color: #cdc6be;
+}
+.ab-join-links {
+  display: flex;
+  justify-content: center;
+  gap: 3vw;
+  margin-top: 2.5vw;
+}
+.ab-join-link {
+  color: #cdc6be;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-size: 2vw;
+  text-decoration: underline;
+  text-underline-offset: 0.4vw;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(205, 198, 190, 0.4);
+  transition: text-decoration-color 0.3s ease, opacity 0.3s ease;
+}
+.ab-join-link .f-span {
+  color: #cdc6be;
+}
+.ab-join-link:hover {
+  text-decoration-color: #cdc6be;
+}
+
+/* --- footer --- */
+.ab-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 3vw;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.1vw;
+  letter-spacing: 0.02em;
+  opacity: 0.75;
+}
+
+@media (max-width: 767px) {
+  .ab {
+    padding: 14vh 4vw 8vw;
+  }
+  .ab-kicker {
+    flex-direction: column;
+    gap: 1vw;
+    font-size: 3vw;
+  }
+  .ab-h1 {
+    font-size: 27vw;
+  }
+  .ab-lead-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6vw;
+  }
+  .ab-lead {
+    max-width: 100%;
+    font-size: 4.6vw;
+    line-height: 5.6vw;
+  }
+  .ab-logo {
+    width: 34vw;
+  }
+  .ab-manifesto {
+    grid-template-columns: 1fr;
+    gap: 10vw;
+    margin-top: 16vw;
+  }
+  .ab-stamp {
+    width: 32vw;
+  }
+  .ab-tagline-text {
+    font-size: 8vw;
+  }
+  .ab-sec-head {
+    font-size: 15vw;
+    margin-bottom: 6vw;
+  }
+  .ab-values {
+    margin-top: 18vw;
+  }
+  .ab-values-grid {
+    grid-template-columns: 1fr;
+  }
+  .ab-value,
+  .ab-value + .ab-value {
+    padding: 5vw 0;
+    border-right: none;
+    border-bottom: 1px solid rgba(29, 29, 27, 0.35);
+  }
+  .ab-value:last-child {
+    border-bottom: none;
+  }
+  .ab-value-num {
+    font-size: 3.5vw;
+  }
+  .ab-value-title {
+    font-size: 9vw;
+    margin: 3vw 0 2vw;
+  }
+  .ab-value-body {
+    font-size: 3.6vw;
+    line-height: 4.8vw;
+    max-width: 100%;
+  }
+  .ab-stats {
+    flex-wrap: wrap;
+    margin-top: 18vw;
+  }
+  .ab-stat {
+    flex: 0 0 50%;
+    padding: 6vw 2vw;
+    border-bottom: 1px solid rgba(29, 29, 27, 0.35);
+  }
+  .ab-stat:nth-child(2n) {
+    border-right: none;
+  }
+  .ab-stat-num {
+    font-size: 13vw;
+  }
+  .ab-stat-label {
+    font-size: 2.8vw;
+    margin-top: 2vw;
+  }
+  .ab-do {
+    margin-top: 20vw;
+  }
+  .ab-do-item {
+    grid-template-columns: 8vw 1fr;
+    gap: 3vw 4vw;
+    padding: 5vw 0;
+  }
+  .ab-do-item:hover {
+    padding-left: 0;
+  }
+  .ab-do-num {
+    font-size: 3.5vw;
+  }
+  .ab-do-title {
+    font-size: 7vw;
+  }
+  .ab-do-body {
+    grid-column: 2;
+    font-size: 3.6vw;
+    line-height: 4.8vw;
+  }
+  .ab-join {
+    margin-top: 20vw;
+    border-radius: 2vw;
+  }
+  .ab-join-inner {
+    padding: 14vw 5vw;
+  }
+  .ab-join-kicker {
+    font-size: 3vw;
+  }
+  .ab-join-head {
+    font-size: 16vw;
+  }
+  .ab-join-links {
+    gap: 8vw;
+    margin-top: 8vw;
+  }
+  .ab-join-link {
+    font-size: 6vw;
+  }
+  .ab-foot {
+    flex-direction: column;
+    gap: 1.5vw;
+    font-size: 3vw;
+    margin-top: 8vw;
+  }
+}
+
+/* ============================================================
+   Work rail card titles - text replaces the old per-project
+   SVG lockups so the home rails render Yuvenza work names.
+   ============================================================ */
+.item-tw.text {
+  height: auto;
+}
+.item-t-text {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 1.9vw;
+  line-height: 1;
+  color: #1d1d1b;
+  white-space: nowrap;
+}
+
+/* work-index row category chip */
+.wk-cat {
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1vw;
+  letter-spacing: 0.03em;
+  opacity: 0.55;
+}
+
+@media (max-width: 767px) {
+  .item-t-text {
+    font-size: 5vw;
+  }
+  .wk-cat {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Four-destination menu - size the overlay titles so Index,
+   Work, Events and About all fit the fullscreen menu.
+   ============================================================ */
+.menu {
+  padding-top: 9vh;
+}
+.menu-title {
+  font-size: 26vh;
+  line-height: 17vh;
+  padding-top: 2vh;
+}
+.menu-title.m2 {
+  padding-top: 2vh;
+}
+@media (max-width: 991px) and (min-width: 768px) {
+  .menu {
+    padding-top: 8vh;
+  }
+  .menu-title {
+    font-size: 20vh;
+    line-height: 14vh;
+  }
+}
+@media (max-width: 767px) {
+  .menu {
+    padding-top: 16vh;
+  }
+  .menu-title {
+    font-size: 20vw;
+    line-height: 18vw;
+    padding-bottom: 0;
+  }
+}
+
+/* ============================================================
+   Home - featured events band (slight refresh in the paper
+   design language, mirrors the /work and /about mastheads).
+   ============================================================ */
+.hm-events {
+  position: relative;
+  z-index: 2;
+  margin: 6vw 2vw 2vw;
+  padding-top: 3vw;
+  border-top: 1px solid #1d1d1b;
+}
+.hm-kicker {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2vw;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.1vw;
+  letter-spacing: 0.03em;
+  opacity: 0.75;
+}
+.hm-events-title {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  font-size: 11vw;
+  line-height: 0.9;
+  margin: 1.5vw 0 0;
+  padding: 0;
+}
+.hm-events-lead {
+  max-width: 44vw;
+  margin: 1.5vw 0 0;
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: 1.7vw;
+  line-height: 2.1vw;
+}
+.hm-events-grid {
+  list-style: none;
+  margin: 3vw 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid rgba(29, 29, 27, 0.4);
+}
+.hm-ev-card {
+  padding: 1.8vw 1.6vw 1.6vw 0;
+  border-right: 1px solid rgba(29, 29, 27, 0.3);
+}
+.hm-ev-card:last-child {
+  border-right: none;
+}
+.hm-ev-card + .hm-ev-card {
+  padding-left: 1.6vw;
+}
+.hm-ev-cat {
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 0.9vw;
+  letter-spacing: 0.04em;
+  opacity: 0.55;
+}
+.hm-ev-name {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 2.6vw;
+  line-height: 1;
+  margin: 0.8vw 0 1.4vw;
+}
+.hm-ev-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: "Editorial New", serif;
+  font-size: 1.1vw;
+  opacity: 0.75;
+}
+.hm-ev-price {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  opacity: 1;
+}
+.hm-events-cta {
+  display: inline-block;
+  margin-top: 2.5vw;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-size: 1.8vw;
+  color: #1d1d1b;
+  text-decoration: underline;
+  text-underline-offset: 0.4vw;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(29, 29, 27, 0.35);
+  transition: text-decoration-color 0.3s ease;
+}
+.hm-events-cta:hover {
+  text-decoration-color: #1d1d1b;
+}
+
+/* ============================================================
+   Events page (/events) - browse entries, build a registration
+   and check out. Self-contained `.ev-` styling in the paper
+   design language; interaction lives in EventsClient.
+   ============================================================ */
+.ev {
+  position: relative;
+  z-index: 2;
+  padding: 16vh 2vw 12vh;
+}
+.ev-masthead {
+  padding-bottom: 2vw;
+}
+.ev-kicker {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2vw;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.2vw;
+  letter-spacing: 0.02em;
+  padding-bottom: 1vw;
+  border-bottom: 1px solid #1d1d1b;
+}
+.ev-h1 {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  font-size: 14vw;
+  line-height: 0.9;
+  margin: 2vw 0 0;
+  padding: 0;
+}
+.ev-lead {
+  max-width: 46vw;
+  margin: 2vw 0 0;
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: 1.8vw;
+  line-height: 2.2vw;
+}
+
+/* --- layout (single column; the cart is a persistent bottom bar) --- */
+.ev-layout {
+  margin-top: 4vw;
+}
+
+/* --- event cards --- */
+.ev-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5vw;
+}
+.ev-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.6vw;
+  border: 1px solid #1d1d1b;
+  background-color: rgba(29, 29, 27, 0.015);
+  transition: background-color 0.35s ease, box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ev-card.selected {
+  background-color: rgba(150, 181, 159, 0.18);
+  box-shadow: inset 0 0 0 1px #1d1d1b;
+}
+.ev-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ev-cat {
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 0.95vw;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+.ev-badge {
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 0.8vw;
+  letter-spacing: 0.03em;
+  padding: 0.25vw 0.7vw;
+  border: 1px solid #1d1d1b;
+  border-radius: 1vw;
+}
+.ev-badge.popular {
+  background-color: #96b59f;
+}
+.ev-badge.new {
+  background-color: #1d1d1b;
+  color: #cdc6be;
+}
+.ev-title {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 2.4vw;
+  line-height: 1;
+  margin: 1vw 0 0.8vw;
+}
+.ev-desc {
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: 1.05vw;
+  line-height: 1.45vw;
+  margin: 0 0 1.4vw;
+  flex: 1;
+}
+.ev-meta {
+  display: flex;
+  justify-content: space-between;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  font-size: 0.9vw;
+  letter-spacing: 0.02em;
+  opacity: 0.6;
+  padding-bottom: 1.2vw;
+  border-bottom: 1px solid rgba(29, 29, 27, 0.25);
+}
+.ev-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.2vw;
+}
+.ev-price {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  font-size: 1.8vw;
+}
+.ev-add {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: 1vw;
+  cursor: pointer;
+  padding: 0.6vw 1.4vw;
+  color: #1d1d1b;
+  background-color: transparent;
+  border: 1px solid #1d1d1b;
+  border-radius: 2vw;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.ev-add:hover {
+  background-color: rgba(29, 29, 27, 0.08);
+}
+.ev-add.on {
+  background-color: #1d1d1b;
+  color: #cdc6be;
+}
+
+/* --- summary sidebar (retired in favour of the persistent bottom bar) --- */
+.ev-summary {
+  display: none;
+}
+.ev-summary-inner {
+  border: 1px solid #1d1d1b;
+  padding: 1.6vw;
+  background-color: rgba(29, 29, 27, 0.02);
+}
+.ev-summary-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 1vw;
+  border-bottom: 1px solid #1d1d1b;
+}
+.ev-summary-title {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-size: 1.6vw;
+}
+.ev-summary-count {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  font-size: 1.6vw;
+}
+.ev-empty {
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: 1.1vw;
+  line-height: 1.5vw;
+  opacity: 0.6;
+  margin: 1.4vw 0;
+}
+.ev-summary-list {
+  list-style: none;
+  margin: 1.2vw 0;
+  padding: 0;
+}
+.ev-summary-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: 0.8vw;
+  padding: 0.7vw 0;
+  border-bottom: 1px solid rgba(29, 29, 27, 0.2);
+  font-family: "Editorial New", serif;
+  font-size: 1.1vw;
+}
+.ev-summary-price {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+}
+.ev-summary-remove {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-size: 1.4vw;
+  line-height: 1;
+  color: #1d1d1b;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+.ev-summary-remove:hover {
+  opacity: 1;
+}
+.ev-summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 1vw;
+  padding-top: 1vw;
+  border-top: 1px solid #1d1d1b;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.2vw;
+}
+.ev-total-amt {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  font-size: 1.8vw;
+}
+.ev-checkout-btn,
+.ev-bar-btn,
+.ev-pay-btn {
+  width: 100%;
+  cursor: pointer;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: 1.2vw;
+  color: #cdc6be;
+  background-color: #1d1d1b;
+  border: 1px solid #1d1d1b;
+  padding: 1vw;
+  margin-top: 1.4vw;
+  transition: opacity 0.25s ease;
+}
+.ev-checkout-btn:hover,
+.ev-bar-btn:hover,
+.ev-pay-btn:hover {
+  opacity: 0.85;
+}
+.ev-checkout-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+/* Bigger Pay button in the checkout modal. */
+.ev-pay-btn {
+  font-size: 1.9vw;
+  padding: 1.5vw;
+  margin-top: 2vw;
+}
+.ev-summary-note {
+  margin: 1vw 0 0;
+  text-align: center;
+  font-family: "Editorial New", serif;
+  font-size: 0.95vw;
+  opacity: 0.55;
+}
+
+/* --- persistent cart bar, fixed to the bottom on every viewport --- */
+.ev-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2vw;
+  padding: 1.1vw 3vw;
+  background-color: #1d1d1b;
+  color: #cdc6be;
+  transform: translateY(120%);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ev-bar.show {
+  transform: translateY(0);
+}
+.ev-bar-info {
+  display: flex;
+  align-items: baseline;
+  gap: 1.4vw;
+}
+.ev-bar-count {
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.1vw;
+  letter-spacing: 0.02em;
+  opacity: 0.7;
+}
+.ev-bar-total {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  font-size: 2vw;
+}
+.ev-bar .ev-bar-btn {
+  width: auto;
+  margin-top: 0;
+  padding: 1.8vw 7vw;
+  font-size: 2.4vw;
+  border-color: #cdc6be;
+}
+
+/* --- checkout modal --- */
+.ev-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vh 4vw;
+  background-color: rgba(29, 29, 27, 0.55);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.ev-modal {
+  position: relative;
+  width: 100%;
+  max-width: 40vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2.6vw;
+  background-color: #cdc6be;
+  border: 1px solid #1d1d1b;
+  box-shadow: -10px 16px 40px rgba(29, 29, 27, 0.4);
+}
+.ev-modal-close {
+  position: absolute;
+  top: 1.2vw;
+  right: 1.4vw;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-size: 2vw;
+  line-height: 1;
+  color: #1d1d1b;
+}
+.ev-modal-kicker {
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1vw;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+.ev-modal-title {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 4.5vw;
+  line-height: 0.95;
+  margin: 0.3vw 0 1.6vw;
+}
+.ev-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vw;
+}
+.ev-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4vw;
+  flex: 1;
+}
+.ev-field-row {
+  display: flex;
+  gap: 1.2vw;
+}
+.ev-field label {
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 0.85vw;
+  letter-spacing: 0.03em;
+  opacity: 0.6;
+}
+.ev-field input {
+  font-family: "Editorial New", serif;
+  font-size: 1.2vw;
+  color: #1d1d1b;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(29, 29, 27, 0.4);
+  padding: 0.5vw 0;
+  outline: none;
+  transition: border-color 0.25s ease;
+}
+.ev-field input::placeholder {
+  color: rgba(29, 29, 27, 0.4);
+}
+.ev-field input:focus {
+  border-bottom-color: #1d1d1b;
+}
+.ev-order {
+  margin-top: 1vw;
+  padding-top: 1.2vw;
+  border-top: 1px solid #1d1d1b;
+}
+.ev-order-title {
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 0.9vw;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+.ev-order-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: "Editorial New", serif;
+  font-size: 1.1vw;
+  padding: 0.5vw 0;
+}
+.ev-order-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.6vw;
+  padding-top: 0.8vw;
+  border-top: 1px solid rgba(29, 29, 27, 0.3);
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.2vw;
+}
+.ev-order-total span:last-child {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+}
+.ev-modal-note {
+  margin: 1vw 0 0;
+  text-align: center;
+  font-family: "Editorial New", serif;
+  font-size: 0.9vw;
+  opacity: 0.55;
+}
+
+/* --- success state --- */
+.ev-success {
+  text-align: center;
+  padding: 1vw 0;
+}
+.ev-success-mark {
+  width: 5vw;
+  height: 5vw;
+  margin: 0 auto 1.5vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4vw;
+  color: #cdc6be;
+  background-color: #1d1d1b;
+  border-radius: 50%;
+}
+.ev-success-head {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 4vw;
+  line-height: 1;
+  margin: 0 0 1vw;
+}
+.ev-success-body {
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: 1.3vw;
+  line-height: 1.7vw;
+  max-width: 26vw;
+  margin: 0 auto 2vw;
+}
+
+/* ============================================================
+   Home band + events page - mobile
+   ============================================================ */
+@media (max-width: 767px) {
+  .hm-events {
+    margin: 14vw 4vw 6vw;
+    padding-top: 8vw;
+  }
+  .hm-kicker {
+    font-size: 3vw;
+  }
+  .hm-events-title {
+    font-size: 24vw;
+    margin-top: 4vw;
+  }
+  .hm-events-lead {
+    max-width: 100%;
+    font-size: 4.4vw;
+    line-height: 5.4vw;
+    margin-top: 4vw;
+  }
+  .hm-events-grid {
+    grid-template-columns: 1fr;
+    margin-top: 8vw;
+  }
+  .hm-ev-card,
+  .hm-ev-card + .hm-ev-card {
+    padding: 5vw 0;
+    border-right: none;
+    border-bottom: 1px solid rgba(29, 29, 27, 0.3);
+  }
+  .hm-ev-card:last-child {
+    border-bottom: none;
+  }
+  .hm-ev-cat {
+    font-size: 3vw;
+  }
+  .hm-ev-name {
+    font-size: 9vw;
+    margin: 2vw 0 3vw;
+  }
+  .hm-ev-meta {
+    font-size: 3.6vw;
+  }
+  .hm-events-cta {
+    font-size: 5.5vw;
+    margin-top: 8vw;
+  }
+
+  .ev {
+    padding: 14vh 4vw 32vw;
+  }
+  .ev-kicker {
+    flex-direction: column;
+    gap: 1vw;
+    font-size: 3vw;
+  }
+  .ev-h1 {
+    font-size: 27vw;
+  }
+  .ev-lead {
+    max-width: 100%;
+    font-size: 4.6vw;
+    line-height: 5.6vw;
+  }
+  .ev-layout {
+    grid-template-columns: 1fr;
+    margin-top: 8vw;
+  }
+  .ev-grid {
+    grid-template-columns: 1fr;
+    gap: 4vw;
+  }
+  .ev-card {
+    padding: 5vw;
+  }
+  .ev-cat {
+    font-size: 3vw;
+  }
+  .ev-badge {
+    font-size: 2.6vw;
+    padding: 1vw 2.4vw;
+    border-radius: 4vw;
+  }
+  .ev-title {
+    font-size: 8vw;
+    margin: 3vw 0 2.5vw;
+  }
+  .ev-desc {
+    font-size: 3.8vw;
+    line-height: 5vw;
+    margin-bottom: 4vw;
+  }
+  .ev-meta {
+    font-size: 3vw;
+    padding-bottom: 4vw;
+  }
+  .ev-card-foot {
+    margin-top: 4vw;
+  }
+  .ev-price {
+    font-size: 6vw;
+  }
+  .ev-add {
+    font-size: 3.4vw;
+    padding: 2.4vw 5vw;
+    border-radius: 8vw;
+  }
+  /* summary sidebar hidden; use the fixed bottom bar instead */
+  .ev-summary {
+    display: none;
+  }
+  .ev-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3vw;
+    padding: 3vw 4vw;
+    background-color: #1d1d1b;
+    color: #cdc6be;
+    transform: translateY(120%);
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ev-bar.show {
+    transform: translateY(0);
+  }
+  .ev-bar-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .ev-bar-count {
+    text-transform: uppercase;
+    font-family: "Canopee", sans-serif;
+    font-size: 3vw;
+    opacity: 0.7;
+  }
+  .ev-bar-total {
+    font-family: "Domaine Display", serif;
+    font-weight: 500;
+    font-size: 6vw;
+  }
+  .ev-bar-btn {
+    width: auto;
+    margin-top: 0;
+    padding: 4vw 11vw;
+    font-size: 5vw;
+    border-color: #cdc6be;
+  }
+  .ev-modal {
+    max-width: 100%;
+    padding: 8vw 6vw;
+  }
+  .ev-modal-close {
+    font-size: 7vw;
+    top: 4vw;
+    right: 5vw;
+  }
+  .ev-modal-kicker {
+    font-size: 3vw;
+  }
+  .ev-modal-title {
+    font-size: 15vw;
+    margin: 1vw 0 5vw;
+  }
+  .ev-form {
+    gap: 4vw;
+  }
+  .ev-field-row {
+    flex-direction: column;
+    gap: 4vw;
+  }
+  .ev-field {
+    gap: 1.5vw;
+  }
+  .ev-field label {
+    font-size: 3vw;
+  }
+  .ev-field input {
+    font-size: 4.4vw;
+    padding: 2vw 0;
+  }
+  .ev-order {
+    margin-top: 3vw;
+    padding-top: 4vw;
+  }
+  .ev-order-title {
+    font-size: 3vw;
+  }
+  .ev-order-row {
+    font-size: 3.8vw;
+    padding: 1.5vw 0;
+  }
+  .ev-order-total {
+    font-size: 4vw;
+    margin-top: 2vw;
+    padding-top: 3vw;
+  }
+  .ev-modal-note {
+    font-size: 3vw;
+  }
+  .ev-pay-btn {
+    font-size: 5vw;
+    padding: 4.5vw;
+    margin-top: 6vw;
+  }
+  .ev-success-mark {
+    width: 18vw;
+    height: 18vw;
+    font-size: 9vw;
+    margin-bottom: 5vw;
+  }
+  .ev-success-head {
+    font-size: 14vw;
+  }
+  .ev-success-body {
+    font-size: 4.4vw;
+    line-height: 6vw;
+    max-width: 100%;
+  }
+}
+
+/* ============================================================
+   Image placeholders - stand-ins that fill their container so
+   it's obvious where a real photo belongs. Swap for imagery
+   when it's ready.
+   ============================================================ */
+.img-ph {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 3 / 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #c3bcb2;
+  background-image:
+    linear-gradient(to top right, transparent calc(50% - 0.6px), rgba(29, 29, 27, 0.18) 50%, transparent calc(50% + 0.6px)),
+    linear-gradient(to bottom right, transparent calc(50% - 0.6px), rgba(29, 29, 27, 0.18) 50%, transparent calc(50% + 0.6px));
+  border: 1px solid rgba(29, 29, 27, 0.35);
+  overflow: hidden;
+}
+.img-ph-label {
+  position: relative;
+  z-index: 1;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  letter-spacing: 0.1em;
+  font-size: 0.9vw;
+  color: #1d1d1b;
+  opacity: 0.6;
+  background-color: #c3bcb2;
+  padding: 0.3vw 0.8vw;
+}
+@media (max-width: 767px) {
+  .img-ph-label {
+    font-size: 3vw;
+    padding: 1vw 2.4vw;
+  }
+}
+
+/* ============================================================
+   Countdown to August 11 (home, beside the hero). Inverted ink
+   panel matching the join / cart bars.
+   ============================================================ */
+.cd {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3vw;
+  margin: 2vw 2vw 0;
+  padding: 2.4vw 3vw;
+  background-color: #1d1d1b;
+  color: #cdc6be;
+}
+.cd-head {
+  display: flex;
+  flex-direction: column;
+}
+.cd-kicker {
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.1vw;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+.cd-date {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 3.6vw;
+  line-height: 1;
+  margin-top: 0.3vw;
+}
+.cd-grid {
+  display: flex;
+  align-items: flex-start;
+}
+.cd-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 7vw;
+  padding: 0 1.4vw;
+}
+.cd-num {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  font-size: 4.6vw;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.cd-label {
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: 0.85vw;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+  margin-top: 0.7vw;
+}
+.cd-colon {
+  position: absolute;
+  top: 0;
+  right: -0.3vw;
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  font-size: 4.6vw;
+  line-height: 1;
+  opacity: 0.4;
+}
+
+/* ============================================================
+   Responsive safety net - stop oversized display type from
+   overflowing / getting clipped on small screens.
+   ============================================================ */
+/* `overflow-x: clip` prevents horizontal overflow WITHOUT turning the element
+   into a scroll container (which `hidden` does, by forcing overflow-y to auto),
+   so vertical page scrolling keeps working natively. */
+html,
+body {
+  overflow-x: clip;
+}
+#app {
+  overflow-x: clip;
+}
+@media (max-width: 767px) {
+  .head,
+  .h-head,
+  .m-head,
+  .m-title,
+  .p-h2,
+  .head-title,
+  .head-desc,
+  .cs-title,
+  .ev-h1,
+  .ab-h1,
+  .wk-h1,
+  .hm-events-title,
+  .aw-slider__head,
+  .menu-title {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
+  }
+
+  .cd {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6vw;
+    margin: 6vw 4vw 0;
+    padding: 8vw 6vw;
+  }
+  .cd-kicker {
+    font-size: 3vw;
+  }
+  .cd-date {
+    font-size: 10vw;
+  }
+  .cd-grid {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .cd-cell {
+    min-width: 0;
+    flex: 1;
+    padding: 0;
+  }
+  .cd-num {
+    font-size: 11vw;
+  }
+  .cd-label {
+    font-size: 2.6vw;
+    margin-top: 2.4vw;
+  }
+  .cd-colon {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Home (/) redesign - clean editorial layout. Display type uses
+   clamp() so it scales fluidly and never overflows or clips.
+   Reuses the .ab- / .hm- section styles for rhythm.
+   ============================================================ */
+.ho {
+  position: relative;
+  z-index: 2;
+  padding: 16vh 2vw 5vw;
+}
+.ho-hero {
+  padding-bottom: 3vw;
+}
+.ho-kicker {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2vw;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: clamp(0.6rem, 1.2vw, 0.95rem);
+  letter-spacing: 0.02em;
+  padding-bottom: 1vw;
+  border-bottom: 1px solid #1d1d1b;
+}
+.ho-title {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  font-size: clamp(4rem, 25vw, 20rem);
+  line-height: 0.82;
+  margin: 2vw 0 0;
+  padding: 0;
+  overflow-wrap: anywhere;
+}
+.ho-hero-b {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3vw;
+  align-items: end;
+  margin-top: 2vw;
+}
+.ho-tagline {
+  margin: 0;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: clamp(1.4rem, 3.6vw, 3.4rem);
+  line-height: 0.95;
+}
+.ho-lead {
+  margin: 0;
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.6vw, 1.6rem);
+  line-height: 1.4;
+}
+.ho-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1vw;
+  margin-top: 2vw;
+}
+.ho-cta {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: clamp(0.8rem, 1.1vw, 1.1rem);
+  padding: 0.85vw 2vw;
+  border-radius: 3vw;
+  background-color: #1d1d1b;
+  color: #cdc6be;
+  border: 1px solid #1d1d1b;
+  transition: opacity 0.25s ease, background-color 0.25s ease;
+}
+.ho-cta.ghost {
+  background-color: transparent;
+  color: #1d1d1b;
+}
+.ho-cta:hover {
+  opacity: 0.85;
+}
+.ho-cta.ghost:hover {
+  opacity: 1;
+  background-color: rgba(29, 29, 27, 0.06);
+}
+.ho-work-grid {
+  border-top: none;
+  gap: 2vw;
+  margin-top: 3vw;
+}
+.ho-work-card,
+.ho-work-card + .ho-work-card {
+  padding: 0;
+  border-right: none;
+}
+.ho-work-link {
+  display: block;
+  color: #1d1d1b;
+}
+.ho-work-thumb {
+  display: block;
+  height: clamp(9rem, 14vw, 16rem);
+  margin-bottom: 1.2vw;
+  overflow: hidden;
+  border: 1px solid #1d1d1b;
+}
+.ho-work-card .hm-ev-name {
+  margin: 0.6vw 0 0;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ho-work-link:hover .hm-ev-name {
+  transform: translateX(0.6vw);
+}
+
+@media (max-width: 767px) {
+  .ho {
+    padding: 14vh 4vw 8vw;
+  }
+  .ho-kicker {
+    flex-direction: column;
+    gap: 1vw;
+    font-size: 3vw;
+  }
+  .ho-title {
+    font-size: 27vw;
+    margin-top: 4vw;
+  }
+  .ho-hero-b {
+    grid-template-columns: 1fr;
+    gap: 6vw;
+    margin-top: 6vw;
+  }
+  .ho-tagline {
+    font-size: 8vw;
+  }
+  .ho-lead {
+    font-size: 4.4vw;
+    line-height: 1.45;
+  }
+  .ho-cta-row {
+    gap: 3vw;
+    margin-top: 6vw;
+  }
+  .ho-cta {
+    font-size: 4vw;
+    padding: 3vw 7vw;
+    border-radius: 12vw;
+  }
+  .ho-work-grid {
+    gap: 8vw;
+    margin-top: 8vw;
+  }
+  .ho-work-thumb {
+    height: 55vw;
+    margin-bottom: 3vw;
+  }
+  .ho-work-card .hm-ev-name {
+    margin-top: 2vw;
+  }
+}
+
+/* ============================================================
+   Case-study text marquee (replaces the old marquee image).
+   ============================================================ */
+.cs-mq {
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid #1d1d1b;
+  border-bottom: 1px solid #1d1d1b;
+  padding: 0.7vw 0;
+}
+.cs-mq-row {
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+  animation: cs-mq-scroll 26s linear infinite;
+}
+.cs-mq-group {
+  display: inline-flex;
+  align-items: center;
+}
+.cs-mq-item {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-size: 2vw;
+  line-height: 1;
+  white-space: nowrap;
+}
+.cs-mq-dot {
+  font-family: "Domaine Display", serif;
+  padding: 0 0.6vw;
+  opacity: 0.5;
+}
+@keyframes cs-mq-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (max-width: 767px) {
+  .cs-mq-item {
+    font-size: 6vw;
+  }
+}
+
+/* ============================================================
+   Home - extended editorial elements (statement, work rail,
+   testimonials). Clamp-based type, mobile-safe.
+   ============================================================ */
+
+/* --- big "youth powered club" statement --- */
+.ho-statement {
+  margin-top: 9vw;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 3vw;
+  align-items: end;
+  border-top: 1px solid rgba(29, 29, 27, 0.4);
+  padding-top: 3vw;
+}
+.ho-statement-head {
+  margin: 0;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  font-size: clamp(2.6rem, 8.5vw, 9rem);
+  line-height: 0.88;
+  overflow-wrap: anywhere;
+}
+.ho-statement-body {
+  margin: 0 0 1vw;
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.6vw, 1.6rem);
+  line-height: 1.5;
+}
+
+/* --- horizontal work rail (echoes the old draggable rail) --- */
+.ho-rail {
+  display: flex;
+  gap: 2vw;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  padding: 3vw 0 1.5vw;
+  margin-top: 1vw;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.ho-rail::-webkit-scrollbar {
+  display: none;
+}
+.ho-rail-card {
+  flex: 0 0 auto;
+  width: 24vw;
+  scroll-snap-align: start;
+  color: #1d1d1b;
+}
+.ho-rail-thumb {
+  display: block;
+  height: 16vw;
+  margin-bottom: 1vw;
+  overflow: hidden;
+  border: 1px solid #1d1d1b;
+}
+.ho-rail-name {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: 2vw;
+  line-height: 1;
+  margin: 0.6vw 0 0;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ho-rail-card:hover .ho-rail-name {
+  transform: translateX(0.5vw);
+}
+.ho-rail-year {
+  font-family: "Domaine Display", serif;
+  font-weight: 500;
+  font-size: 1.1vw;
+  opacity: 0.55;
+}
+
+/* --- testimonials deck --- */
+.ho-quotes {
+  margin-top: 9vw;
+}
+.ho-quotes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2vw;
+  border-top: 1px solid rgba(29, 29, 27, 0.4);
+  padding-top: 3vw;
+}
+.ho-quote {
+  margin: 0;
+  padding: 2vw;
+  border: 1px solid #1d1d1b;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 18vw;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ho-quote:hover {
+  transform: translateY(-0.5vw);
+  box-shadow: -6px 10px 22px rgba(29, 29, 27, 0.2);
+}
+.ho-quote-text {
+  margin: 0 0 2vw;
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.5vw, 1.5rem);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.ho-quote-by {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2vw;
+}
+.ho-quote-name {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-size: 1.2vw;
+}
+.ho-quote-role {
+  font-family: "Editorial New", serif;
+  font-size: 1vw;
+  opacity: 0.6;
+}
+
+@media (max-width: 767px) {
+  .ho-statement {
+    grid-template-columns: 1fr;
+    gap: 6vw;
+    margin-top: 16vw;
+    padding-top: 6vw;
+  }
+  .ho-statement-head {
+    font-size: 15vw;
+  }
+  .ho-statement-body {
+    font-size: 4.4vw;
+    line-height: 1.5;
+  }
+  .ho-rail {
+    gap: 5vw;
+    padding: 6vw 0 3vw;
+  }
+  .ho-rail-card {
+    width: 70vw;
+  }
+  .ho-rail-thumb {
+    height: 48vw;
+    margin-bottom: 3vw;
+  }
+  .ho-rail-name {
+    font-size: 8vw;
+  }
+  .ho-rail-year {
+    font-size: 3.4vw;
+  }
+  .ho-quotes {
+    margin-top: 18vw;
+  }
+  .ho-quotes-grid {
+    grid-template-columns: 1fr;
+    gap: 5vw;
+    padding-top: 6vw;
+  }
+  .ho-quote {
+    padding: 6vw;
+    min-height: 0;
+  }
+  .ho-quote-text {
+    font-size: 4.6vw;
+    line-height: 1.45;
+    margin-bottom: 5vw;
+  }
+  .ho-quote-name {
+    font-size: 4vw;
+  }
+  .ho-quote-role {
+    font-size: 3.2vw;
+  }
+}
+

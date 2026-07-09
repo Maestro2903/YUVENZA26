@@ -1,7 +1,8 @@
 {
   "name": "yuvenza26",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "Yuvenza - The Youth Club portfolio, built with Next.js + TypeScript + React",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,16 +10,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "gsap": "^3.12.5",
-    "lenis": "^1.1.14",
-    "next": "15.1.6",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "next": "^15.5.20",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "typescript": "^5"
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "playwright-core": "^1.49.0",
+    "typescript": "^5.7.0"
   }
 }
