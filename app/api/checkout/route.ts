@@ -10,6 +10,7 @@ import {
 } from "@/lib/supabase/server";
 import { isAllowedEmail, normalizeDomain } from "@/lib/auth/allowedDomain";
 import { clientIp, rateLimit, tooManyRequests } from "@/lib/rateLimit";
+import { sendConfirmationEmail } from "@/lib/email/notify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -122,6 +123,7 @@ export async function POST(req: Request) {
         .select("id")
         .single();
       if (error) throw error;
+      await sendConfirmationEmail(data.id); // idempotent, never throws
       return NextResponse.json({ ok: true, mode: "free", orderId: data.id });
     }
 
@@ -136,6 +138,7 @@ export async function POST(req: Request) {
         .select("id")
         .single();
       if (error) throw error;
+      await sendConfirmationEmail(data.id); // idempotent, never throws
       return NextResponse.json({ ok: true, mode: "demo", orderId: data.id });
     }
 

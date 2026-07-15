@@ -3,6 +3,7 @@ import { verifyWebhookSignature } from "@/lib/razorpay/verify";
 import { getRazorpayWebhookSecret } from "@/lib/razorpay/server";
 import { getServiceSupabase } from "@/lib/supabase/server";
 import type { Json, PaymentStatus } from "@/lib/supabase/types";
+import { sendConfirmationEmail } from "@/lib/email/notify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -94,6 +95,7 @@ export async function POST(req: Request) {
 
     if (paymentStatus === "captured") {
       await service.from("orders").update({ status: "paid" }).eq("id", order.id);
+      await sendConfirmationEmail(order.id); // idempotent, never throws
     } else if (paymentStatus === "failed" && order.status !== "paid") {
       await service.from("orders").update({ status: "failed" }).eq("id", order.id);
     }

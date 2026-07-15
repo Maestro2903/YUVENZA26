@@ -134,6 +134,10 @@ export type OrderRow = {
   notes: Json | null;
   /** The signed-in visitor who placed the order (Google auth). */
   user_id: string | null;
+  /** Set by the admin QR scanner on the first valid gate scan. */
+  checked_in_at: string | null;
+  /** Claimed atomically before the confirmation email is sent. */
+  confirmation_email_sent_at: string | null;
   created_at: string;
   updated_at: string;
 };

@@ -1,6 +1,6 @@
 -- ONE-SHOT SETUP for a FRESH project: paste into the Supabase SQL editor and Run.
--- (0001 + 0002 + 0003 + 0004 + seed. For an EXISTING database, run only the
---  migration files you haven't applied yet, in order.)
+-- (0001..0006 + seed. For an EXISTING database, run only the migration files
+--  you haven't applied yet, in order.)
 
 -- ============================================================================
 -- YUVENZA26 - initial schema
@@ -774,6 +774,33 @@ from (values
 ) as caps(slug, c)
 where public.events.slug = caps.slug
   and public.events.capacity is null;
+
+-- ============================================================================
+-- YUVENZA26 - migration 0005: gate check-in tracking
+--
+-- The admin QR scanner marks an order checked-in on its first valid scan;
+-- any later scan of the same pass warns staff that it was already used.
+--
+-- Apply AFTER 0004 (paste into the Supabase SQL editor, or supabase db push).
+-- ============================================================================
+
+alter table public.orders
+  add column if not exists checked_in_at timestamptz;
+
+create index if not exists idx_orders_checked_in_at on public.orders (checked_in_at);
+
+-- ============================================================================
+-- YUVENZA26 - migration 0006: confirmation-email bookkeeping
+--
+-- The app claims this timestamp atomically before sending the registration
+-- confirmation email, so the verify route and the Razorpay webhook can race
+-- without ever double-sending.
+--
+-- Apply AFTER 0005 (paste into the Supabase SQL editor, or supabase db push).
+-- ============================================================================
+
+alter table public.orders
+  add column if not exists confirmation_email_sent_at timestamptz;
 
 -- ============================================================================
 -- YUVENZA26 - seed data

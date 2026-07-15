@@ -747,3 +747,38 @@ legend {
     width: 100%;
   }
 }
+
+/* ---------- Gate check-in: warning state + camera scanner ---------- */
+.adm-flash.warn {
+  background: #fdf3d7;
+  color: #7a5a12;
+  border-color: rgba(122, 90, 18, 0.35);
+}
+.adm-scanner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+.adm-scanner-frame {
+  position: relative;
+  width: min(420px, 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--adm-line);
+  background: #000;
+}
+.adm-scanner-video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+.adm-scanner-target {
+  position: absolute;
+  inset: 12%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 14px;
+  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}

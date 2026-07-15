@@ -1,0 +1,16 @@
+{
+  "name": "yuvenza-email-function",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "functions-framework --target=sendConfirmation"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.4.0",
+    "nodemailer": "^6.9.14",
+    "qrcode": "^1.5.4"
+  }
+}

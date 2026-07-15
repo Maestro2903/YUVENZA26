@@ -129,12 +129,39 @@ orders and only to the order's owner** (or an admin) — the browser never
 constructs a payload, so nobody can generate a valid pass themselves, and an
 unpaid/cancelled order has no pass at all.
 
-**Check-in:** Admin → Orders & payments → *Verify entry pass*. Focus the box,
-scan the QR (hardware scanners type the decoded text) or paste it — the
-signature is verified and the attendee's name, events and payment status come
-straight from the database. A rotated `APP_ENCRYPTION_KEY` invalidates
+**Check-in:** Admin → Orders & payments → *Verify entry pass · gate check-in*.
+Tap **Open camera scanner** (rear camera; native BarcodeDetector with a jsQR
+fallback for iOS) and point it at the pass, or focus the text box and use a
+hardware scanner / paste. The signature is verified server-side and the
+attendee's name, events and payment status come straight from the database.
+**The first valid scan marks the order checked-in** (atomic - two gates can't
+both claim it); scanning the same pass again shows an "ALREADY CHECKED IN at
+<time>" warning with a beep, so one ticket can't admit two people (migration
+0005). Checked-in orders show a pill in the orders table. A rotated `APP_ENCRYPTION_KEY` invalidates
 previously scanned-and-saved payload copies, but passes are re-issued live on
 every view, so attendees are unaffected.
+
+### Confirmation emails (Gmail + Google Cloud Function)
+
+When an order becomes paid (card payment verified, webhook capture, or a
+free/demo registration), the app sends a branded confirmation email: stamp
+logo, the attendee's entries with dates/times, amount, the **signed QR pass
+inline** (scannable at the gate straight from the email) and a "Download
+ticket (PDF)" button back to the site.
+
+Setup (see `google-cloud/email-function/README.md` for the full walkthrough):
+1. Create a Gmail app password (2FA required).
+2. Deploy the function: `gcloud functions deploy … --gen2 --runtime=nodejs20`
+   (free tier; exact command in the README).
+3. Set `EMAIL_FUNCTION_URL` + `EMAIL_FUNCTION_SECRET` in the app's env.
+4. Run `supabase/migrations/0006_confirmation_email.sql`.
+
+Sending is **idempotent** (an atomic claim on
+`orders.confirmation_email_sent_at` means verify + webhook can race without
+double-sending; failures release the claim so retries resend) and **never
+blocks a payment** — with the env vars unset, emails are simply skipped.
+Preview the template any time: `node scripts/email-demo.mjs` writes an
+HTML + PDF preview to ~/Downloads.
 
 ### Live slot availability (Realtime)
 

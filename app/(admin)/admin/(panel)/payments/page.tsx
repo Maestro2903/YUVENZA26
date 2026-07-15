@@ -26,7 +26,7 @@ export default async function AdminPaymentsPage({
   let query = supabase
     .from("orders")
     .select(
-      "id, razorpay_order_id, amount, status, demo, customer_name, customer_email, customer_phone, customer_college, event_slugs, created_at, payments ( razorpay_payment_id, status, method )",
+      "id, razorpay_order_id, amount, status, demo, customer_name, customer_email, customer_phone, customer_college, event_slugs, created_at, checked_in_at, payments ( razorpay_payment_id, status, method )",
       { count: "exact" }
     );
   if (q) query = query.or(`customer_email.ilike.%${q}%,customer_name.ilike.%${q}%,customer_phone.ilike.%${q}%`);
@@ -112,7 +112,15 @@ export default async function AdminPaymentsPage({
                     <td className="num">{o.amount === 0 ? "Free" : INR(Math.round(o.amount / 100))}</td>
                     <td>
                       <span className={`adm-pill ${o.status}`}>{o.status}</span>{" "}
-                      {o.demo && <span className="adm-pill demo">demo</span>}
+                      {o.demo && <span className="adm-pill demo">demo</span>}{" "}
+                      {o.checked_in_at && (
+                        <span
+                          className="adm-pill active"
+                          title={new Date(o.checked_in_at).toLocaleString("en-IN")}
+                        >
+                          checked in
+                        </span>
+                      )}
                     </td>
                     <td>
                       {payment ? (

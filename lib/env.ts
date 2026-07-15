@@ -83,3 +83,13 @@ export function getRazorpayEnvConfig(): { keyId: string | null; keySecret: strin
 export function getRazorpayWebhookSecretEnv(): string | null {
   return process.env.RAZORPAY_WEBHOOK_SECRET || null;
 }
+
+/**
+ * Confirmation-email service (Google Cloud Function running Nodemailer;
+ * see google-cloud/email-function). Both unset = emails silently skipped.
+ */
+export function getEmailFunctionConfig(): { url: string; secret: string } | null {
+  const url = process.env.EMAIL_FUNCTION_URL;
+  const secret = process.env.EMAIL_FUNCTION_SECRET;
+  return url && secret ? { url, secret } : null;
+}

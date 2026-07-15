@@ -3,6 +3,7 @@ import { verifyPaymentSignature } from "@/lib/razorpay/verify";
 import { getRazorpayConfig } from "@/lib/razorpay/server";
 import { getServiceSupabase } from "@/lib/supabase/server";
 import { clientIp, rateLimit, tooManyRequests } from "@/lib/rateLimit";
+import { sendConfirmationEmail } from "@/lib/email/notify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -92,6 +93,8 @@ export async function POST(req: Request) {
       { onConflict: "razorpay_payment_id" }
     );
     if (paymentError) throw paymentError;
+
+    await sendConfirmationEmail(order.id); // idempotent, never throws
 
     return NextResponse.json({ ok: true, status: "paid" });
   } catch (err) {
