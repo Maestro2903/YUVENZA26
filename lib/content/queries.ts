@@ -58,11 +58,42 @@ export function mapEventRow(row: EventRow): EventItem {
     title: row.title,
     category: row.category,
     dateLabel: row.date_label,
+    eventDate: row.event_date ?? undefined,
+    // Postgres time columns serialise as "HH:MM:SS" - keep "HH:MM".
+    startTime: row.start_time ? row.start_time.slice(0, 5) : undefined,
+    endTime: row.end_time ? row.end_time.slice(0, 5) : undefined,
     price: row.price,
     description: row.description,
     slots: row.slots ?? undefined,
+    capacity: row.capacity ?? undefined,
+    imageUrl: row.image_url ?? undefined,
+    imageAlt: row.image_alt ?? undefined,
+    details: row.details ?? undefined,
+    rules: row.rules ?? undefined,
     badge: row.badge ?? undefined,
   };
+}
+
+export async function getEvent(slug: string): Promise<EventItem | null> {
+  const events = await getEvents();
+  return events.find((e) => e.slug === slug) ?? null;
+}
+
+/** Current paid-registration counts per event slug (live via Realtime on the client). */
+export async function getEventRegistrations(): Promise<Record<string, number>> {
+  if (!isSupabaseConfigured()) return {};
+  try {
+    const supabase = getAnonServerSupabase();
+    if (!supabase) return {};
+    const { data, error } = await supabase
+      .from("event_registrations")
+      .select("event_slug, registered");
+    if (error) throw error;
+    return Object.fromEntries((data ?? []).map((r) => [r.event_slug, r.registered]));
+  } catch (err) {
+    warnFallback("event registrations", err);
+    return {};
+  }
 }
 
 export async function getWorkItems(): Promise<WorkItem[]> {

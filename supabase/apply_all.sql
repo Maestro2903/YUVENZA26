@@ -1,6 +1,6 @@
 -- ONE-SHOT SETUP for a FRESH project: paste into the Supabase SQL editor and Run.
--- (0001 + 0002 + seed. For an EXISTING database, run only the new migration
---  file supabase/migrations/0002_google_registration.sql instead.)
+-- (0001 + 0002 + 0003 + 0004 + seed. For an EXISTING database, run only the
+--  migration files you haven't applied yet, in order.)
 
 -- ============================================================================
 -- YUVENZA26 - initial schema
@@ -607,6 +607,175 @@ begin
 end $$;
 
 -- ============================================================================
+-- YUVENZA26 - migration 0003: structured event dates & times
+--
+-- Adds calendar date + start/end times to events so the admin can schedule
+-- them with real pickers and the registration page can prevent time clashes.
+-- The free-text date_label stays for display; the structured fields drive
+-- clash detection.
+--
+-- Apply AFTER 0002 (paste into the Supabase SQL editor, or supabase db push).
+-- ============================================================================
+
+alter table public.events
+  add column if not exists event_date date,
+  add column if not exists start_time time,
+  add column if not exists end_time time;
+
+-- End must come after start when both are set.
+alter table public.events
+  drop constraint if exists events_time_order;
+alter table public.events
+  add constraint events_time_order
+  check (start_time is null or end_time is null or end_time > start_time);
+
+-- Schedule the seeded fest line-up (only rows that haven't been scheduled
+-- yet, so admin edits are never clobbered on re-run).
+update public.events set event_date = d, start_time = s, end_time = e
+from (values
+  ('hackathon',        date '2026-08-11', null::time,    null::time),
+  ('design-sprint',    date '2026-08-11', time '10:00',  time '13:00'),
+  ('canvas',           date '2026-08-11', time '14:00',  time '17:00'),
+  ('frame-by-frame',   date '2026-08-11', null::time,    null::time),
+  ('arena',            date '2026-08-12', time '10:00',  time '14:00'),
+  ('the-great-debate', date '2026-08-12', time '15:00',  time '17:00'),
+  ('battle-of-bands',  date '2026-08-12', time '18:00',  time '21:00'),
+  ('run-for-kindness', date '2026-08-13', time '06:00',  time '09:00')
+) as sched(slug, d, s, e)
+where public.events.slug = sched.slug
+  and public.events.event_date is null;
+
+-- ============================================================================
+-- YUVENZA26 - migration 0004: live slot availability + rich event pages
+--
+-- * events gain capacity (max registrations), a 4:3 image and a long-form
+--   details write-up (all editable in the admin panel).
+-- * event_registrations keeps a live per-event counter of PAID registrations,
+--   maintained by a trigger on orders and streamed to browsers over Supabase
+--   Realtime - no polling, no refresh.
+--
+-- Apply AFTER 0003 (paste into the Supabase SQL editor, or supabase db push).
+-- ============================================================================
+
+alter table public.events
+  add column if not exists capacity integer check (capacity is null or capacity >= 0),
+  add column if not exists image_url text,
+  add column if not exists image_alt text,
+  add column if not exists details text,
+  add column if not exists rules text; -- one rule per line, shown on /events/[slug]
+
+-- ---------------------------------------------------------------------------
+-- Live registration counters (one row per event slug)
+-- ---------------------------------------------------------------------------
+create table if not exists public.event_registrations (
+  event_slug text primary key,
+  registered integer not null default 0 check (registered >= 0),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.event_registrations enable row level security;
+drop policy if exists "event_registrations_select" on public.event_registrations;
+create policy "event_registrations_select" on public.event_registrations
+  for select using (true);
+-- No insert/update/delete policies: only the trigger (definer) writes.
+
+create or replace function public.bump_event_registrations(slugs text[], delta integer)
+returns void
+language plpgsql security definer
+set search_path = public
+as $$
+begin
+  if delta > 0 then
+    insert into public.event_registrations (event_slug, registered, updated_at)
+    select s, delta, now() from unnest(slugs) as s
+    on conflict (event_slug) do update
+      set registered = public.event_registrations.registered + excluded.registered,
+          updated_at = now();
+  elsif delta < 0 then
+    update public.event_registrations
+      set registered = greatest(0, registered + delta), updated_at = now()
+      where event_slug = any (slugs);
+  end if;
+end $$;
+
+-- Keep counters in sync with paid orders (insert, status change, delete).
+create or replace function public.sync_event_registrations()
+returns trigger
+language plpgsql security definer
+set search_path = public
+as $$
+begin
+  if tg_op = 'INSERT' then
+    if new.status = 'paid' then
+      perform public.bump_event_registrations(new.event_slugs, 1);
+    end if;
+    return new;
+  elsif tg_op = 'UPDATE' then
+    if coalesce(old.status, '') <> 'paid' and new.status = 'paid' then
+      perform public.bump_event_registrations(new.event_slugs, 1);
+    elsif old.status = 'paid' and new.status <> 'paid' then
+      perform public.bump_event_registrations(old.event_slugs, -1);
+    end if;
+    return new;
+  elsif tg_op = 'DELETE' then
+    if old.status = 'paid' then
+      perform public.bump_event_registrations(old.event_slugs, -1);
+    end if;
+    return old;
+  end if;
+  return null;
+end $$;
+
+drop trigger if exists trg_orders_sync_registrations on public.orders;
+create trigger trg_orders_sync_registrations
+  after insert or update of status or delete on public.orders
+  for each row execute function public.sync_event_registrations();
+
+-- Maintenance helper: rebuild every counter from the orders table.
+create or replace function public.refresh_event_registrations()
+returns void
+language plpgsql security definer
+set search_path = public
+as $$
+begin
+  delete from public.event_registrations;
+  insert into public.event_registrations (event_slug, registered, updated_at)
+  select slug, count(*), now()
+  from public.orders, unnest(event_slugs) as slug
+  where status = 'paid'
+  group by slug;
+end $$;
+
+revoke execute on function public.refresh_event_registrations() from public, anon, authenticated;
+grant execute on function public.refresh_event_registrations() to service_role;
+
+-- Backfill counters from existing paid orders.
+select public.refresh_event_registrations();
+
+-- Stream counter changes to browsers (Supabase Realtime).
+do $$
+begin
+  alter publication supabase_realtime add table public.event_registrations;
+exception
+  when duplicate_object then null;
+end $$;
+
+-- Capacities for the seeded line-up (derived from the old slots labels;
+-- only filled where the admin hasn't set one).
+update public.events set capacity = c
+from (values
+  ('hackathon',        120),
+  ('battle-of-bands',   16),
+  ('design-sprint',     60),
+  ('arena',             32),
+  ('canvas',            80),
+  ('the-great-debate',  48),
+  ('run-for-kindness', 300)
+) as caps(slug, c)
+where public.events.slug = caps.slug
+  and public.events.capacity is null;
+
+-- ============================================================================
 -- YUVENZA26 - seed data
 -- Permission catalog, default roles, and the site's current content so the
 -- database starts exactly where the static site left off.
@@ -735,32 +904,32 @@ on conflict (slug) do nothing;
 -- Events (fest line-up; dates follow the Aug 2026 fest window)
 -- ---------------------------------------------------------------------------
 insert into public.events
-  (slug, title, category, date_label, price, description, slots, badge, sort_order, published)
+  (slug, title, category, date_label, event_date, start_time, end_time, price, description, slots, capacity, badge, sort_order, published)
 values
-  ('hackathon', 'Hackathon 24', 'Technology', 'Aug 11-12', 299,
+  ('hackathon', 'Hackathon 24', 'Technology', 'Aug 11-12', date '2026-08-11', null, null, 299,
    $t$A 24-hour build sprint where teams ship something that matters. Mentors on tap, midnight chai included.$t$,
-   '120 slots', 'Popular', 0, true),
-  ('battle-of-bands', 'Battle of Bands', 'Culture', 'Aug 12', 199,
+   '120 slots', 120, 'Popular', 0, true),
+  ('battle-of-bands', 'Battle of Bands', 'Culture', 'Aug 12', date '2026-08-12', time '18:00', time '21:00', 199,
    $t$The loudest night of the fest. Bring your band, own the stage and play for the crowd.$t$,
-   '16 bands', null, 1, true),
-  ('design-sprint', 'Design Sprint', 'Workshop', 'Aug 11', 149,
+   '16 bands', 16, null, 1, true),
+  ('design-sprint', 'Design Sprint', 'Workshop', 'Aug 11', date '2026-08-11', time '10:00', time '13:00', 149,
    $t$A hands-on studio session on brand, type and interface, run by working designers.$t$,
-   '60 seats', 'New', 2, true),
-  ('frame-by-frame', 'Frame by Frame', 'Photography', 'Aug 11-12', 99,
+   '60 seats', 60, 'New', 2, true),
+  ('frame-by-frame', 'Frame by Frame', 'Photography', 'Aug 11-12', date '2026-08-11', null, null, 99,
    $t$A campus-wide photography contest on the theme of kindness. Shoot, submit, get exhibited.$t$,
-   'Open entry', null, 3, true),
-  ('arena', 'The Arena', 'eSports', 'Aug 12', 149,
+   'Open entry', null, null, 3, true),
+  ('arena', 'The Arena', 'eSports', 'Aug 12', date '2026-08-12', time '10:00', time '14:00', 149,
    $t$Squad up for the fest gaming tournament. Brackets, big screens and bragging rights.$t$,
-   '32 teams', null, 4, true),
-  ('canvas', 'Canvas', 'Art & Craft', 'Aug 11', 79,
+   '32 teams', 32, null, 4, true),
+  ('canvas', 'Canvas', 'Art & Craft', 'Aug 11', date '2026-08-11', time '14:00', time '17:00', 79,
    $t$A live art and craft contest. Paints, paper and a few hours to make something beautiful.$t$,
-   '80 seats', null, 5, true),
-  ('the-great-debate', 'The Great Debate', 'Literary', 'Aug 12', 0,
+   '80 seats', 80, null, 5, true),
+  ('the-great-debate', 'The Great Debate', 'Literary', 'Aug 12', date '2026-08-12', time '15:00', time '17:00', 0,
    $t$Free and open floor. Take a side, make your case and change a few minds.$t$,
-   '48 speakers', 'Free', 6, true),
-  ('run-for-kindness', 'Run for Kindness', 'Fundraiser', 'Aug 13', 249,
+   '48 speakers', 48, 'Free', 6, true),
+  ('run-for-kindness', 'Run for Kindness', 'Fundraiser', 'Aug 13', date '2026-08-13', time '06:00', time '09:00', 249,
    $t$A 5K charity run to close the fest. Every rupee raised goes straight to our community drives.$t$,
-   '300 runners', null, 7, true)
+   '300 runners', 300, null, 7, true)
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------------------

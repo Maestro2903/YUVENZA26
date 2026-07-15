@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import AppShell from "@/components/AppShell";
 import EventsClient from "@/components/EventsClient";
-import { getEvents, getRegistrationSettings, getSection } from "@/lib/content/queries";
+import {
+  getEventRegistrations,
+  getEvents,
+  getRegistrationSettings,
+  getSection,
+} from "@/lib/content/queries";
 import { getRazorpayConfig } from "@/lib/razorpay/server";
 
 export const revalidate = 300;
@@ -13,10 +18,11 @@ export const metadata: Metadata = {
 };
 
 export default async function RegistrationPage() {
-  const [events, fest, registration] = await Promise.all([
+  const [events, fest, registration, slotCounts] = await Promise.all([
     getEvents(),
     getSection("fest"),
     getRegistrationSettings(),
+    getEventRegistrations(),
   ]);
   // Only used for messaging; the checkout API decides the real mode per request.
   const paymentsLive = Boolean(await getRazorpayConfig().catch(() => null));
@@ -30,6 +36,7 @@ export default async function RegistrationPage() {
         paymentsLive={paymentsLive}
         requireLogin={registration.requireLogin}
         allowedEmailDomain={registration.allowedEmailDomain}
+        initialSlotCounts={slotCounts}
       />
     </AppShell>
   );

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServiceSupabase } from "@/lib/supabase/server";
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,6 +13,8 @@ export const dynamic = "force-dynamic";
  * status still comes from the Razorpay webhook.
  */
 export async function POST(req: Request) {
+  if (!rateLimit(`cancel:${clientIp(req)}`, 20, 60_000)) return tooManyRequests();
+
   let body: { orderId?: string; failed?: boolean };
   try {
     body = await req.json();

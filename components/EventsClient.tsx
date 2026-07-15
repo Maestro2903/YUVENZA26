@@ -4,6 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { INR, type EventItem } from "@/lib/content/types";
 import { useSupabaseUser } from "@/lib/hooks/useSupabaseUser";
 import { normalizeDomain } from "@/lib/auth/allowedDomain";
+import { findClash, formatTimeRange } from "@/lib/events/clash";
+import { isSoldOut, slotsLabel } from "@/lib/events/capacity";
+import { useLiveSlots } from "@/lib/hooks/useLiveSlots";
 import MyRegistrations from "@/components/MyRegistrations";
 import QrTicket from "@/components/QrTicket";
 
@@ -80,6 +83,7 @@ export default function EventsClient({
   paymentsLive = false,
   requireLogin = true,
   allowedEmailDomain = "citchennai.net",
+  initialSlotCounts = {},
 }: {
   events: EventItem[];
   festName?: string;
@@ -87,6 +91,8 @@ export default function EventsClient({
   paymentsLive?: boolean;
   requireLogin?: boolean;
   allowedEmailDomain?: string;
+  /** Server-rendered paid-registration counts; kept live via Realtime. */
+  initialSlotCounts?: Record<string, number>;
 }) {
   const { user, loading: authLoading, signInWithGoogle, signOut } = useSupabaseUser();
   const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -100,6 +106,7 @@ export default function EventsClient({
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
 
+  const slotCounts = useLiveSlots(initialSlotCounts);
   const domain = normalizeDomain(allowedEmailDomain);
   const mustSignIn = requireLogin && !user;
 
@@ -149,7 +156,14 @@ export default function EventsClient({
     }));
   }, [user]);
 
-  const toggle = (slug: string) => setSelected((s) => ({ ...s, [slug]: !s[slug] }));
+  const toggle = (slug: string) => {
+    const event = events.find((e) => e.slug === slug);
+    // Never allow selecting a sold-out entry or one that clashes with an
+    // already-chosen event - the buttons are disabled too; this guards
+    // keyboard/programmatic paths.
+    if (event && !selected[slug] && (findClash(event, chosen) || isSoldOut(event, slotCounts[slug]))) return;
+    setSelected((s) => ({ ...s, [slug]: !s[slug] }));
+  };
 
   const startSignIn = async () => {
     setAuthError(null);
@@ -429,6 +443,8 @@ export default function EventsClient({
               key={ev.slug}
               event={ev}
               selected={!!selected[ev.slug]}
+              clashWith={!selected[ev.slug] ? findClash(ev, chosen)?.title ?? null : null}
+              registered={slotCounts[ev.slug]}
               onToggle={() => toggle(ev.slug)}
             />
           ))}
@@ -529,12 +545,7 @@ export default function EventsClient({
                       ? `Your free ${count === 1 ? "entry is" : "entries are"} confirmed.`
                       : `Your registration for ${count} ${count === 1 ? "entry" : "entries"} is recorded (demo mode - no payment taken).`}
                 </p>
-                {showQr && (
-                  <QrTicket
-                    orderId={successOrderId}
-                    name={form.name || user?.name || "Guest"}
-                  />
-                )}
+                {showQr && <QrTicket orderId={successOrderId} />}
                 <button type="button" className="ev-pay-btn" onClick={reset}>
                   Done
                 </button>
@@ -669,14 +680,24 @@ export default function EventsClient({
 function EventCard({
   event,
   selected,
+  clashWith,
+  registered,
   onToggle,
 }: {
   event: EventItem;
   selected: boolean;
+  /** Title of an already-selected event this one clashes with, if any. */
+  clashWith?: string | null;
+  /** Live paid-registration count (Realtime). */
+  registered?: number;
   onToggle: () => void;
 }) {
+  const timeRange = formatTimeRange(event.startTime, event.endTime);
+  const soldOut = isSoldOut(event, registered) && !selected;
+  const blocked = (Boolean(clashWith) || soldOut) && !selected;
+
   return (
-    <li className={"ev-card" + (selected ? " selected" : "")}>
+    <li className={"ev-card" + (selected ? " selected" : "") + (blocked ? " clashed" : "")}>
       <div className="ev-card-top">
         <span className="ev-cat">{event.category}</span>
         {event.badge && <span className={"ev-badge " + event.badge.toLowerCase()}>{event.badge}</span>}
@@ -684,9 +705,17 @@ function EventCard({
       <h3 className="ev-title">{event.title}</h3>
       <p className="ev-desc">{event.description}</p>
       <div className="ev-meta">
-        <span className="ev-date">{event.dateLabel}</span>
-        <span className="ev-slots">{event.slots}</span>
+        <span className="ev-date">
+          {event.dateLabel}
+          {timeRange && <span className="ev-time"> · {timeRange}</span>}
+        </span>
+        <span className={"ev-slots" + (soldOut ? " out" : "")}>{slotsLabel(event, registered)}</span>
       </div>
+      {blocked && (
+        <p className="ev-clash" role="status">
+          Clashes with {clashWith} - remove it to pick this one.
+        </p>
+      )}
       <div className="ev-card-foot">
         <span className="ev-price">{INR(event.price)}</span>
         <button
@@ -694,8 +723,10 @@ function EventCard({
           className={"ev-add" + (selected ? " on" : "")}
           onClick={onToggle}
           aria-pressed={selected}
+          disabled={blocked}
+          title={soldOut ? "No slots left" : blocked ? `Clashes with ${clashWith}` : undefined}
         >
-          {selected ? "Added ✓" : "Add entry"}
+          {selected ? "Added ✓" : soldOut ? "Sold out" : blocked ? "Time clash" : "Add entry"}
         </button>
       </div>
     </li>

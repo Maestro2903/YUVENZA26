@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Flash from "@/components/admin/Flash";
 import Pagination from "@/components/admin/Pagination";
+import VerifyTicket from "@/components/admin/VerifyTicket";
 import { identityHasPermission, requirePagePermission } from "@/lib/rbac/guards";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { INR } from "@/lib/content/types";
@@ -60,7 +61,9 @@ export default async function AdminPaymentsPage({
       </header>
       <Flash ok={ok} err={err ?? error?.message} />
 
-      <div className="adm-toolbar">
+      <VerifyTicket />
+
+      <div className="adm-toolbar" style={{ marginTop: "1.25rem" }}>
         <form method="get">
           <input type="search" name="q" placeholder="Search name, email, phone…" defaultValue={q} />
           <select name="status" defaultValue={status} aria-label="Filter by status">

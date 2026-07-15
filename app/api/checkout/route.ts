@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { validateCheckout } from "@/lib/checkout";
-import { getEvents, getRegistrationSettings } from "@/lib/content/queries";
+import { getEventRegistrations, getEvents, getRegistrationSettings } from "@/lib/content/queries";
+import { findSoldOut } from "@/lib/events/capacity";
 import { createRazorpayOrder, getRazorpayConfig } from "@/lib/razorpay/server";
 import {
   getAnonServerSupabase,
@@ -8,6 +9,7 @@ import {
   getServiceSupabase,
 } from "@/lib/supabase/server";
 import { isAllowedEmail, normalizeDomain } from "@/lib/auth/allowedDomain";
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,6 +26,8 @@ export const dynamic = "force-dynamic";
  *  - { mode: "demo",  orderId }  -> no gateway configured, demo registration
  */
 export async function POST(req: Request) {
+  if (!rateLimit(`checkout:${clientIp(req)}`, 10, 60_000)) return tooManyRequests();
+
   let body: unknown;
   try {
     body = await req.json();
@@ -37,6 +41,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: parsed.error }, { status: 400 });
   }
   const checkout = parsed.value;
+
+  // ---- Capacity: reject sold-out events (live counters, same rule as UI) ----
+  const counts = await getEventRegistrations();
+  const soldOut = findSoldOut(checkout.events, counts);
+  if (soldOut) {
+    return NextResponse.json(
+      { ok: false, error: `"${soldOut.title}" is sold out - remove it to continue.` },
+      { status: 409 }
+    );
+  }
 
   // ---- Visitor authentication (Google sign-in) ----
   // getUser() validates against the auth server - correct for a mutation.

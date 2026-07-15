@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Flash from "@/components/admin/Flash";
 import SubmitButton from "@/components/admin/SubmitButton";
+import ImageField from "@/components/admin/ImageField";
 import { saveEventAction } from "@/app/(admin)/admin/actions/content";
 import { identityHasPermission, requirePagePermission } from "@/lib/rbac/guards";
 import { getServerSupabase } from "@/lib/supabase/server";
@@ -70,9 +71,47 @@ export default async function AdminEventEdit({
               <input id="ev-category" name="category" required maxLength={60} defaultValue={event?.category ?? ""} placeholder="Technology" />
             </div>
             <div className="adm-field">
-              <label htmlFor="ev-date">Date label *</label>
+              <label htmlFor="ev-date">Date label (shown on cards) *</label>
               <input id="ev-date" name="date_label" required maxLength={60} defaultValue={event?.date_label ?? ""} placeholder="Aug 11-12" />
             </div>
+          </div>
+
+          <div className="adm-field">
+            <label>Schedule</label>
+            <div className="adm-field-row" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+              <div className="adm-field">
+                <label htmlFor="ev-cal">Event date</label>
+                <input
+                  id="ev-cal"
+                  name="event_date"
+                  type="date"
+                  defaultValue={event?.event_date ?? ""}
+                />
+              </div>
+              <div className="adm-field">
+                <label htmlFor="ev-start">Start time</label>
+                <input
+                  id="ev-start"
+                  name="start_time"
+                  type="time"
+                  defaultValue={event?.start_time?.slice(0, 5) ?? ""}
+                />
+              </div>
+              <div className="adm-field">
+                <label htmlFor="ev-end">End time</label>
+                <input
+                  id="ev-end"
+                  name="end_time"
+                  type="time"
+                  defaultValue={event?.end_time?.slice(0, 5) ?? ""}
+                />
+              </div>
+            </div>
+            <p className="adm-help">
+              The registration page uses these to stop visitors from picking two events that
+              overlap. Leave the times empty for open-format entries (multi-day sprints, open
+              submissions) - they never clash.
+            </p>
           </div>
 
           <div className="adm-field-row">
@@ -81,14 +120,71 @@ export default async function AdminEventEdit({
               <input id="ev-price" name="price" type="number" min={0} max={1000000} required defaultValue={event?.price ?? 0} />
             </div>
             <div className="adm-field">
-              <label htmlFor="ev-slots">Slots label</label>
-              <input id="ev-slots" name="slots" maxLength={60} defaultValue={event?.slots ?? ""} placeholder="120 slots" />
+              <label htmlFor="ev-capacity">Capacity (max registrations)</label>
+              <input
+                id="ev-capacity"
+                name="capacity"
+                type="number"
+                min={0}
+                max={100000}
+                defaultValue={event?.capacity ?? ""}
+                placeholder="Leave empty for unlimited"
+              />
+              <p className="adm-help">
+                Live remaining slots show on the site and update in real time; sold-out events
+                can&#x27;t be registered.
+              </p>
             </div>
           </div>
 
           <div className="adm-field">
-            <label htmlFor="ev-desc">Description *</label>
+            <label htmlFor="ev-slots">Slots label (only shown when no capacity is set)</label>
+            <input id="ev-slots" name="slots" maxLength={60} defaultValue={event?.slots ?? ""} placeholder="Open entry" />
+          </div>
+
+          <div className="adm-field">
+            <label htmlFor="ev-desc">Short description *</label>
             <textarea id="ev-desc" name="description" required maxLength={1000} defaultValue={event?.description ?? ""} />
+          </div>
+
+          <div className="adm-field">
+            <label htmlFor="ev-details">Full details (events page)</label>
+            <textarea
+              id="ev-details"
+              name="details"
+              maxLength={5000}
+              rows={6}
+              defaultValue={event?.details ?? ""}
+              placeholder="Everything a visitor should know - format, rules, judging, prizes, what to bring…"
+            />
+          </div>
+
+          <div className="adm-field">
+            <label htmlFor="ev-rules">Rules (one per line)</label>
+            <textarea
+              id="ev-rules"
+              name="rules"
+              maxLength={5000}
+              rows={6}
+              defaultValue={event?.rules ?? ""}
+              placeholder={"Teams of 2-4 members\nBring your college ID\nJudges' decision is final"}
+            />
+            <p className="adm-help">
+              Shown as a numbered list on the event&#x27;s own page (/events/&lt;slug&gt;) and
+              linked from every attendee&#x27;s registration.
+            </p>
+          </div>
+
+          <div className="adm-field">
+            <label>Showcase image (shown 4:3 on the events page)</label>
+            <ImageField
+              folder="events"
+              urlFieldName="image_url"
+              altFieldName="image_alt"
+              initialUrl={event?.image_url ?? ""}
+              initialAlt={event?.image_alt ?? ""}
+              label="Event image"
+            />
           </div>
 
           <div className="adm-field-row">

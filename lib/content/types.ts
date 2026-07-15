@@ -27,10 +27,24 @@ export type EventItem = {
   title: string;
   category: string;
   dateLabel: string;
+  /** Calendar date (YYYY-MM-DD); with start/end times it drives clash checks. */
+  eventDate?: string;
+  /** "HH:MM" 24h. */
+  startTime?: string;
+  endTime?: string;
   /** Registration fee in INR (rupees). 0 = free entry. */
   price: number;
   description: string;
   slots?: string;
+  /** Maximum paid registrations; undefined = unlimited. */
+  capacity?: number;
+  /** 4:3 showcase image + alt text (admin-uploaded). */
+  imageUrl?: string;
+  imageAlt?: string;
+  /** Long-form write-up for the public events page. */
+  details?: string;
+  /** Rules, one per line; rendered on the event's own page. */
+  rules?: string;
   badge?: EventBadge;
 };
 

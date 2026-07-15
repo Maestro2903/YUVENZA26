@@ -78,7 +78,18 @@ export default function MyRegistrations({
               <div className="ev-myregs-row">
                 <div className="ev-myregs-info">
                   <span className="ev-myregs-events">
-                    {order.event_slugs.map(titleFor).join(" · ")}
+                    {order.event_slugs.map((slug, i) => (
+                      <span key={slug}>
+                        {i > 0 && " · "}
+                        <a
+                          href={`/events/${slug}`}
+                          className="ev-myregs-link"
+                          title={`${titleFor(slug)} - details & rules`}
+                        >
+                          {titleFor(slug)}
+                        </a>
+                      </span>
+                    ))}
                   </span>
                   <span className="ev-myregs-meta">
                     {new Date(order.created_at).toLocaleDateString("en-IN", {
@@ -107,7 +118,7 @@ export default function MyRegistrations({
                   )}
                 </div>
               </div>
-              {paid && openQr === order.id && <QrTicket orderId={order.id} name={user.name} />}
+              {paid && openQr === order.id && <QrTicket orderId={order.id} />}
             </li>
           );
         })}

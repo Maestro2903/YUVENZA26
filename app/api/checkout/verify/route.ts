@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyPaymentSignature } from "@/lib/razorpay/verify";
 import { getRazorpayConfig } from "@/lib/razorpay/server";
 import { getServiceSupabase } from "@/lib/supabase/server";
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,6 +15,8 @@ export const dynamic = "force-dynamic";
  * duplicating anything - the webhook and this route can race safely.
  */
 export async function POST(req: Request) {
+  if (!rateLimit(`verify:${clientIp(req)}`, 20, 60_000)) return tooManyRequests();
+
   let body: {
     orderId?: string;
     razorpayOrderId?: string;

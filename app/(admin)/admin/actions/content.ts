@@ -155,15 +155,52 @@ export async function saveEventAction(formData: FormData): Promise<void> {
     const badgeRaw = str(formData, "badge");
     const badge = BADGES.includes(badgeRaw as EventBadge) ? (badgeRaw as EventBadge) : null;
 
+    // Structured schedule (calendar + clock pickers). Drives time-clash
+    // detection on the registration page.
+    const eventDate = str(formData, "event_date");
+    const startTime = str(formData, "start_time").slice(0, 5);
+    const endTime = str(formData, "end_time").slice(0, 5);
+    if (eventDate && !/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) {
+      throw new Error("Event date must be a valid calendar date.");
+    }
+    for (const [label, t] of [["Start", startTime], ["End", endTime]] as const) {
+      if (t && !/^([01]\d|2[0-3]):[0-5]\d$/.test(t)) {
+        throw new Error(`${label} time must be a valid time (HH:MM).`);
+      }
+    }
+    if ((startTime || endTime) && !eventDate) {
+      throw new Error("Pick the event date before setting times.");
+    }
+    if ((startTime && !endTime) || (!startTime && endTime)) {
+      throw new Error("Set both a start and an end time (or neither).");
+    }
+    if (startTime && endTime && endTime <= startTime) {
+      throw new Error("End time must be after the start time.");
+    }
+
+    const capacityRaw = str(formData, "capacity");
+    const capacity = capacityRaw === "" ? null : intOr(formData, "capacity", -1);
+    if (capacity !== null && (capacity < 0 || capacity > 100000)) {
+      throw new Error("Capacity must be a number ≥ 0 (leave empty for unlimited).");
+    }
+
     const canPublish = identityHasPermission(identity, "content.publish");
     const row = {
       slug,
       title,
       category,
       date_label: dateLabel,
+      event_date: eventDate || null,
+      start_time: startTime || null,
+      end_time: endTime || null,
       price,
       description,
+      details: str(formData, "details") || null,
+      rules: str(formData, "rules") || null,
       slots: str(formData, "slots") || null,
+      capacity,
+      image_url: str(formData, "image_url") || null,
+      image_alt: str(formData, "image_alt") || null,
       badge,
       sort_order: intOr(formData, "sort_order", 0),
       published,

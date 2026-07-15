@@ -16,6 +16,16 @@ const menuLinks = [
     active: "work",
   },
   {
+    href: "/events",
+    label: "Yuvenza Events",
+    node: (
+      <>
+        Ev<span className="f-span space">e</span>nts
+      </>
+    ),
+    active: "events",
+  },
+  {
     href: "/registration",
     label: "Yuvenza Register",
     node: (
@@ -43,7 +53,7 @@ export default function Nav({
   linkedinUrl = "https://www.linkedin.com/company/yuvenza-cit/",
   locationLabel = "Chennai, India",
 }: {
-  current?: "index" | "work" | "about" | "registration";
+  current?: "index" | "work" | "about" | "registration" | "events";
   instagramUrl?: string;
   linkedinUrl?: string;
   locationLabel?: string;

@@ -3,6 +3,7 @@ import Flash from "@/components/admin/Flash";
 import Pagination from "@/components/admin/Pagination";
 import ConfirmButton from "@/components/admin/ConfirmButton";
 import { deleteEventAction, toggleEventPublishedAction } from "@/app/(admin)/admin/actions/content";
+import LiveSlotCell from "@/components/admin/LiveSlotCell";
 import { identityHasPermission, requirePagePermission } from "@/lib/rbac/guards";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { INR } from "@/lib/content/types";
@@ -25,16 +26,20 @@ export default async function AdminEventsList({
 
   let query = supabase
     .from("events")
-    .select("id, slug, title, category, date_label, price, published", { count: "exact" });
+    .select("id, slug, title, category, date_label, price, capacity, published", { count: "exact" });
   if (q) query = query.or(`title.ilike.%${q}%,slug.ilike.%${q}%,category.ilike.%${q}%`);
   if (status === "published") query = query.eq("published", true);
   if (status === "draft") query = query.eq("published", false);
 
   const from = (page - 1) * PAGE_SIZE;
-  const { data: rows, count, error } = await query
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: true })
-    .range(from, from + PAGE_SIZE - 1);
+  const [{ data: rows, count, error }, { data: regRows }] = await Promise.all([
+    query
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true })
+      .range(from, from + PAGE_SIZE - 1),
+    supabase.from("event_registrations").select("event_slug, registered"),
+  ]);
+  const regCounts = Object.fromEntries((regRows ?? []).map((r) => [r.event_slug, r.registered]));
 
   const canPublish = identityHasPermission(identity, "content.publish");
   const canDelete = identityHasPermission(identity, "content.delete");
@@ -86,6 +91,7 @@ export default async function AdminEventsList({
                 <th>Category</th>
                 <th>Date</th>
                 <th className="num">Fee</th>
+                <th>Registered (live)</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -100,6 +106,13 @@ export default async function AdminEventsList({
                   <td>{row.category}</td>
                   <td>{row.date_label}</td>
                   <td className="num">{INR(row.price)}</td>
+                  <td>
+                    <LiveSlotCell
+                      slug={row.slug}
+                      capacity={row.capacity}
+                      initialRegistered={regCounts[row.slug] ?? 0}
+                    />
+                  </td>
                   <td>
                     <span className={`adm-pill ${row.published ? "published" : "draft"}`}>
                       {row.published ? "Published" : "Draft"}

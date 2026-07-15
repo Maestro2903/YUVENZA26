@@ -127,32 +127,32 @@ on conflict (slug) do nothing;
 -- Events (fest line-up; dates follow the Aug 2026 fest window)
 -- ---------------------------------------------------------------------------
 insert into public.events
-  (slug, title, category, date_label, price, description, slots, badge, sort_order, published)
+  (slug, title, category, date_label, event_date, start_time, end_time, price, description, slots, capacity, badge, sort_order, published)
 values
-  ('hackathon', 'Hackathon 24', 'Technology', 'Aug 11-12', 299,
+  ('hackathon', 'Hackathon 24', 'Technology', 'Aug 11-12', date '2026-08-11', null, null, 299,
    $t$A 24-hour build sprint where teams ship something that matters. Mentors on tap, midnight chai included.$t$,
-   '120 slots', 'Popular', 0, true),
-  ('battle-of-bands', 'Battle of Bands', 'Culture', 'Aug 12', 199,
+   '120 slots', 120, 'Popular', 0, true),
+  ('battle-of-bands', 'Battle of Bands', 'Culture', 'Aug 12', date '2026-08-12', time '18:00', time '21:00', 199,
    $t$The loudest night of the fest. Bring your band, own the stage and play for the crowd.$t$,
-   '16 bands', null, 1, true),
-  ('design-sprint', 'Design Sprint', 'Workshop', 'Aug 11', 149,
+   '16 bands', 16, null, 1, true),
+  ('design-sprint', 'Design Sprint', 'Workshop', 'Aug 11', date '2026-08-11', time '10:00', time '13:00', 149,
    $t$A hands-on studio session on brand, type and interface, run by working designers.$t$,
-   '60 seats', 'New', 2, true),
-  ('frame-by-frame', 'Frame by Frame', 'Photography', 'Aug 11-12', 99,
+   '60 seats', 60, 'New', 2, true),
+  ('frame-by-frame', 'Frame by Frame', 'Photography', 'Aug 11-12', date '2026-08-11', null, null, 99,
    $t$A campus-wide photography contest on the theme of kindness. Shoot, submit, get exhibited.$t$,
-   'Open entry', null, 3, true),
-  ('arena', 'The Arena', 'eSports', 'Aug 12', 149,
+   'Open entry', null, null, 3, true),
+  ('arena', 'The Arena', 'eSports', 'Aug 12', date '2026-08-12', time '10:00', time '14:00', 149,
    $t$Squad up for the fest gaming tournament. Brackets, big screens and bragging rights.$t$,
-   '32 teams', null, 4, true),
-  ('canvas', 'Canvas', 'Art & Craft', 'Aug 11', 79,
+   '32 teams', 32, null, 4, true),
+  ('canvas', 'Canvas', 'Art & Craft', 'Aug 11', date '2026-08-11', time '14:00', time '17:00', 79,
    $t$A live art and craft contest. Paints, paper and a few hours to make something beautiful.$t$,
-   '80 seats', null, 5, true),
-  ('the-great-debate', 'The Great Debate', 'Literary', 'Aug 12', 0,
+   '80 seats', 80, null, 5, true),
+  ('the-great-debate', 'The Great Debate', 'Literary', 'Aug 12', date '2026-08-12', time '15:00', time '17:00', 0,
    $t$Free and open floor. Take a side, make your case and change a few minds.$t$,
-   '48 speakers', 'Free', 6, true),
-  ('run-for-kindness', 'Run for Kindness', 'Fundraiser', 'Aug 13', 249,
+   '48 speakers', 48, 'Free', 6, true),
+  ('run-for-kindness', 'Run for Kindness', 'Fundraiser', 'Aug 13', date '2026-08-13', time '06:00', time '09:00', 249,
    $t$A 5K charity run to close the fest. Every rupee raised goes straight to our community drives.$t$,
-   '300 runners', null, 7, true)
+   '300 runners', 300, null, 7, true)
 on conflict (slug) do nothing;
 
 -- ---------------------------------------------------------------------------

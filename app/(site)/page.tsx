@@ -188,9 +188,14 @@ export default async function Home() {
               </li>
             ))}
           </ul>
-          <a href="/registration" className="hm-events-cta">
-            Register now ↗
-          </a>
+          <div className="hm-events-cta-row">
+            <a href="/events" className="hm-events-cta">
+              All events ↗
+            </a>
+            <a href="/registration" className="hm-events-cta">
+              Register now ↗
+            </a>
+          </div>
         </section>
 
         {/* ===================== Testimonials ===================== */}

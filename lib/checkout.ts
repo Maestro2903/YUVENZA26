@@ -4,6 +4,7 @@
  * the total from the event catalog; client-sent amounts are never trusted.
  */
 import type { EventItem } from "@/lib/content/types";
+import { findClashesWithin } from "@/lib/events/clash";
 
 export type CheckoutInput = {
   name: string;
@@ -60,12 +61,25 @@ export function validateCheckout(
   }
 
   const unique = [...new Set(eventSlugs)];
+  if (unique.length > 30) {
+    return { ok: false, error: "Too many events selected." };
+  }
   const bySlug = new Map(catalog.map((e) => [e.slug, e]));
   const events: EventItem[] = [];
   for (const slug of unique) {
     const event = bySlug.get(slug);
     if (!event) return { ok: false, error: "One of the selected events is no longer available." };
     events.push(event);
+  }
+
+  // Same rule the UI applies - re-checked here so it can't be bypassed.
+  const clashes = findClashesWithin(events);
+  if (clashes.length > 0) {
+    const [a, b] = clashes[0];
+    return {
+      ok: false,
+      error: `"${a.title}" and "${b.title}" happen at the same time - pick one of them.`,
+    };
   }
 
   const totalRupees = events.reduce((sum, e) => sum + e.price, 0);

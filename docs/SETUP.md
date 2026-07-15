@@ -118,8 +118,51 @@ Visitors must sign in with a **@citchennai.net Google account** before
 registering for events (separate from admin logins, which stay
 email/password). Orders are linked to the account; visitors see "Your
 registrations" with a **QR entry pass** (their name in the centre) for every
-paid order. The QR encodes `YUV26|<order-id>|<name>` — staff verify a pass by
-looking the order id up in **Admin → Orders & payments**.
+paid order.
+
+### Signed, unforgeable QR passes
+
+The QR encodes `YUV26|v1|<order-id>|<signature>` where the signature is an
+HMAC-SHA256 (key derived from `APP_ENCRYPTION_KEY`) that only the server can
+produce. Passes are issued by `GET /api/ticket/<orderId>` **only for paid
+orders and only to the order's owner** (or an admin) — the browser never
+constructs a payload, so nobody can generate a valid pass themselves, and an
+unpaid/cancelled order has no pass at all.
+
+**Check-in:** Admin → Orders & payments → *Verify entry pass*. Focus the box,
+scan the QR (hardware scanners type the decoded text) or paste it — the
+signature is verified and the attendee's name, events and payment status come
+straight from the database. A rotated `APP_ENCRYPTION_KEY` invalidates
+previously scanned-and-saved payload copies, but passes are re-issued live on
+every view, so attendees are unaffected.
+
+### Live slot availability (Realtime)
+
+Each event can carry a **capacity** (Admin → Events → edit; empty =
+unlimited). A Postgres trigger keeps a per-event counter of paid
+registrations (`event_registrations`), and browsers subscribe to it over
+**Supabase Realtime** — remaining slots ("97 / 120 slots left") update on the
+registration page, the /events page and the admin events list **the moment
+someone pays, with no refresh**. Sold-out events can't be added to the cart
+and the checkout API rejects them server-side (migration 0004; run
+`select public.refresh_event_registrations();` any time you need to rebuild
+the counters). Two people paying for the final slot at the same instant can
+both succeed — a standard, tiny oversell window.
+
+### Public events page (/events)
+
+A showcase page listing every published event with a **4:3 image** (uploaded
+in Admin → Events → edit → *Showcase image*), the full details write-up,
+schedule, fee and live slots. Linked from the home page events section.
+
+### Event schedule & clash prevention
+
+Each event can carry a calendar date plus start/end times (Admin → Events →
+edit → *Schedule*, with native date/time pickers). On the registration page,
+events that overlap in time can't be added together — the card shows
+"Clashes with X" and the button disables — and the checkout API re-validates
+the rule server-side, so it can't be bypassed. Events without times
+(multi-day sprints, open entries) never clash.
 
 ### One-time setup
 
@@ -189,6 +232,16 @@ Razorpay → POST /api/webhooks/razorpay   authoritative reconciliation (idempot
 
 If you rotate `APP_ENCRYPTION_KEY`, stored credentials become undecryptable —
 just re-enter them in the admin panel.
+
+### Load & abuse protection
+
+- Checkout, payment-verify, cancel and ticket APIs are **rate-limited per
+  IP** (10–30 req/min). The limiter is per server instance — ideal burst
+  protection; swap in Upstash Redis if you ever need a strict global limit.
+- Everything else scales statelessly: public pages are ISR-cached on the CDN,
+  order writes are single-row inserts, Razorpay handles payment concurrency,
+  and Supabase's pooled Postgres takes the reads. A registration rush hits
+  the CDN for pages and only touches the database at the moment of checkout.
 
 ---
 

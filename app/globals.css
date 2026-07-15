@@ -3330,3 +3330,436 @@ button.nav-link {
     font-size: 3.2vw;
   }
 }
+
+/* ---- Event times + clash state ---- */
+.ev-time {
+  opacity: 0.85;
+  white-space: nowrap;
+}
+.ev-clash {
+  margin: 0.6vw 0 0;
+  font-family: "Editorial New", serif;
+  font-size: clamp(0.78rem, 0.95vw, 0.95rem);
+  color: #7a2818;
+}
+.ev-card.clashed {
+  opacity: 0.72;
+}
+.ev-add:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+@media (max-width: 767px) {
+  .ev-clash {
+    font-size: 3.2vw;
+    margin-top: 1.5vw;
+  }
+}
+
+/* ============================================================
+   Events showcase (/events) - rich cards with the 4:3 image,
+   full write-up and LIVE remaining slots.
+   ============================================================ */
+.evx {
+  position: relative;
+  z-index: 2;
+  padding: 16vh 2vw 5vw;
+}
+.evx-list {
+  list-style: none;
+  margin: 3vw 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5vw;
+}
+.evx-card {
+  border: 1px solid #1d1d1b;
+  border-radius: 1vw;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.35);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.evx-card:hover {
+  transform: translateY(-0.3vw);
+}
+.evx-card.out {
+  opacity: 0.78;
+}
+.evx-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-bottom: 1px solid #1d1d1b;
+  overflow: hidden;
+}
+.evx-media .img-ph {
+  position: absolute;
+  inset: 0;
+}
+.evx-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.evx-badge {
+  position: absolute;
+  top: 0.9vw;
+  left: 0.9vw;
+}
+.evx-body {
+  padding: 1.4vw 1.6vw 1.8vw;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7vw;
+  flex: 1;
+}
+.evx-kicker {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1vw;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: clamp(0.65rem, 0.85vw, 0.9rem);
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(29, 29, 27, 0.4);
+  padding-bottom: 0.6vw;
+}
+.evx-slots {
+  white-space: nowrap;
+  background: #1d1d1b;
+  color: #cdc6be;
+  border-radius: 3vw;
+  padding: 0.32em 0.95em;
+  letter-spacing: 0.04em;
+}
+.evx-slots.out {
+  background: #7a2818;
+  color: #f6e4de;
+}
+.evx-title {
+  margin: 0;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.5rem, 2.6vw, 2.6rem);
+  line-height: 0.95;
+}
+.evx-meta {
+  margin: 0;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(0.7rem, 0.95vw, 0.95rem);
+  opacity: 0.85;
+}
+.evx-price {
+  font-family: "Domaine Display", serif;
+  text-transform: none;
+}
+.evx-desc {
+  margin: 0;
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: clamp(0.92rem, 1.15vw, 1.1rem);
+  line-height: 1.5;
+  white-space: pre-line;
+  flex: 1;
+}
+.evx-actions {
+  margin-top: 0.8vw;
+}
+.evx-cta {
+  display: inline-flex;
+}
+.evx-cta[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.evx-foot {
+  display: flex;
+  justify-content: center;
+  margin-top: 3.5vw;
+}
+.hm-events-cta-row {
+  display: flex;
+  gap: 2vw;
+  flex-wrap: wrap;
+}
+/* Live slots on the registration cards - black pill so availability pops. */
+.ev .ev-slots {
+  background: #1d1d1b;
+  color: #cdc6be;
+  border-radius: 3vw;
+  padding: 0.32em 0.95em;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: clamp(0.62rem, 0.8vw, 0.85rem);
+  white-space: nowrap;
+}
+.ev .ev-slots:empty {
+  display: none;
+}
+.ev .ev-slots.out {
+  background: #7a2818;
+  color: #f6e4de;
+}
+@media (max-width: 767px) {
+  .ev .ev-slots,
+  .evx-slots {
+    font-size: 2.9vw;
+  }
+}
+
+@media (max-width: 991px) {
+  .evx-list {
+    grid-template-columns: 1fr;
+    gap: 5vw;
+  }
+}
+@media (max-width: 767px) {
+  .evx {
+    padding: 14vh 4vw 8vw;
+  }
+  .evx-list {
+    margin-top: 6vw;
+    gap: 7vw;
+  }
+  .evx-card {
+    border-radius: 3vw;
+  }
+  .evx-body {
+    padding: 4vw 4.5vw 5vw;
+    gap: 2.5vw;
+  }
+  .evx-kicker {
+    font-size: 3vw;
+    padding-bottom: 2vw;
+  }
+  .evx-title {
+    font-size: 7.5vw;
+  }
+  .evx-meta {
+    font-size: 3.2vw;
+  }
+  .evx-desc {
+    font-size: 3.9vw;
+  }
+  .evx-badge {
+    top: 2.5vw;
+    left: 2.5vw;
+  }
+  .hm-events-cta-row {
+    gap: 5vw;
+  }
+}
+
+/* ============================================================
+   Five-item menu (Events added): tighten the stack so all five
+   titles + socials fit the viewport, and stagger the fifth in.
+   ============================================================ */
+.menu-title {
+  font-size: 19vh;
+  line-height: 14vh;
+}
+.nav.is-open .menu-link.m5 .menu-title {
+  transition-delay: 0.54s;
+}
+@media (max-width: 991px) and (min-width: 768px) {
+  .menu-title {
+    font-size: 15vh;
+    line-height: 11vh;
+  }
+}
+@media (max-width: 767px) {
+  .menu-title {
+    font-size: 15.5vw;
+    line-height: 14vw;
+  }
+}
+
+/* ============================================================
+   Event detail page (/events/[slug]) - about + rules columns,
+   plus PDF download button and rules links in registrations.
+   ============================================================ */
+.evd {
+  position: relative;
+  z-index: 2;
+  padding: 16vh 2vw 5vw;
+}
+.evd-h1 {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  font-size: clamp(3rem, 11vw, 9.5rem);
+  line-height: 0.9;
+  margin: 2vw 0 0;
+  overflow-wrap: anywhere;
+}
+.evd-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.4vw;
+  flex-wrap: wrap;
+  margin-top: 2vw;
+  padding-top: 1.2vw;
+  border-top: 1px solid rgba(29, 29, 27, 0.4);
+}
+.evd-fee {
+  font-family: "Domaine Display", serif;
+  font-size: clamp(1.3rem, 2.2vw, 2.2rem);
+}
+.evd-cta {
+  margin-left: auto;
+}
+.evd-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  max-height: 62vh;
+  width: 100%;
+  border: 1px solid #1d1d1b;
+  border-radius: 1vw;
+  overflow: hidden;
+  margin-top: 3vw;
+}
+.evd-media .img-ph {
+  position: absolute;
+  inset: 0;
+}
+.evd-cols {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 4vw;
+  margin-top: 4vw;
+}
+.evd-sec-head {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.8rem, 3.4vw, 3.4rem);
+  line-height: 0.95;
+  margin: 0 0 1.2vw;
+  padding-bottom: 0.8vw;
+  border-bottom: 1px solid #1d1d1b;
+}
+.evd-text {
+  margin: 0;
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: clamp(1rem, 1.3vw, 1.25rem);
+  line-height: 1.55;
+  white-space: pre-line;
+}
+.evd-rules-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.evd-rule {
+  display: flex;
+  gap: 1.2vw;
+  align-items: baseline;
+  padding: 0.9vw 0;
+  border-bottom: 1px dashed rgba(29, 29, 27, 0.35);
+}
+.evd-rule:last-child {
+  border-bottom: none;
+}
+.evd-rule-num {
+  font-family: "Domaine Display", serif;
+  font-size: clamp(0.95rem, 1.3vw, 1.3rem);
+  opacity: 0.65;
+  flex: none;
+}
+.evd-rule-text {
+  font-family: "Editorial New", serif;
+  font-weight: 300;
+  font-size: clamp(0.98rem, 1.25vw, 1.2rem);
+  line-height: 1.5;
+}
+.evd-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 2vw;
+  flex-wrap: wrap;
+  margin-top: 5vw;
+}
+.evx-title a {
+  color: inherit;
+}
+.evx-title a:hover {
+  opacity: 0.75;
+}
+.ev-myregs-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(29, 29, 27, 0.5);
+}
+.ev-myregs-link:hover {
+  text-decoration-color: #1d1d1b;
+}
+.ev-qr-download {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(0.75rem, 0.95vw, 0.95rem);
+  background: #1d1d1b;
+  color: #cdc6be;
+  border: 1px solid #1d1d1b;
+  border-radius: 3vw;
+  padding: 0.55em 1.6em;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.ev-qr-download:hover {
+  opacity: 0.85;
+}
+.ev-qr-download:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+@media (max-width: 991px) {
+  .evd-cols {
+    grid-template-columns: 1fr;
+    gap: 6vw;
+  }
+}
+@media (max-width: 767px) {
+  .evd {
+    padding: 14vh 4vw 8vw;
+  }
+  .evd-h1 {
+    font-size: 14vw;
+    margin-top: 4vw;
+  }
+  .evd-bar {
+    gap: 3vw;
+    margin-top: 5vw;
+    padding-top: 3vw;
+  }
+  .evd-cta {
+    margin-left: 0;
+  }
+  .evd-media {
+    border-radius: 3vw;
+    margin-top: 6vw;
+  }
+  .evd-cols {
+    margin-top: 8vw;
+  }
+  .evd-rule {
+    gap: 3vw;
+    padding: 2.5vw 0;
+  }
+  .evd-foot {
+    margin-top: 10vw;
+  }
+  .ev-qr-download {
+    font-size: 3.4vw;
+  }
+}

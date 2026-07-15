@@ -63,13 +63,33 @@ export type EventRow = {
   title: string;
   category: string;
   date_label: string;
+  /** Calendar date (YYYY-MM-DD); drives time-clash detection. */
+  event_date: string | null;
+  /** "HH:MM[:SS]" - clash detection needs both start and end. */
+  start_time: string | null;
+  end_time: string | null;
   price: number;
   description: string;
   slots: string | null;
+  /** Maximum paid registrations; null = unlimited. */
+  capacity: number | null;
+  /** 4:3 showcase image (media bucket URL) + alt text. */
+  image_url: string | null;
+  image_alt: string | null;
+  /** Long-form write-up for the public events page. */
+  details: string | null;
+  /** Rules, one per line; rendered on the event's own page. */
+  rules: string | null;
   badge: EventBadge | null;
   sort_order: number;
   published: boolean;
   created_at: string;
+  updated_at: string;
+};
+
+export type EventRegistrationRow = {
+  event_slug: string;
+  registered: number;
   updated_at: string;
 };
 
@@ -153,6 +173,7 @@ export interface Database {
       profiles: TableDef<ProfileRow, "id" | "email">;
       case_studies: TableDef<CaseStudyRow, "slug" | "title" | "category" | "year" | "description">;
       events: TableDef<EventRow, "slug" | "title" | "category" | "date_label" | "description">;
+      event_registrations: TableDef<EventRegistrationRow, "event_slug">;
       site_content: TableDef<SiteContentRow, "key" | "data">;
       site_settings: TableDef<SiteSettingRow, "key" | "value">;
       media: TableDef<MediaRow, "bucket" | "path">;
