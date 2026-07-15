@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const menuLinks = [
   { href: "/", label: "Yuvenza Home", node: <>Index</>, active: "index" },
@@ -37,38 +37,46 @@ const menuLinks = [
   },
 ];
 
-const menuSocials = [
-  {
-    href: "https://www.instagram.com/yuvenza_cit/",
-    label: "instagram",
-    node: (
-      <>
-        insta<span className="f-span">g</span>ram
-      </>
-    ),
-  },
-  {
-    href: "https://www.linkedin.com/company/yuvenza-cit/",
-    label: "linkedin",
-    node: (
-      <>
-        linke<span className="f-span">d</span>in
-      </>
-    ),
-  },
-];
-
 export default function Nav({
   current = "index",
+  instagramUrl = "https://www.instagram.com/yuvenza_cit/",
+  linkedinUrl = "https://www.linkedin.com/company/yuvenza-cit/",
+  locationLabel = "Chennai, India",
 }: {
   current?: "index" | "work" | "about" | "registration";
+  instagramUrl?: string;
+  linkedinUrl?: string;
+  locationLabel?: string;
 }) {
   const [open, setOpen] = useState(false);
   const transitioning = useRef(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  const menuSocials = [
+    {
+      href: instagramUrl,
+      label: "instagram",
+      node: (
+        <>
+          insta<span className="f-span">g</span>ram
+        </>
+      ),
+    },
+    {
+      href: linkedinUrl,
+      label: "linkedin",
+      node: (
+        <>
+          linke<span className="f-span">d</span>in
+        </>
+      ),
+    },
+  ];
 
   const toggleMenu = useCallback(() => {
     if (transitioning.current) return;
-    const curtain = (window as any).paperCurtainEffect;
+    const curtain = (window as { paperCurtainEffect?: { in?: () => void; out?: () => void } })
+      .paperCurtainEffect;
     setOpen((prev) => {
       const next = !prev;
       if (next) {
@@ -79,6 +87,19 @@ export default function Nav({
       return next;
     });
   }, []);
+
+  // Close the menu with Escape and hand focus back to the toggle.
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        toggleMenu();
+        toggleRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, toggleMenu]);
 
   return (
     <nav
@@ -93,8 +114,8 @@ export default function Nav({
       </div>
       <div className="nav-inner">
         <div className="paper-background work" />
-        <div aria-label="nav-link" rel="noopener" className="nav-block l">
-          <div className="n-text">Chennai, India</div>
+        <div className="nav-block l">
+          <div className="n-text">{locationLabel}</div>
         </div>
         <a
           data-color="#1D1D1B"
@@ -106,15 +127,23 @@ export default function Nav({
           <div className="brand-text">The Youth Club</div>
         </a>
         <div className="nav-block r">
-          <div className="nav-link" onClick={toggleMenu} role="button" tabIndex={0}>
-            <div className="nav-lines">
+          <button
+            ref={toggleRef}
+            type="button"
+            className="nav-link"
+            onClick={toggleMenu}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="site-menu"
+          >
+            <div className="nav-lines" aria-hidden="true">
               <div className="nav-line up" />
               <div className="nav-line bottom" />
             </div>
-          </div>
+          </button>
         </div>
 
-        <div className="menu" aria-hidden={!open}>
+        <div className="menu" id="site-menu" aria-hidden={!open}>
           <div className="menu-w">
             {menuLinks.map((l) => (
               <a
@@ -124,6 +153,7 @@ export default function Nav({
                 data-color="#cdc6be"
                 rel="noopener"
                 href={l.href}
+                tabIndex={open ? 0 : -1}
                 className={`menu-link m${menuLinks.indexOf(l) + 1} w-inline-block${
                   l.active === current ? " w--current" : ""
                 }`}
@@ -139,9 +169,10 @@ export default function Nav({
                 <a
                   draggable={false}
                   aria-label={`Yuvenza ${s.label}`}
-                  rel="noopener"
+                  rel="noopener noreferrer"
                   target="_blank"
                   href={s.href}
+                  tabIndex={open ? 0 : -1}
                   className="f-li new-tab w"
                 >
                   {s.node}

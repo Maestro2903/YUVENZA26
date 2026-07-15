@@ -3,6 +3,7 @@ import BodyClass from "./BodyClass";
 import Nav from "./Nav";
 import Footer from "./Footer";
 import PageReveal from "./PageReveal";
+import { getGeneralSettings } from "@/lib/content/queries";
 
 function Grid() {
   return (
@@ -31,8 +32,10 @@ type AppShellProps = {
  * The shared page frame: sets the body class and renders the `#app`
  * smooth-scroll container with the paper background, nav, grid guides,
  * page content and footer - matching the original DOM order.
+ * Social links / location come from admin-editable settings (with static
+ * fallbacks), so the chrome stays correct without code changes.
  */
-export default function AppShell({
+export default async function AppShell({
   children,
   bodyClass = "",
   current = "index",
@@ -42,6 +45,8 @@ export default function AppShell({
   withNav = true,
   withFooter = true,
 }: AppShellProps) {
+  const settings = await getGeneralSettings();
+
   return (
     <>
       <BodyClass name={bodyClass} />
@@ -56,10 +61,19 @@ export default function AppShell({
         <div className="paper-background">
           <div className="paper-mode w-embed" />
         </div>
-        {withNav && <Nav current={current} />}
+        {withNav && (
+          <Nav
+            current={current}
+            instagramUrl={settings.instagramUrl}
+            linkedinUrl={settings.linkedinUrl}
+            locationLabel={settings.locationLabel}
+          />
+        )}
         <Grid />
         {children}
-        {withFooter && <Footer />}
+        {withFooter && (
+          <Footer instagramUrl={settings.instagramUrl} linkedinUrl={settings.linkedinUrl} />
+        )}
       </main>
       <PageReveal />
     </>

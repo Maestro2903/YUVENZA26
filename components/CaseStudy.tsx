@@ -1,18 +1,13 @@
 import AppShell from "@/components/AppShell";
 import Placeholder from "@/components/Placeholder";
 import { AVATARS, IMAGES } from "@/lib/data";
-import {
-  nextCase,
-  prevCase,
-  type CaseStudy as CaseStudyType,
-} from "@/lib/caseStudies";
+import type { WorkItem } from "@/lib/content/types";
 
-/* eslint-disable @next/next/no-img-element */
+ 
 
 const ASSET = {
   scratch: IMAGES + "scratch.png",
   backAll: IMAGES + "back-all.svg",
-  gallery: IMAGES + "gallery.svg",
 };
 
 /** Text marquee content (repeated), replacing the old marquee image. */
@@ -29,19 +24,32 @@ function MarqueeGroup() {
   );
 }
 
+/** Cover / feature imagery: real photo when set in the admin, placeholder otherwise. */
+function CoverImage({ item, eager = false }: { item: WorkItem; eager?: boolean }) {
+  if (item.coverUrl) {
+    return (
+      <img
+        src={item.coverUrl}
+        alt={item.coverAlt ?? item.title}
+        loading={eager ? "eager" : "lazy"}
+        className="cover-img"
+      />
+    );
+  }
+  return <Placeholder />;
+}
+
 /** A small paper-language card used for the previous / next project pager. */
-function PagerCard({
-  study,
-  kind,
-}: {
-  study: CaseStudyType;
-  kind: "prev" | "next";
-}) {
+function PagerCard({ study, kind }: { study: WorkItem; kind: "prev" | "next" }) {
   return (
     <a href={`/work/${study.slug}`} className={`cs-pager-card ${kind}`} aria-label={study.title}>
       <span className="cs-pager-label">{kind === "prev" ? "Previous" : "Next Project"}</span>
       <span className="cs-pager-thumb" aria-hidden="true">
-        <Placeholder />
+        {study.coverUrl ? (
+          <img src={study.coverUrl} alt="" loading="lazy" className="cover-img" />
+        ) : (
+          <Placeholder />
+        )}
       </span>
       <span className="cs-pager-name">{study.title}</span>
       <span className="cs-pager-meta">
@@ -53,13 +61,19 @@ function PagerCard({
 
 /**
  * The single template every /work/[slug] page renders through. Content is
- * fully data-driven from lib/caseStudies.ts, so all project pages share one
- * layout: ripped-paper cover, project title + client/category/year meta bar,
- * drop-cap write-up, the "Work Story" block and a previous/next pager.
+ * data-driven (admin-editable with a static fallback), so all project pages
+ * share one layout: ripped-paper cover, project title + client/category/year
+ * meta bar, drop-cap write-up, the "Work Story" block and a prev/next pager.
  */
-export default function CaseStudy({ study }: { study: CaseStudyType }) {
-  const next = nextCase(study.slug);
-  const prev = prevCase(study.slug);
+export default function CaseStudy({
+  study,
+  prev,
+  next,
+}: {
+  study: WorkItem;
+  prev: WorkItem;
+  next: WorkItem;
+}) {
   const story =
     study.story ??
     `${study.title} is presented through a bespoke digital experience, bringing motion, typography and creative coding together into one cohesive story.`;
@@ -68,9 +82,9 @@ export default function CaseStudy({ study }: { study: CaseStudyType }) {
     <AppShell bodyClass="work-case" current="work" appClass="app case" intro="fade">
       {/* Cover with ripped-paper reveal + project title / meta overlay */}
       <div className="case-intro">
-        <div data-scroll="0" className="cover">
+        <div className="cover">
           <div className="c-inner blend">
-            <Placeholder />
+            <CoverImage item={study} eager />
           </div>
           <div className="ripped-wrap">
             <div className="c-ripped" />
@@ -131,12 +145,12 @@ export default function CaseStudy({ study }: { study: CaseStudyType }) {
           <div className="cs-rule" />
           <div className="pr-info-w">
             <div className="case-desc about w-embed">
-              <h5 className="has-dropcap">{study.desc}</h5>
+              <h5 className="has-dropcap">{study.description}</h5>
             </div>
           </div>
           {study.liveSite && (
             <a
-              rel="noopener"
+              rel="noopener noreferrer"
               aria-label="Yuvenza Live Site"
               draggable={false}
               href={study.liveSite}
@@ -172,17 +186,9 @@ export default function CaseStudy({ study }: { study: CaseStudyType }) {
             </div>
           </div>
           <div className="pw-wrap blend">
-            <div id="fixed-target" data-scroll="0" className="pw-inner">
-              <div data-scroll-speed="-1" data-scroll="0" className="pw-img blend">
-                <Placeholder />
-              </div>
-            </div>
-            <div className="gallery-open">
-              <div className="button-ico">
-                <img src={ASSET.gallery} loading="lazy" alt="" className="img" />
-              </div>
-              <div className="button-text">
-                <span className="f-span space">G</span>allery
+            <div className="pw-inner">
+              <div className="pw-img blend">
+                <CoverImage item={study} />
               </div>
             </div>
           </div>

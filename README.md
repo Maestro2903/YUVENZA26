@@ -6,7 +6,10 @@ The official website of **Yuvenza**, the student driven youth club of **Chennai 
 
 Yuvenza runs events, campaigns and community drives, and channels what it raises straight back into social causes: blind school visits, girl child home support, poverty and Braille awareness, environmental drives and youth mentoring.
 
-Built with **Next.js (App Router)**, **React 19** and **TypeScript**.
+Built with **Next.js (App Router)**, **React 19** and **TypeScript**, backed by
+**Supabase** (database, auth, storage, RBAC), **Razorpay** (payments) and
+**Vercel Analytics / Speed Insights**. Content is managed from a built-in
+admin panel at `/admin`.
 
 ---
 
@@ -14,12 +17,21 @@ Built with **Next.js (App Router)**, **React 19** and **TypeScript**.
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run build    # production build (prerenders every route)
-npm start        # serve the production build
+npm run dev        # http://localhost:3000
+npm run build      # production build (prerenders every route)
+npm start          # serve the production build
+npm run lint       # eslint
+npm run typecheck  # tsc --noEmit
+npm test           # vitest (crypto, payment verification, RBAC, checkout)
 ```
 
 Node 18+ (developed on Node 22).
+
+**The site runs with zero configuration** - without env vars it serves the
+built-in fallback content, checkout runs in demo mode and `/admin` shows a
+setup notice. To enable the database, admin panel and payments, follow
+**[docs/SETUP.md](docs/SETUP.md)** (Supabase migration/seed, environment
+variables, Razorpay keys, Vercel Analytics).
 
 > Only run one Next process at a time. A stray `next dev` and a `next start` will fight over `.next` and serve stale chunks (you will see `ChunkLoadError` in the browser). If that happens, stop every Next process, delete `.next`, rebuild, and hard refresh the tab.
 
@@ -35,6 +47,9 @@ Node 18+ (developed on Node 22).
 | `/registration`  | Registration  | Browse fest entries, add to a persistent cart, checkout       |
 | `/about`         | About         | Mission, pillars, impact stats, what we do, join CTA           |
 | `/legal`         | Legal         | Terms, privacy and registration basics                        |
+| `/admin`         | Admin panel   | Content, media, orders, users, roles, settings (auth required) |
+| `/api/checkout*` | Payments API  | Order creation, signature verification, cancellation           |
+| `/api/webhooks/razorpay` | Webhook | Authoritative Razorpay payment status updates              |
 
 ---
 
@@ -58,16 +73,32 @@ components/
   Footer.tsx        marquee + socials
   CaseStudy.tsx     the single template every /work/[slug] page renders through
   EventsClient.tsx  registration UI: entries, cart bar, checkout modal
-  Countdown.tsx     live countdown to August 11
+  Countdown.tsx     live countdown (target date editable in the admin panel)
   Placeholder.tsx   labelled image placeholder
   PageReveal.tsx    reveals each page on mount, clears any scroll lock
   BodyClass.tsx     sets the per page body class
   SiteScripts.tsx   loads GSAP, butter-slider, the paper-curtain module, mobile --vh fix
 
+app/admin/           admin panel (login, dashboard, content/media/orders/users/roles/settings)
+app/api/             checkout + Razorpay webhook route handlers
+middleware.ts        /admin session guard
+
 lib/
-  caseStudies.ts    the 8 initiatives (title, category, year, description, story)
-  events.ts         the 8 fest entries (category, date, price, slots)
-  data.ts           image path constants
+  content/           public data layer: types, Supabase queries, static fallback
+  supabase/          browser / server / service-role clients + DB types
+  rbac/              permission catalog, default roles, server guards
+  razorpay/          credential resolution, order creation, signature verification
+  security/          AES-256-GCM secret encryption
+  checkout.ts        server-side checkout validation & totals (unit-tested)
+  media.ts           media bucket constants
+  env.ts             every process.env read
+  data.ts            image path constants
+
+supabase/
+  migrations/        full schema: tables, RLS policies, triggers, storage bucket
+  seed.sql           permission catalog, default roles, current site content
+
+tests/               vitest suites (crypto, payment verification, RBAC, checkout)
 
 public/
   fonts/            Canopee, Editorial New, Domaine Display, UnifrakturMaguntia
@@ -79,11 +110,17 @@ public/
 
 ## Editing content
 
-Almost all copy lives in two typed files, so no JSX editing is needed for routine updates.
+Content is managed from the **admin panel at `/admin`** (once Supabase is
+configured - see [docs/SETUP.md](docs/SETUP.md)):
 
-- **Initiatives** (`/work` and every case study): `lib/caseStudies.ts`. Add an object to `CASE_STUDIES` and the work index, the case study page, the home rail and the previous/next pager all pick it up automatically. Each entry supports `title`, `category`, `year`, `desc`, an optional `client`, an optional long form `story` and an optional `liveSite`.
-- **Fest entries** (`/registration` and the home events band): `lib/events.ts`. Prices are plain numbers in INR (`0` renders as "Free").
-- **Countdown target**: `components/Countdown.tsx` counts down to the next August 11. Change the month and day in `computeTarget()`.
+- **Initiatives** (`/work`, case studies, home rail): Admin → Work.
+- **Fest entries** (`/registration`, home events band): Admin → Events. Fees are INR; `0` renders as "Free".
+- **Page sections** (hero, statement, pillars, testimonials, stats, join CTA): Admin → Site sections.
+- **Countdown target & fest dates**: Admin → Site sections → Fest & countdown.
+- **Images**: Admin → Media library (or upload directly from the work/event editors).
+
+Without Supabase, the site renders the static fallback content in
+`lib/content/fallback.ts` (kept in sync with `supabase/seed.sql`).
 
 ### Writing conventions
 
@@ -121,19 +158,22 @@ Display type uses `clamp()` so headings scale fluidly and never overflow or clip
 - **Scrolling is native.** The original smooth scroll library was removed because it fought the viewport based layout and left pages unscrollable after client side navigation. `overflow-x: clip` is used rather than `hidden`, because `hidden` forces the other axis to `auto` and turns the element into a scroll container.
 - **The nav is always fixed.** Anything that sets `transform`, `perspective` or `will-change` on an ancestor would make a fixed child scroll away, so `#app` deliberately sets none of them.
 - **The menu is a paper curtain.** It sweeps in on open and back out on close with the same easing, the links stagger in, and the hamburger morphs into an X. It is pure CSS, driven by an `is-open` class, so it does not depend on WebGL.
-- **All photography is a placeholder.** `Placeholder.tsx` renders a labelled box wherever a real image belongs. Drop real photography in and replace those components.
-- **Checkout is a frontend demo.** `EventsClient.tsx` collects a registration and shows a confirmation, but takes no payment. Wire a real provider into `handlePay` before going live.
+- **Photography defaults to placeholders.** `Placeholder.tsx` renders a labelled box wherever no image has been uploaded yet; covers uploaded through the admin panel replace them automatically.
+- **Checkout is Razorpay-backed.** Orders are created and signatures verified server-side (`/api/checkout*`); with no credentials configured it falls back to a clearly-labelled demo mode.
 
 ---
 
 ## Before going live
 
-- [ ] Replace every `Placeholder` with real Yuvenza photography.
-- [ ] Connect a payment provider in `EventsClient.tsx` (`handlePay`) and confirm the fee and refund copy in `/legal`.
+See the full checklist in [docs/SETUP.md](docs/SETUP.md). Highlights:
+
+- [ ] Apply the Supabase migration + seed and promote your super admin.
+- [ ] Set all env vars on Vercel (`.env.example` lists them).
+- [ ] Enter Razorpay keys in Admin → Settings and configure the webhook.
+- [ ] Enable Analytics + Speed Insights in the Vercel dashboard.
+- [ ] Upload real Yuvenza photography via Admin → Media.
 - [ ] Confirm licensing for the bundled typefaces (see Credits) before deploying publicly.
-- [ ] Set `metadataBase` in `app/layout.tsx` so Open Graph and Twitter image URLs resolve absolutely.
 - [ ] Add a real contact address to `/legal` if you would rather not route enquiries through Instagram.
-- [ ] Optional cleanup: `components/Item.tsx` and the Locomotive files in `public/vendor/` are no longer referenced.
 
 ---
 

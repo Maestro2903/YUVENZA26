@@ -67,6 +67,10 @@ window.dispatchEvent(new Event('paper-curtain-ready'));
 
 export default function SiteScripts() {
   useEffect(() => {
+    // The admin panel doesn't use the paper-site interaction stack - skip the
+    // vendor downloads entirely there.
+    if (window.location.pathname.startsWith("/admin")) return;
+
     // --- 100vh fix on mobile ---
     const setVh = () => {
       const vh = window.innerHeight * 0.01;
@@ -100,8 +104,13 @@ export default function SiteScripts() {
     }
 
     /** Signature intro: the whole #app scales up from 0.4 and un-spins 720° into place. */
+    type GsapLike = {
+      set: (target: unknown, vars: Record<string, unknown>) => void;
+      to: (target: unknown, vars: Record<string, unknown>) => void;
+    };
+
     function runIntro() {
-      const gsap = (window as any).gsap;
+      const gsap = (window as unknown as { gsap?: GsapLike }).gsap;
       const app = document.querySelector<HTMLElement>("#app");
       if (!gsap || !app) return;
       gsap.set(app, {
@@ -140,7 +149,14 @@ export default function SiteScripts() {
       // ---- butter-slider (draggable work rail on the home header) ----
       try {
         await loadScript(BUTTER_JS, "butter-lib");
-        const bs = (window as any).butterSlider;
+        type ButterSlider = {
+          smoothAmount: number;
+          dragSpeed: number;
+          setRelativePosition: (x: number) => void;
+        };
+        const bs = (
+          window as unknown as { butterSlider?: { autoInit?: () => ButterSlider[] } }
+        ).butterSlider;
         if (bs && typeof bs.autoInit === "function") {
           const sliders = bs.autoInit();
           if (sliders && sliders[0]) {

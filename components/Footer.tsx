@@ -1,17 +1,15 @@
 import { AVATARS } from "@/lib/data";
 
-const JOIN_LINK = "https://www.instagram.com/yuvenza_cit/";
-
-function MarqueeContent() {
+function MarqueeContent({ joinHref }: { joinHref: string }) {
   return (
     <div className="marquee-content">
       <h4 className="f-news">Let&#x27;s create change together</h4>
       <a
         target="_blank"
         aria-label="Yuvenza Join Us"
-        rel="noopener"
+        rel="noopener noreferrer"
         draggable={false}
-        href={JOIN_LINK}
+        href={joinHref}
         className="marquee-link w-inline-block"
       >
         <div className="marquee-text">Join Us</div>
@@ -20,42 +18,50 @@ function MarqueeContent() {
   );
 }
 
-const socials = [
-  {
-    href: "https://www.instagram.com/yuvenza_cit/",
-    label: "instagram",
-    node: (
-      <>
-        insta<span className="f-span">g</span>ram
-      </>
-    ),
-  },
-  {
-    href: "https://www.linkedin.com/company/yuvenza-cit/",
-    label: "linkedin",
-    node: (
-      <>
-        linke<span className="f-span">d</span>in
-      </>
-    ),
-  },
-];
+export default function Footer({
+  instagramUrl = "https://www.instagram.com/yuvenza_cit/",
+  linkedinUrl = "https://www.linkedin.com/company/yuvenza-cit/",
+}: {
+  instagramUrl?: string;
+  linkedinUrl?: string;
+}) {
+  const socials = [
+    {
+      href: instagramUrl,
+      label: "instagram",
+      node: (
+        <>
+          insta<span className="f-span">g</span>ram
+        </>
+      ),
+    },
+    {
+      href: linkedinUrl,
+      label: "linkedin",
+      node: (
+        <>
+          linke<span className="f-span">d</span>in
+        </>
+      ),
+    },
+  ];
 
-export default function Footer() {
+  const year = new Date().getFullYear();
+
   return (
     <div className="footer">
       <div className="marquee">
         <div className="marquee--inner">
-          <MarqueeContent />
-          <MarqueeContent />
-          <MarqueeContent />
+          <MarqueeContent joinHref={instagramUrl} />
+          <MarqueeContent joinHref={instagramUrl} />
+          <MarqueeContent joinHref={instagramUrl} />
         </div>
       </div>
       <div className="f-info">
         <div className="f-col left">
           <div className="f-title">Yuvenza©</div>
-          <div className="f-year">2021</div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <div className="f-year">{year}</div>
+          { }
           <img src={AVATARS.stamp} loading="lazy" alt="" className="f-stamp" />
           <div className="legal-w">
             <a
@@ -78,7 +84,7 @@ export default function Footer() {
                 <a
                   draggable={false}
                   aria-label={s.label}
-                  rel="noopener"
+                  rel="noopener noreferrer"
                   target="_blank"
                   href={s.href}
                   className="f-li new-tab f"

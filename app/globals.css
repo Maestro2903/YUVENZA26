@@ -2531,35 +2531,6 @@ body {
   opacity: 1;
   background-color: rgba(29, 29, 27, 0.06);
 }
-.ho-work-grid {
-  border-top: none;
-  gap: 2vw;
-  margin-top: 3vw;
-}
-.ho-work-card,
-.ho-work-card + .ho-work-card {
-  padding: 0;
-  border-right: none;
-}
-.ho-work-link {
-  display: block;
-  color: #1d1d1b;
-}
-.ho-work-thumb {
-  display: block;
-  height: clamp(9rem, 14vw, 16rem);
-  margin-bottom: 1.2vw;
-  overflow: hidden;
-  border: 1px solid #1d1d1b;
-}
-.ho-work-card .hm-ev-name {
-  margin: 0.6vw 0 0;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.ho-work-link:hover .hm-ev-name {
-  transform: translateX(0.6vw);
-}
-
 @media (max-width: 767px) {
   .ho {
     padding: 14vh 4vw 8vw;
@@ -2593,17 +2564,6 @@ body {
     font-size: 4vw;
     padding: 3vw 7vw;
     border-radius: 12vw;
-  }
-  .ho-work-grid {
-    gap: 8vw;
-    margin-top: 8vw;
-  }
-  .ho-work-thumb {
-    height: 55vw;
-    margin-bottom: 3vw;
-  }
-  .ho-work-card .hm-ev-name {
-    margin-top: 2vw;
   }
 }
 
@@ -2836,3 +2796,537 @@ body {
   }
 }
 
+
+/* ============================================================
+   Hero redesign - richer hierarchy in the same paper language:
+   kicker rule, oversize wordmark with the rotating club stamp,
+   tagline + fest facts on the left, lead + tiered CTAs on the
+   right. Fully fluid via clamp(); collapses to one column on
+   tablet and mobile.
+   ============================================================ */
+.ho-kicker {
+  margin: 0;
+}
+.ho-title-w {
+  position: relative;
+}
+.ho-title-stamp {
+  position: absolute;
+  right: 1vw;
+  top: -2vw;
+  width: clamp(4.5rem, 9vw, 9rem);
+  height: auto;
+  transform: rotate(8deg);
+  animation: ho-stamp-spin 60s linear infinite;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+@keyframes ho-stamp-spin {
+  from { transform: rotate(8deg); }
+  to { transform: rotate(368deg); }
+}
+.ho-hero-b {
+  align-items: start;
+  margin-top: 3vw;
+}
+.ho-hero-l {
+  display: flex;
+  flex-direction: column;
+  gap: 2vw;
+}
+.ho-facts {
+  list-style: none;
+  margin: 0;
+  padding: 1.2vw 0 0;
+  border-top: 1px solid rgba(29, 29, 27, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6vw;
+}
+.ho-fact {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: clamp(0.7rem, 1vw, 1rem);
+  line-height: 1.5;
+}
+.ho-fact::before {
+  content: "✳";
+  margin-right: 0.6em;
+  font-size: 0.85em;
+}
+.ho-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+}
+.ho-cta span {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+.ho-cta:hover span,
+.ho-cta:focus-visible span {
+  transform: translate(0.12em, -0.12em);
+}
+.ho-cta.text {
+  background: transparent;
+  border-color: transparent;
+  color: #1d1d1b;
+  padding-left: 0.4vw;
+  padding-right: 0.4vw;
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+  text-decoration-thickness: 1px;
+}
+.ho-cta.text:hover {
+  opacity: 0.7;
+  background: transparent;
+}
+
+@media (max-width: 991px) {
+  .ho-hero-b {
+    grid-template-columns: 1fr;
+    gap: 4vw;
+  }
+  .ho-title-stamp {
+    top: -3vw;
+    width: clamp(4rem, 11vw, 7rem);
+  }
+}
+@media (max-width: 767px) {
+  .ho-title-stamp {
+    right: 0;
+    top: -6vw;
+    width: 17vw;
+  }
+  .ho-hero-l {
+    gap: 5vw;
+  }
+  .ho-facts {
+    padding-top: 3.5vw;
+    gap: 2vw;
+  }
+  .ho-fact {
+    font-size: 3.4vw;
+  }
+  .ho-cta.text {
+    padding-left: 1vw;
+    padding-right: 1vw;
+  }
+}
+
+/* ============================================================
+   Accessibility: visible keyboard focus everywhere. The paper
+   design hides default outlines; restore them for :focus-visible
+   so keyboard users can navigate. Beige outline on ink surfaces.
+   ============================================================ */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #1d1d1b;
+  outline-offset: 3px;
+}
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #1d1d1b;
+  outline-offset: 1px;
+}
+.nav .menu a:focus-visible,
+body.index a:focus-visible:not(.ho-cta):not(.hm-events-cta):not(.ho-rail-card):not(.ab-join-link) {
+  outline-color: #cdc6be;
+}
+body.beige a:focus-visible,
+body.beige button:focus-visible,
+body.work-case a:focus-visible,
+body.work-case button:focus-visible {
+  outline-color: #1d1d1b;
+}
+.nav .menu a:focus-visible {
+  outline-color: #cdc6be;
+}
+
+/* The hamburger is a real <button> now - neutralise UA button chrome
+   while keeping the original .nav-link layout. */
+button.nav-link {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* ============================================================
+   Real imagery (admin-uploaded covers) - drop-in replacement for
+   the Placeholder block wherever a cover exists.
+   ============================================================ */
+.cover-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ============================================================
+   Checkout status + error/404 pages
+   ============================================================ */
+.ev-status {
+  margin: 1vw 0 0;
+  font-family: "Editorial New", serif;
+  font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+  line-height: 1.45;
+}
+.ev-status.error {
+  color: #7a2818;
+}
+
+.err-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  text-align: center;
+  background-color: #cdc6be;
+  color: #1d1d1b;
+  padding: 10vh 6vw;
+}
+.err-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  font-family: "Canopee", sans-serif;
+  font-size: clamp(0.7rem, 1.1vw, 1rem);
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+.err-title {
+  margin: 0;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(4rem, 16vw, 12rem);
+  line-height: 0.9;
+}
+.err-body {
+  margin: 0;
+  max-width: 34rem;
+  font-family: "Editorial New", serif;
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  line-height: 1.5;
+}
+.err-cta {
+  margin-top: 0.5rem;
+  padding: 0.8rem 2rem;
+  border-radius: 3rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ho-title-stamp {
+    animation: none;
+  }
+  .ho-cta span {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   Registration: visitor Google sign-in, "My registrations" and
+   the QR entry pass - in the paper design language.
+   ============================================================ */
+.ev-auth {
+  margin-top: 2vw;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8vw;
+}
+.ev-signin-row {
+  display: flex;
+  align-items: center;
+  gap: 1.2vw;
+  flex-wrap: wrap;
+}
+.ev-signin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: clamp(0.85rem, 1.1vw, 1.1rem);
+  padding: 0.8vw 1.8vw;
+  border-radius: 3vw;
+  background-color: #1d1d1b;
+  color: #cdc6be;
+  border: 1px solid #1d1d1b;
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+.ev-signin-btn:hover {
+  opacity: 0.85;
+}
+.ev-signin-btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.ev-signin-btn svg {
+  background: #fff;
+  border-radius: 50%;
+  padding: 2px;
+  width: 1.25em;
+  height: 1.25em;
+}
+.ev-signin-note {
+  font-family: "Editorial New", serif;
+  font-size: clamp(0.9rem, 1.15vw, 1.1rem);
+  opacity: 0.8;
+}
+.ev-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9vw;
+  border: 1px solid #1d1d1b;
+  border-radius: 4vw;
+  padding: 0.5vw 1.2vw 0.5vw 0.6vw;
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.35);
+  width: fit-content;
+}
+.ev-user-avatar {
+  width: clamp(2.1rem, 2.6vw, 2.75rem);
+  height: clamp(2.1rem, 2.6vw, 2.75rem);
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #1d1d1b;
+  flex: none;
+}
+.ev-user-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1d1d1b;
+  color: #cdc6be;
+  font-family: "Canopee", sans-serif;
+  font-size: 1.1em;
+}
+.ev-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+.ev-user-name {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(0.85rem, 1.05vw, 1.05rem);
+}
+.ev-user-email {
+  font-family: "Editorial New", serif;
+  font-size: clamp(0.75rem, 0.9vw, 0.92rem);
+  opacity: 0.75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ev-user-signout {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+  background: transparent;
+  border: 1px solid rgba(29, 29, 27, 0.45);
+  border-radius: 3vw;
+  padding: 0.35em 1em;
+  color: #1d1d1b;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex: none;
+}
+.ev-user-signout:hover {
+  background: rgba(29, 29, 27, 0.08);
+}
+.ev-field-hint {
+  font-family: "Editorial New", serif;
+  font-size: 0.78rem;
+  opacity: 0.7;
+  margin-top: 0.25em;
+}
+
+/* ---- My registrations ---- */
+.ev-myregs {
+  margin: 0 0 3vw;
+  border: 1px solid #1d1d1b;
+  border-radius: 1vw;
+  padding: 1.4vw 1.8vw;
+  background: rgba(255, 255, 255, 0.35);
+}
+.ev-myregs-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(29, 29, 27, 0.4);
+  padding-bottom: 0.8vw;
+  margin-bottom: 0.4vw;
+}
+.ev-myregs-title {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(1rem, 1.5vw, 1.4rem);
+}
+.ev-myregs-count {
+  font-family: "Domaine Display", serif;
+  font-size: clamp(1rem, 1.4vw, 1.3rem);
+}
+.ev-myregs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ev-myregs-item {
+  border-bottom: 1px dashed rgba(29, 29, 27, 0.35);
+  padding: 1vw 0;
+}
+.ev-myregs-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0.4vw;
+}
+.ev-myregs-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5vw;
+  flex-wrap: wrap;
+}
+.ev-myregs-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2vw;
+  min-width: 0;
+}
+.ev-myregs-events {
+  font-family: "Editorial New", serif;
+  font-weight: 500;
+  font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+}
+.ev-myregs-meta {
+  font-family: "Editorial New", serif;
+  font-size: clamp(0.8rem, 0.95vw, 0.95rem);
+  opacity: 0.7;
+}
+.ev-myregs-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8vw;
+  flex: none;
+}
+.ev-myregs-status {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(0.68rem, 0.8vw, 0.8rem);
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(29, 29, 27, 0.45);
+  border-radius: 3vw;
+  padding: 0.3em 0.9em;
+  opacity: 0.85;
+}
+.ev-myregs-status.paid {
+  background: #1d1d1b;
+  color: #cdc6be;
+  border-color: #1d1d1b;
+  opacity: 1;
+}
+.ev-myregs-qrbtn {
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(0.72rem, 0.85vw, 0.85rem);
+  background: transparent;
+  border: 1px solid #1d1d1b;
+  border-radius: 3vw;
+  padding: 0.35em 1em;
+  color: #1d1d1b;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.ev-myregs-qrbtn:hover {
+  background: rgba(29, 29, 27, 0.08);
+}
+
+/* ---- QR entry pass ---- */
+.ev-qr {
+  margin: 1.2vw auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6vw;
+  max-width: 300px;
+}
+.ev-qr-canvas {
+  border: 1px solid #1d1d1b;
+  border-radius: 12px;
+  background: #fff;
+  padding: 8px;
+  width: min(260px, 70vw) !important;
+  height: auto !important;
+}
+.ev-qr-caption {
+  font-family: "Editorial New", serif;
+  font-size: clamp(0.8rem, 0.95vw, 0.95rem);
+  opacity: 0.75;
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .ev-auth {
+    margin-top: 5vw;
+    gap: 2.5vw;
+  }
+  .ev-signin-btn {
+    font-size: 4vw;
+    padding: 3vw 6vw;
+    border-radius: 12vw;
+  }
+  .ev-signin-note {
+    font-size: 3.6vw;
+  }
+  .ev-user {
+    gap: 2.5vw;
+    border-radius: 14vw;
+    padding: 1.6vw 4vw 1.6vw 2vw;
+  }
+  .ev-user-avatar {
+    width: 9vw;
+    height: 9vw;
+  }
+  .ev-user-name {
+    font-size: 3.6vw;
+  }
+  .ev-user-email {
+    font-size: 3vw;
+    max-width: 45vw;
+  }
+  .ev-user-signout {
+    font-size: 3vw;
+  }
+  .ev-myregs {
+    border-radius: 3vw;
+    padding: 4vw;
+    margin-bottom: 8vw;
+  }
+  .ev-myregs-head {
+    padding-bottom: 2.5vw;
+  }
+  .ev-myregs-item {
+    padding: 3vw 0;
+  }
+  .ev-myregs-status,
+  .ev-myregs-qrbtn {
+    font-size: 3vw;
+  }
+  .ev-qr {
+    margin-top: 4vw;
+    gap: 2vw;
+  }
+  .ev-qr-caption {
+    font-size: 3.2vw;
+  }
+}
