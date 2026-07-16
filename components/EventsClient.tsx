@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { track } from "@vercel/analytics";
 import { INR, type EventItem } from "@/lib/content/types";
 import { useSupabaseUser } from "@/lib/hooks/useSupabaseUser";
 import { normalizeDomain } from "@/lib/auth/allowedDomain";
@@ -166,6 +167,7 @@ export default function EventsClient({
   };
 
   const startSignIn = async () => {
+    track("Sign In Started");
     setAuthError(null);
     setPhase("signin");
     const error = await signInWithGoogle(domain);
@@ -183,6 +185,7 @@ export default function EventsClient({
       return;
     }
     triggerRef.current = e.currentTarget;
+    track("Checkout Opened", { entries: count, totalRupees: total });
     setResult(null);
     setCheckoutOpen(true);
   };
@@ -231,6 +234,7 @@ export default function EventsClient({
   }
 
   const succeed = (mode: "razorpay" | "free" | "demo", orderId: string) => {
+    track("Registration Completed", { mode, entries: count, totalRupees: total });
     setPhase("idle");
     setResult({ kind: "success", mode, orderId });
     setRegsRefresh((n) => n + 1);
@@ -300,6 +304,7 @@ export default function EventsClient({
         theme: { color: "#1d1d1b" },
         modal: {
           ondismiss: () => {
+            track("Payment Cancelled", { totalRupees: total });
             void markCancelled(data.orderId, false);
             setPhase("idle");
             setResult({ kind: "cancelled" });
@@ -342,6 +347,7 @@ export default function EventsClient({
       });
 
       rzp.on("payment.failed", () => {
+        track("Payment Failed", { totalRupees: total });
         void markCancelled(data.orderId, true);
         setPhase("idle");
         setResult({

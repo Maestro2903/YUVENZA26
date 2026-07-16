@@ -1,4 +1,4 @@
-# CLAUDE.md
+https://vercel.com/docs/analytics/quickstart# CLAUDE.md
 
 Guidance for Claude Code when working in this repository.
 
@@ -113,6 +113,16 @@ applied manually in the Supabase SQL editor. When adding one:
 - `DEPLOY_TARGET=site|admin` splits the one codebase across two Vercel
   projects (site 404s `/admin`; admin redirects `/` → `/admin`); unset =
   combined (local dev).
+
+## Observability
+
+`instrumentation.ts` registers `@vercel/otel` tracing (all plans) and exports
+Next's `onRequestError` hook, which logs one structured JSON line tagged
+`yuvenza.request-error` per uncaught server error (queryable via
+`vercel logs --query`). Analytics + Speed Insights load in the PUBLIC layout
+only (admin traffic is deliberately untracked - hobby quotas are small).
+Conversion funnel custom events (`track()` in EventsClient) are Pro-gated
+no-ops on Hobby. Dashboard setup steps live in docs/SETUP.md §5.
 
 ## Env vars (see .env.example)
 

@@ -7,6 +7,7 @@ import LiveSlotCell from "@/components/admin/LiveSlotCell";
 import { identityHasPermission, requirePagePermission } from "@/lib/rbac/guards";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { INR } from "@/lib/content/types";
+import { sanitizeSearch } from "@/app/(admin)/admin/actions/helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -15,21 +16,26 @@ const PAGE_SIZE = 10;
 export default async function AdminEventsList({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; page?: string; ok?: string; err?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; category?: string; page?: string; ok?: string; err?: string }>;
 }) {
   const identity = await requirePagePermission("content.view");
-  const { q = "", status = "all", page: pageParam, ok, err } = await searchParams;
+  const { q: qRaw = "", status = "all", category = "", page: pageParam, ok, err } = await searchParams;
+  const q = sanitizeSearch(qRaw);
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
   const supabase = await getServerSupabase();
   if (!supabase) return <p className="adm-flash err">Supabase is not configured.</p>;
 
+  const { data: catRows } = await supabase.from("events").select("category");
+  const categories = [...new Set((catRows ?? []).map((r) => r.category))].sort();
+
   let query = supabase
     .from("events")
-    .select("id, slug, title, category, date_label, price, capacity, published", { count: "exact" });
+    .select("id, slug, title, category, date_label, price, capacity, image_url, published", { count: "exact" });
   if (q) query = query.or(`title.ilike.%${q}%,slug.ilike.%${q}%,category.ilike.%${q}%`);
   if (status === "published") query = query.eq("published", true);
   if (status === "draft") query = query.eq("published", false);
+  if (category && categories.includes(category)) query = query.eq("category", category);
 
   const from = (page - 1) * PAGE_SIZE;
   const [{ data: rows, count, error }, { data: regRows }] = await Promise.all([
@@ -70,6 +76,14 @@ export default async function AdminEventsList({
             <option value="published">Published</option>
             <option value="draft">Draft</option>
           </select>
+          <select name="category" defaultValue={category} aria-label="Filter by category">
+            <option value="">All categories</option>
+            {categories.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
           <button type="submit" className="adm-btn ghost small">
             Filter
           </button>
@@ -100,8 +114,18 @@ export default async function AdminEventsList({
               {rows.map((row) => (
                 <tr key={row.id}>
                   <td>
-                    <span className="adm-cell-main">{row.title}</span>
-                    <span className="adm-cell-sub">{row.slug}</span>
+                    <span className="adm-cell-media">
+                      {row.image_url ? (
+                         
+                        <img src={row.image_url} alt="" className="adm-thumb" loading="lazy" />
+                      ) : (
+                        <span className="adm-thumb empty" aria-hidden="true" />
+                      )}
+                      <span>
+                        <span className="adm-cell-main">{row.title}</span>
+                        <span className="adm-cell-sub">{row.slug}</span>
+                      </span>
+                    </span>
                   </td>
                   <td>{row.category}</td>
                   <td>{row.date_label}</td>
@@ -154,7 +178,7 @@ export default async function AdminEventsList({
         page={page}
         pageSize={PAGE_SIZE}
         total={count ?? 0}
-        params={{ q, status }}
+        params={{ q, status, category }}
       />
     </>
   );

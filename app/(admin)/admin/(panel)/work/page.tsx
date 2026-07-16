@@ -8,6 +8,7 @@ import {
 } from "@/app/(admin)/admin/actions/content";
 import { identityHasPermission, requirePagePermission } from "@/lib/rbac/guards";
 import { getServerSupabase } from "@/lib/supabase/server";
+import { sanitizeSearch } from "@/app/(admin)/admin/actions/helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -16,23 +17,28 @@ const PAGE_SIZE = 10;
 export default async function AdminWorkList({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; status?: string; page?: string; ok?: string; err?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; category?: string; page?: string; ok?: string; err?: string }>;
 }) {
   const identity = await requirePagePermission("content.view");
-  const { q = "", status = "all", page: pageParam, ok, err } = await searchParams;
+  const { q: qRaw = "", status = "all", category = "", page: pageParam, ok, err } = await searchParams;
+  const q = sanitizeSearch(qRaw);
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
   const supabase = await getServerSupabase();
   if (!supabase) return <p className="adm-flash err">Supabase is not configured.</p>;
 
+  const { data: catRows } = await supabase.from("case_studies").select("category");
+  const categories = [...new Set((catRows ?? []).map((r) => r.category))].sort();
+
   let query = supabase
     .from("case_studies")
-    .select("id, slug, title, category, year, published, sort_order, updated_at", {
+    .select("id, slug, title, category, year, cover_url, published, sort_order, updated_at", {
       count: "exact",
     });
   if (q) query = query.or(`title.ilike.%${q}%,slug.ilike.%${q}%,category.ilike.%${q}%`);
   if (status === "published") query = query.eq("published", true);
   if (status === "draft") query = query.eq("published", false);
+  if (category && categories.includes(category)) query = query.eq("category", category);
 
   const from = (page - 1) * PAGE_SIZE;
   const { data: rows, count, error } = await query
@@ -69,6 +75,14 @@ export default async function AdminWorkList({
             <option value="published">Published</option>
             <option value="draft">Draft</option>
           </select>
+          <select name="category" defaultValue={category} aria-label="Filter by category">
+            <option value="">All categories</option>
+            {categories.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
           <button type="submit" className="adm-btn ghost small">
             Filter
           </button>
@@ -95,8 +109,18 @@ export default async function AdminWorkList({
               {rows.map((row) => (
                 <tr key={row.id}>
                   <td>
-                    <span className="adm-cell-main">{row.title}</span>
-                    <span className="adm-cell-sub">/{row.slug}</span>
+                    <span className="adm-cell-media">
+                      {row.cover_url ? (
+                         
+                        <img src={row.cover_url} alt="" className="adm-thumb" loading="lazy" />
+                      ) : (
+                        <span className="adm-thumb empty" aria-hidden="true" />
+                      )}
+                      <span>
+                        <span className="adm-cell-main">{row.title}</span>
+                        <span className="adm-cell-sub">/{row.slug}</span>
+                      </span>
+                    </span>
                   </td>
                   <td>{row.category}</td>
                   <td>{row.year}</td>
@@ -141,7 +165,7 @@ export default async function AdminWorkList({
         page={page}
         pageSize={PAGE_SIZE}
         total={count ?? 0}
-        params={{ q, status }}
+        params={{ q, status, category }}
       />
     </>
   );

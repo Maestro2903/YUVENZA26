@@ -50,3 +50,25 @@ export function withFlash(path: string, kind: "ok" | "err", message: string): st
   const sep = path.includes("?") ? "&" : "?";
   return `${path}${sep}${kind}=${encodeURIComponent(message)}`;
 }
+
+/**
+ * Make a user-typed search term safe to interpolate into a PostgREST
+ * .or("col.ilike.%…%") filter string:
+ *  - commas separate disjuncts and parentheses group them (stripped),
+ *  - "*" is PostgREST's alias for "%" (stripped),
+ *  - "%", "_" and "\" are LIKE metacharacters (escaped), so searching for
+ *    "hero_2" or "100%" matches those literal characters.
+ */
+export function sanitizeSearch(raw: string): string {
+  return raw
+    .replace(/[,()*]/g, " ")
+    .replace(/([\\%_])/g, "\\$1")
+    .trim()
+    .slice(0, 120);
+}
+
+/** Strict UUID shape check (used to validate id-valued filters). */
+export const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Event-slug shape check for slug-valued filters. */
+export const SLUG_FILTER_RE = /^[a-z0-9-]{1,100}$/;

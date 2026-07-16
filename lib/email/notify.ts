@@ -20,12 +20,16 @@ import { getEvents } from "@/lib/content/queries";
 
 const SEND_TIMEOUT_MS = 8000;
 
-export async function sendConfirmationEmail(orderId: string): Promise<void> {
+/**
+ * @returns true when an email was actually handed to the mail function;
+ * false when skipped (unconfigured / already sent / not paid) or failed.
+ */
+export async function sendConfirmationEmail(orderId: string): Promise<boolean> {
   try {
     const config = getEmailFunctionConfig();
     const service = getServiceSupabase();
     const appKey = getAppEncryptionKey();
-    if (!config || !service || !appKey) return; // not configured - skip quietly
+    if (!config || !service || !appKey) return false; // not configured - skip quietly
 
     // Atomic claim: exactly one caller proceeds even if verify + webhook race.
     const { data: claimed } = await service
@@ -36,7 +40,7 @@ export async function sendConfirmationEmail(orderId: string): Promise<void> {
       .is("confirmation_email_sent_at", null)
       .select("id, customer_name, customer_email, amount, demo, event_slugs")
       .maybeSingle();
-    if (!claimed) return; // already sent, being sent, or not paid
+    if (!claimed) return false; // already sent, being sent, or not paid
 
     const catalog = await getEvents();
     const events = claimed.event_slugs.map((slug) => {
@@ -68,6 +72,7 @@ export async function sendConfirmationEmail(orderId: string): Promise<void> {
     if (!res.ok) {
       throw new Error(`email function responded ${res.status}`);
     }
+    return true;
   } catch (err) {
     console.error(`[email] confirmation for order ${orderId} failed:`, err);
     // Release the claim so a later caller (webhook retry) can resend.
@@ -80,5 +85,6 @@ export async function sendConfirmationEmail(orderId: string): Promise<void> {
     } catch {
       // best effort
     }
+    return false;
   }
 }

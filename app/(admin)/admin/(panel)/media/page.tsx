@@ -8,7 +8,8 @@ import { deleteMediaAction, updateMediaMetaAction } from "@/app/(admin)/admin/ac
 import { identityHasPermission, requirePagePermission } from "@/lib/rbac/guards";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { getSupabaseUrl } from "@/lib/env";
-import { formatBytes, publicMediaUrl } from "@/lib/media";
+import { formatBytes, publicMediaUrl, MEDIA_FOLDERS } from "@/lib/media";
+import { sanitizeSearch } from "@/app/(admin)/admin/actions/helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +18,11 @@ const PAGE_SIZE = 12;
 export default async function AdminMediaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; page?: string; ok?: string; err?: string }>;
+  searchParams: Promise<{ q?: string; folder?: string; page?: string; ok?: string; err?: string }>;
 }) {
   const identity = await requirePagePermission("media.view");
-  const { q = "", page: pageParam, ok, err } = await searchParams;
+  const { q: qRaw = "", folder = "", page: pageParam, ok, err } = await searchParams;
+  const q = sanitizeSearch(qRaw);
   const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
 
   const supabase = await getServerSupabase();
@@ -30,6 +32,7 @@ export default async function AdminMediaPage({
     .from("media")
     .select("id, path, alt, caption, mime_type, size_bytes, created_at", { count: "exact" });
   if (q) query = query.or(`path.ilike.%${q}%,alt.ilike.%${q}%,caption.ilike.%${q}%`);
+  if ((MEDIA_FOLDERS as readonly string[]).includes(folder)) query = query.like("path", `${folder}/%`);
 
   const from = (page - 1) * PAGE_SIZE;
   const { data: rows, count, error } = await query
@@ -63,6 +66,14 @@ export default async function AdminMediaPage({
       <div className="adm-toolbar" style={{ marginTop: "1.25rem" }}>
         <form method="get">
           <input type="search" name="q" placeholder="Search path, alt text…" defaultValue={q} />
+          <select name="folder" defaultValue={folder} aria-label="Filter by folder">
+            <option value="">All folders</option>
+            {MEDIA_FOLDERS.map((f) => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+          </select>
           <button type="submit" className="adm-btn ghost small">
             Search
           </button>
@@ -131,7 +142,7 @@ export default async function AdminMediaPage({
         </div>
       )}
 
-      <Pagination basePath="/admin/media" page={page} pageSize={PAGE_SIZE} total={count ?? 0} params={{ q }} />
+      <Pagination basePath="/admin/media" page={page} pageSize={PAGE_SIZE} total={count ?? 0} params={{ q, folder }} />
     </>
   );
 }

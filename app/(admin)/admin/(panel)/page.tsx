@@ -38,12 +38,18 @@ export default async function AdminDashboard({
 
   if (supabase) {
     // All dashboard queries fire concurrently - one network wait, not six.
-    const [studies, events, media, paidOrdersRes, recentRes] = await Promise.all([
+    const [studies, events, media, paidOrdersRes, checkedInRes, recentRes] = await Promise.all([
       canSeeContent ? count(supabase, "case_studies") : null,
       canSeeContent ? count(supabase, "events") : null,
       canSeeContent ? count(supabase, "media") : null,
       canSeePayments
         ? supabase.from("orders").select("amount, demo").eq("status", "paid")
+        : null,
+      canSeePayments
+        ? supabase
+            .from("orders")
+            .select("*", { count: "exact", head: true })
+            .not("checked_in_at", "is", null)
         : null,
       canSeePayments
         ? supabase
@@ -67,7 +73,8 @@ export default async function AdminDashboard({
       const revenueRupees = Math.round(revenuePaise / 100);
       stats.push(
         { label: "Paid orders", value: String(paidOrders.length) },
-        { label: "Revenue", value: revenueRupees === 0 ? "₹0" : INR(revenueRupees) }
+        { label: "Revenue", value: revenueRupees === 0 ? "₹0" : INR(revenueRupees) },
+        { label: "Checked in", value: String(checkedInRes?.count ?? 0) }
       );
       recentOrders = recentRes?.data ?? [];
     }

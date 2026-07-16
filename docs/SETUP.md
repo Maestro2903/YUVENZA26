@@ -310,15 +310,84 @@ interval (≤5 minutes), which is the expected trade-off.
 
 ---
 
-## 5. Vercel Analytics & Speed Insights
+## 5. Vercel Analytics, Speed Insights & Observability
 
-Already integrated (`<Analytics />` + `<SpeedInsights />` in
-`app/layout.tsx`); they are inert in local dev.
+The code side is fully wired; each feature below lists the one-time dashboard
+step and its plan gate (verified against the Vercel docs, mid-2026).
 
-Dashboard steps (one-time):
-1. Vercel → your project → **Analytics** tab → Enable.
-2. Vercel → your project → **Speed Insights** tab → Enable.
-3. Redeploy. Data appears after the first production visits.
+### Web Analytics (all plans)
+
+- Code: `<Analytics />` from `@vercel/analytics/next` in the **public site's**
+  root layout (`app/(site)/layout.tsx`). The admin panel is deliberately not
+  tracked - internal traffic would pollute the data and burn quota.
+- **Enable once**: Vercel dashboard → **Analytics** (sidebar) → select the
+  project → **Enable**, then redeploy. Verify: page visits fire a request to
+  `/_vercel/insights/view` in the browser Network tab.
+- **Custom events** (Pro/Enterprise only): the registration funnel is already
+  instrumented - `Sign In Started`, `Checkout Opened`, `Registration
+  Completed` (mode + entries + amount), `Payment Failed`, `Payment
+  Cancelled`. On Hobby these calls are harmless no-ops; upgrade and they
+  appear under Analytics → Web Analytics → **Events** with no code change.
+
+### Speed Insights
+
+- Code: `<SpeedInsights />` from `@vercel/speed-insights/next`, public site
+  only. Does not track in development.
+- **Enable once**: dashboard → **Speed Insights** (sidebar) → select project
+  → **Enable**, then redeploy.
+- **Managing usage**: billed in events; Hobby = 1 project, **10,000
+  events/month cap** (collection pauses when hit, 7-day window); Pro = $10
+  per project/month + $0.65 per 10k events, 30-day window. If a traffic spike
+  threatens the cap, lower sampling in code, e.g.
+  `<SpeedInsights sampleRate={0.5} />` (sends 50% of page views), and/or drop
+  routes with `beforeSend={(d) => (d.url.includes("/x") ? null : d)}`.
+  Usage lives at dashboard → **Usage** → Speed Insights.
+
+### Tracing / OpenTelemetry (all plans, 1M spans/month)
+
+- Code: `instrumentation.ts` registers `@vercel/otel`
+  (`registerOTel({ serviceName: "yuvenza" })`). Vercel auto-collects
+  infrastructure + fetch spans; Next.js adds route/render spans. No
+  next.config changes needed.
+- **View traces**: on a deployment, open the Vercel toolbar → **Tracing** →
+  Start Tracing Session; or from the CLI:
+  `vercel curl --trace /api/checkout` then `vercel traces get <req-id> --open`.
+  In the dashboard: project → **Logs** → tracing icon → request → **Trace**.
+
+### Debugging production errors
+
+- Code: `instrumentation.ts` exports Next's `onRequestError` hook - every
+  uncaught server error logs ONE structured JSON line tagged
+  `yuvenza.request-error` (message, digest, path, route, trimmed stack).
+- Find errors with the CLI (project must be linked with `vercel link`):
+  ```bash
+  vercel logs --environment production --status-code 5xx --since 1h
+  vercel logs --environment production --query '"yuvenza.request-error"' --since 1h --expand
+  vercel logs --request-id req_xxxxx --expand
+  vercel bisect --good <url> --bad <url> --path /api/failing-route
+  vercel rollback <previous-deployment-url>
+  ```
+
+### Alerts (dashboard-only)
+
+Team **Settings → Alerts** → **Add Rule** → trigger **Error anomaly**
+(recommended: 5xx; fires when the 5-min error rate is >4σ above the 24-h
+average) or **Usage anomaly** (function invocations/duration, data transfer,
+edge requests) → scope to this project → set severity → subscribe email /
+Slack / webhook. Sensible starter: one High-severity 5xx error-anomaly rule
+covering both site and admin projects.
+
+### Observability Insights & Observability Plus
+
+- Every project has a base **Observability** dashboard (project →
+  Observability): function invocations/error rates, external API latency
+  (Supabase + Razorpay calls show up here), edge requests incl. bot
+  breakdowns, image optimization, ISR - see the docs' Insights reference.
+- **Observability Plus** is a paid add-on (**paid Pro/Enterprise only**,
+  $1.20 per 1M events): 30-day retention, per-path breakdowns, latency p75
+  per route, and the query builder. Enable at team **Settings → Billing →
+  Observability Plus** once on Pro; exclude low-value projects from Plus
+  there to control cost. Not available on Hobby or Pro trials.
 
 ---
 
@@ -335,8 +404,15 @@ Dashboard steps (one-time):
   `*x*` renders the serif accent letter; `*_x*` the spaced variant.
 - **Media library** — drag-and-drop uploads (progress bar, 10 MB/image types
   validated client- and server-side), alt/caption editing, copy-URL, delete.
-- **Orders & payments** — searchable, filterable registration + payment trail.
-- **Users** — invite users, assign roles, deactivate/reactivate.
+- **Orders & payments** — searchable registration + payment trail with
+  status / event / check-in filters, live summary cards (matching, paid,
+  filtered revenue, checked-in), gate QR scanner, per-order "Resend email"
+  (needs `payments.manage`), and **Export CSV** honouring the active filters
+  (filter by an event to download its attendee list). Exports page through
+  Supabase's Max-Rows cap automatically and warn if the 10k-row ceiling is
+  hit.
+- **Users** — search, role filter (incl. "no role" Google visitors),
+  pagination, CSV export, invite users, assign roles, deactivate/reactivate.
 - **Roles & permissions** — create roles, toggle granular permissions
   (super-admin only).
 - **Settings** — site name/description, social links, registration open/closed,

@@ -782,3 +782,22 @@ legend {
   box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.25);
   pointer-events: none;
 }
+
+/* ---------- List thumbnails ---------- */
+.adm-cell-media {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.adm-thumb {
+  width: 48px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--adm-line);
+  flex: none;
+}
+.adm-thumb.empty {
+  display: inline-block;
+  background: repeating-conic-gradient(#eae6de 0% 25%, #f6f3ee 0% 50%) 0 0 / 12px 12px;
+}
