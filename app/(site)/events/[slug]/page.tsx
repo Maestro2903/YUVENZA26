@@ -82,7 +82,7 @@ export default async function EventDetailPage({
               initialRegistered={slotCounts[event.slug] ?? 0}
             />
             <a href="/registration" className="ho-cta primary evd-cta">
-              Register <span aria-hidden="true">↗</span>
+              Register <span aria-hidden="true">↗&#xFE0E;</span>
             </a>
           </div>
         </header>
@@ -130,7 +130,7 @@ export default async function EventDetailPage({
             ← All events
           </a>
           <a href="/registration" className="hm-events-cta">
-            Register now ↗
+            Register now ↗&#xFE0E;
           </a>
         </footer>
       </div>

@@ -48,7 +48,7 @@ export default async function WorkPage() {
                   <span className="wk-cat">{p.category}</span>
                   <span className="wk-year">{p.year}</span>
                   <span className="wk-arrow" aria-hidden="true">
-                    ↗
+                    ↗&#xFE0E;
                   </span>
                 </span>
               </a>

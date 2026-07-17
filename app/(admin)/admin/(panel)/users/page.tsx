@@ -69,7 +69,7 @@ export default async function AdminUsersPage({
         </div>
         <div className="adm-header-actions">
           <a href={exportHref} className="adm-btn ghost">
-            ⬇ Export CSV
+            ⬇&#xFE0E; Export CSV
           </a>
         </div>
       </header>

@@ -66,7 +66,7 @@ export default async function AppShell({
         </div>
         {announcement.enabled && announcement.text && (
           <div className="site-banner" role="status">
-            <span className="site-banner-dot" aria-hidden="true">✳</span>
+            <span className="site-banner-dot" aria-hidden="true">✳&#xFE0E;</span>
             {announcement.text}
             {announcement.linkLabel && announcement.linkHref && (
               <a
@@ -75,7 +75,7 @@ export default async function AppShell({
                 target={announcement.linkHref.startsWith("http") ? "_blank" : undefined}
                 rel={announcement.linkHref.startsWith("http") ? "noopener noreferrer" : undefined}
               >
-                {announcement.linkLabel} <span aria-hidden="true">↗</span>
+                {announcement.linkLabel} <span aria-hidden="true">↗&#xFE0E;</span>
               </a>
             )}
           </div>

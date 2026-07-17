@@ -47,7 +47,7 @@ export default async function AdminPanelLayout({ children }: { children: React.R
           <span className="adm-user-role">{identity.role?.name ?? "no role"}</span>
           <div className="adm-user-actions">
             <a href="/" className="adm-btn ghost small">
-              View site ↗
+              View site ↗&#xFE0E;
             </a>
             <form action={signOutAction}>
               <button type="submit" className="adm-btn ghost small">

@@ -16,8 +16,8 @@ function MarqueeGroup() {
     <span className="cs-mq-group">
       {Array.from({ length: 4 }).map((_, i) => (
         <span key={i} className="cs-mq-item">
-          Yuvenza <span className="cs-mq-dot">✳</span> What we create, we contribute{" "}
-          <span className="cs-mq-dot">✳</span>{" "}
+          Yuvenza <span className="cs-mq-dot">✳&#xFE0E;</span> What we create, we contribute{" "}
+          <span className="cs-mq-dot">✳&#xFE0E;</span>{" "}
         </span>
       ))}
     </span>

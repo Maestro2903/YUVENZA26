@@ -11,7 +11,7 @@ export default function NotFound() {
         This page doesn&#x27;t exist (or it moved on to a better cause). Let&#x27;s get you back.
       </p>
       <Link href="/" className="ho-cta primary err-cta">
-        Back home <span aria-hidden="true">↗</span>
+        Back home <span aria-hidden="true">↗&#xFE0E;</span>
       </Link>
     </main>
   );

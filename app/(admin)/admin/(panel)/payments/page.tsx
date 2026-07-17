@@ -132,7 +132,7 @@ export default async function AdminPaymentsPage({
         </div>
         <div className="adm-header-actions">
           <a href={exportHref} className="adm-btn ghost">
-            ⬇ Export CSV
+            ⬇&#xFE0E; Export CSV
           </a>
           {canManagePayments && (
             <Link href="/admin/settings#payments" className="adm-btn ghost">

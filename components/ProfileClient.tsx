@@ -116,10 +116,10 @@ export default function ProfileClient({
 
       <div className="pf-links">
         <a href="/events" className="ho-cta ghost">
-          Browse events <span aria-hidden="true">↗</span>
+          Browse events <span aria-hidden="true">↗&#xFE0E;</span>
         </a>
         <a href="/registration" className="ho-cta primary">
-          Register <span aria-hidden="true">↗</span>
+          Register <span aria-hidden="true">↗&#xFE0E;</span>
         </a>
       </div>
 

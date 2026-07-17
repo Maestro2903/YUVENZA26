@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { track } from "@vercel/analytics";
 import { INR, type EventItem } from "@/lib/content/types";
 import { useSupabaseUser } from "@/lib/hooks/useSupabaseUser";
@@ -210,7 +211,12 @@ export default function EventsClient({
     document.addEventListener("keydown", onKeyDown);
     const focusable = modalRef.current?.querySelector<HTMLElement>("input:not([disabled]), button");
     focusable?.focus();
-    return () => document.removeEventListener("keydown", onKeyDown);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
   }, [checkoutOpen, closeCheckout]);
 
   const reset = () => {
@@ -531,8 +537,11 @@ export default function EventsClient({
         </button>
       </div>
 
-      {/* Checkout modal */}
-      {checkoutOpen && (
+      {/* Checkout modal - portaled to <body>: the vendor smooth-scroll
+          transforms #app, which turns position: fixed inside it into
+          absolute (the modal would sit at the scroll offset and clip). */}
+      {checkoutOpen &&
+        createPortal(
         <div
           className="ev-modal-overlay"
           role="dialog"
@@ -554,7 +563,7 @@ export default function EventsClient({
             {succeeded ? (
               <div className="ev-success">
                 <div className="ev-success-mark" aria-hidden="true">
-                  ✓
+                  ✓&#xFE0E;
                 </div>
                 <h2 className="ev-success-head" id="ev-modal-title">
                   You&#x27;re in<span className="f-span">!</span>
@@ -693,7 +702,8 @@ export default function EventsClient({
               </>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -748,7 +758,7 @@ function EventCard({
           disabled={blocked}
           title={soldOut ? "No slots left" : blocked ? `Clashes with ${clashWith}` : undefined}
         >
-          {selected ? "Added ✓" : soldOut ? "Sold out" : blocked ? "Time clash" : "Add entry"}
+          {selected ? "Added ✓\uFE0E" : soldOut ? "Sold out" : blocked ? "Time clash" : "Add entry"}
         </button>
       </div>
     </li>

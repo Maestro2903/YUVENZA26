@@ -75,7 +75,7 @@ export default function EventsShowcase({
                   </span>
                 ) : (
                   <a href="/registration" className="ho-cta primary evx-cta">
-                    Register <span aria-hidden="true">↗</span>
+                    Register <span aria-hidden="true">↗&#xFE0E;</span>
                   </a>
                 )}
               </div>

@@ -18,7 +18,7 @@ export default function CopyButton({ value, label = "Copy URL" }: { value: strin
         }
       }}
     >
-      {copied ? "Copied ✓" : label}
+      {copied ? "Copied ✓\uFE0E" : label}
     </button>
   );
 }

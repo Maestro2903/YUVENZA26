@@ -42,7 +42,7 @@ export default async function AdminWorkEdit({
         </div>
         {study?.published && (
           <a href={`/work/${study.slug}`} className="adm-btn ghost small" target="_blank" rel="noopener noreferrer">
-            View live ↗
+            View live ↗&#xFE0E;
           </a>
         )}
       </header>

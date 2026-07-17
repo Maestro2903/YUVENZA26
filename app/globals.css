@@ -1967,7 +1967,6 @@ html.no-scroll nav.nav {
 .ev-order {
   margin-top: 1vw;
   padding-top: 1.2vw;
-  border-top: 1px solid #1d1d1b;
 }
 .ev-order-title {
   text-transform: uppercase;
@@ -2851,7 +2850,7 @@ body {
   line-height: 1.5;
 }
 .ho-fact::before {
-  content: "✳";
+  content: "✳\FE0E";
   margin-right: 0.6em;
   font-size: 0.85em;
 }

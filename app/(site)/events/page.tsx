@@ -41,7 +41,7 @@ export default async function EventsPage() {
 
         <footer className="evx-foot">
           <a href="/registration" className="hm-events-cta">
-            Register now ↗
+            Register now ↗&#xFE0E;
           </a>
         </footer>
       </div>

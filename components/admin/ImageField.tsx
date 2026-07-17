@@ -104,7 +104,7 @@ export default function ImageField({
 
       setProgress(null);
       setUrl(fin.publicUrl);
-      setDone("Uploaded ✓");
+      setDone("Uploaded ✓\uFE0E");
       if (standalone) {
         setCaption("");
         setAlt("");

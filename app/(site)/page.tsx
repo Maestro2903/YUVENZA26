@@ -76,10 +76,10 @@ export default async function Home() {
               <p className="ho-lead">{hero.lead}</p>
               <div className="ho-cta-row">
                 <a href={hero.primaryCta.href} className="ho-cta primary">
-                  {hero.primaryCta.label} <span aria-hidden="true">↗</span>
+                  {hero.primaryCta.label} <span aria-hidden="true">↗&#xFE0E;</span>
                 </a>
                 <a href={hero.secondaryCta.href} className="ho-cta ghost">
-                  {hero.secondaryCta.label} <span aria-hidden="true">↗</span>
+                  {hero.secondaryCta.label} <span aria-hidden="true">↗&#xFE0E;</span>
                 </a>
                 <a
                   href={hero.tertiaryCta.href}
@@ -87,7 +87,7 @@ export default async function Home() {
                   rel={hero.tertiaryCta.href.startsWith("http") ? "noopener noreferrer" : undefined}
                   className="ho-cta text"
                 >
-                  {hero.tertiaryCta.label} <span aria-hidden="true">↗</span>
+                  {hero.tertiaryCta.label} <span aria-hidden="true">↗&#xFE0E;</span>
                 </a>
               </div>
             </div>
@@ -160,7 +160,7 @@ export default async function Home() {
             ))}
           </div>
           <a href="/work" className="hm-events-cta">
-            See all work ↗
+            See all work ↗&#xFE0E;
           </a>
         </section>
 
@@ -190,10 +190,10 @@ export default async function Home() {
           </ul>
           <div className="hm-events-cta-row">
             <a href="/events" className="hm-events-cta">
-              All events ↗
+              All events ↗&#xFE0E;
             </a>
             <a href="/registration" className="hm-events-cta">
-              Register now ↗
+              Register now ↗&#xFE0E;
             </a>
           </div>
         </section>
