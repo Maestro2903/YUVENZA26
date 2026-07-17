@@ -155,7 +155,8 @@ logo, the attendee's entries with dates/times, amount, the **signed QR pass
 inline** (scannable at the gate straight from the email) and a "Download
 ticket (PDF)" button back to the site.
 
-Setup (see `google-cloud/email-function/README.md` for the full walkthrough):
+Setup (step-by-step Render guide: `docs/EMAIL.md`; gcloud alternative in
+`google-cloud/email-function/README.md`):
 1. Create a Gmail app password (2FA required).
 2. Host the sender. **Render (recommended, no CLI):** New → Blueprint →
    pick this repo — `render.yaml` creates the `yuvenza-email` free web

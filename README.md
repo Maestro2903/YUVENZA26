@@ -223,6 +223,7 @@ instrumentation.ts   tracing + structured production error logs
 middleware.ts        /admin session guard + DEPLOY_TARGET routing
 tests/               vitest (crypto, tickets, RBAC, checkout, clash, capacity, domain)
 docs/SETUP.md        the full operator manual
+docs/EMAIL.md        confirmation emails on Render, step by step
 ```
 
 `CLAUDE.md` documents the architecture invariants for AI-assisted development.
