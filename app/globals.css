@@ -3971,3 +3971,57 @@ button.nav-link {
     text-align: center;
   }
 }
+
+/* ===================================================================
+   Footer - mobile: the vendor sheet keeps desktop vw sizes here
+   (~7px text on phones). Stack the columns and size for thumbs.
+   =================================================================== */
+@media (max-width: 767px) {
+  .f-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5vw;
+    margin-top: 10vw;
+    padding-bottom: 8vw;
+  }
+  .f-col.left {
+    flex-wrap: wrap;
+    row-gap: 2.5vw;
+  }
+  .f-title {
+    display: inline-block;
+    font-size: min(5.5vw, 82.5px);
+    line-height: 1;
+    padding-top: 0;
+  }
+  .f-year {
+    display: inline-block;
+    font-size: min(4.5vw, 67.5px);
+    line-height: 1;
+    margin-left: 1.5vw;
+    top: 0;
+  }
+  .f-stamp {
+    width: 8vw;
+    margin-left: 3vw;
+  }
+  .legal-w {
+    margin-left: 4vw;
+  }
+  .f-link {
+    font-size: min(4vw, 60px);
+    line-height: 1.35;
+  }
+  .f-info .f-block {
+    justify-content: flex-start;
+  }
+  .f-li {
+    font-size: min(4vw, 60px);
+    line-height: 1.35;
+  }
+  .f-li.ci {
+    font-size: min(4vw, 60px);
+    margin-left: 1.5vw;
+    margin-right: 1.5vw;
+  }
+}
