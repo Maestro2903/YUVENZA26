@@ -3260,6 +3260,9 @@ button.nav-link {
   max-width: 300px;
 }
 .ev-qr-canvas {
+  /* The vendor sheet declares canvas{position:absolute} for its decorative
+     background canvases - that would pin the QR to the page corner. */
+  position: static;
   border: 1px solid #1d1d1b;
   border-radius: 12px;
   background: #fff;
