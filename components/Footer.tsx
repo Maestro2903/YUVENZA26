@@ -79,6 +79,16 @@ export default function Footer({
           )}
           <div className="legal-w">
             <a
+              aria-label="Your Yuvenza profile"
+              draggable={false}
+              href="/profile"
+              className="f-link new-tab"
+            >
+              Profile
+            </a>
+          </div>
+          <div className="legal-w">
+            <a
               data-color="#1D1D1B"
               aria-label="yuvenza-legal"
               draggable={false}

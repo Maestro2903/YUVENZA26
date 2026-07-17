@@ -3558,26 +3558,29 @@ button.nav-link {
 }
 
 /* ============================================================
-   Five-item menu (Events added): tighten the stack so all five
-   titles + socials fit the viewport, and stagger the fifth in.
+   Six-item menu (Events + Profile added): tighten the stack so
+   all six titles + socials fit the viewport, stagger 5 and 6 in.
    ============================================================ */
 .menu-title {
-  font-size: 19vh;
-  line-height: 14vh;
+  font-size: 15.5vh;
+  line-height: 11.5vh;
 }
 .nav.is-open .menu-link.m5 .menu-title {
   transition-delay: 0.54s;
 }
+.nav.is-open .menu-link.m6 .menu-title {
+  transition-delay: 0.62s;
+}
 @media (max-width: 991px) and (min-width: 768px) {
   .menu-title {
-    font-size: 15vh;
-    line-height: 11vh;
+    font-size: 12.5vh;
+    line-height: 9.5vh;
   }
 }
 @media (max-width: 767px) {
   .menu-title {
-    font-size: 15.5vw;
-    line-height: 14vw;
+    font-size: 13vw;
+    line-height: 12vw;
   }
 }
 
@@ -3815,5 +3818,95 @@ button.nav-link {
   .site-banner-link {
     display: block;
     margin: 0.3em 0 0;
+  }
+}
+
+/* ============================================================
+   Profile: top-bar avatar button + /profile page
+   ============================================================ */
+.nav-profile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1em;
+  height: 2.1em;
+  margin-right: 0.9em;
+  border: 1px solid #1d1d1b;
+  border-radius: 50%;
+  color: #1d1d1b;
+  background: rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  vertical-align: middle;
+  font-family: "Canopee", sans-serif;
+  font-size: 0.85em;
+  transition: background-color 0.2s ease;
+  flex: none;
+}
+.nav-profile:hover {
+  background: rgba(29, 29, 27, 0.08);
+}
+.nav-profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.nav-block.r {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+/* Inside the open menu the bar sits on ink - invert the chip */
+.nav.is-open .nav-profile {
+  border-color: #cdc6be;
+  color: #cdc6be;
+  background: transparent;
+}
+
+.pf {
+  position: relative;
+  z-index: 2;
+  padding: 16vh 2vw 5vw;
+}
+.pf-signin,
+.pf-body {
+  margin-top: 2.5vw;
+  display: flex;
+  flex-direction: column;
+  gap: 2vw;
+  max-width: 60rem;
+}
+.pf-user {
+  align-self: flex-start;
+}
+.pf-links {
+  display: flex;
+  gap: 1.2vw;
+  flex-wrap: wrap;
+}
+.pf-note {
+  margin: 0;
+  font-family: "Editorial New", serif;
+  font-size: clamp(0.85rem, 1vw, 1rem);
+  opacity: 0.7;
+  max-width: 40rem;
+}
+
+@media (max-width: 767px) {
+  .pf {
+    padding: 14vh 4vw 8vw;
+  }
+  .pf-signin,
+  .pf-body {
+    margin-top: 6vw;
+    gap: 5vw;
+  }
+  .pf-links {
+    gap: 3.5vw;
+  }
+  .nav-profile {
+    width: 2.3em;
+    height: 2.3em;
+    margin-right: 0.7em;
   }
 }

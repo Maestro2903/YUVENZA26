@@ -418,6 +418,9 @@ export default function EventsClient({
                   <span className="ev-user-name">{user.name}</span>
                   <span className="ev-user-email">{user.email}</span>
                 </span>
+                <a href="/profile" className="ev-user-signout" aria-label="Open your profile">
+                  Profile
+                </a>
                 <button type="button" className="ev-user-signout" onClick={() => void signOut()}>
                   Sign out
                 </button>

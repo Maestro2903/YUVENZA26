@@ -18,7 +18,7 @@ function Grid() {
 type AppShellProps = {
   children: ReactNode;
   bodyClass?: string;
-  current?: "index" | "work" | "about" | "registration" | "events";
+  current?: "index" | "work" | "about" | "registration" | "events" | "profile";
   appClass?: string;
   scrollDirection?: "horizontal" | "vertical";
   /** "spin" = the home scale/rotate reveal; "fade" = opacity fade used by inner pages */

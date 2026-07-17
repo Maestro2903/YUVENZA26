@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSupabaseUser } from "@/lib/hooks/useSupabaseUser";
 
 const menuLinks = [
   { href: "/", label: "Yuvenza Home", node: <>Index</>, active: "index" },
@@ -36,6 +37,16 @@ const menuLinks = [
     active: "registration",
   },
   {
+    href: "/profile",
+    label: "Yuvenza Profile",
+    node: (
+      <>
+        Pr<span className="f-span space">o</span>file
+      </>
+    ),
+    active: "profile",
+  },
+  {
     href: "/about",
     label: "Yuvenza About",
     node: (
@@ -53,7 +64,7 @@ export default function Nav({
   linkedinUrl = "https://www.linkedin.com/company/yuvenza-cit/",
   locationLabel = "Chennai, India",
 }: {
-  current?: "index" | "work" | "about" | "registration" | "events";
+  current?: "index" | "work" | "about" | "registration" | "events" | "profile";
   instagramUrl?: string;
   linkedinUrl?: string;
   locationLabel?: string;
@@ -61,6 +72,7 @@ export default function Nav({
   const [open, setOpen] = useState(false);
   const transitioning = useRef(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const { user } = useSupabaseUser();
 
   const menuSocials = [
     {
@@ -137,6 +149,24 @@ export default function Nav({
           <div className="brand-text">The Youth Club</div>
         </a>
         <div className="nav-block r">
+          { }
+          <a
+            href="/profile"
+            className={"nav-profile" + (user ? " signed-in" : "")}
+            aria-label={user ? `Profile: ${user.name}` : "Profile"}
+            title={user ? user.name : "Profile"}
+          >
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt="" referrerPolicy="no-referrer" />
+            ) : user ? (
+              <span aria-hidden="true">{user.name.charAt(0).toUpperCase()}</span>
+            ) : (
+              <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <circle cx="12" cy="8" r="3.6" />
+                <path d="M4.5 20c1.4-3.6 4.2-5.4 7.5-5.4s6.1 1.8 7.5 5.4" />
+              </svg>
+            )}
+          </a>
           <button
             ref={toggleRef}
             type="button"
