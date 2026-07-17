@@ -10,7 +10,6 @@ import { findClash, formatTimeRange } from "@/lib/events/clash";
 import { isSoldOut, slotsLabel } from "@/lib/events/capacity";
 import { useLiveSlots } from "@/lib/hooks/useLiveSlots";
 import MyRegistrations from "@/components/MyRegistrations";
-import QrTicket from "@/components/QrTicket";
 
 /**
  * Events page frontend: sign in with a college Google account, browse the
@@ -39,7 +38,6 @@ declare global {
 
 const CHECKOUT_JS = "https://checkout.razorpay.com/v1/checkout.js";
 const CART_KEY = "yv26-cart";
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Load Razorpay's checkout.js once, on demand. */
 function loadRazorpayScript(): Promise<boolean> {
@@ -73,7 +71,6 @@ function GoogleMark() {
 
 type Phase = "idle" | "signin" | "submitting" | "gateway" | "verifying";
 type Result =
-  | { kind: "success"; mode: "razorpay" | "free" | "demo"; orderId: string }
   | { kind: "cancelled" }
   | { kind: "error"; message: string }
   | null;
@@ -106,7 +103,6 @@ export default function EventsClient({
   const [result, setResult] = useState<Result>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", college: "" });
-  const [regsRefresh, setRegsRefresh] = useState(0);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -219,19 +215,6 @@ export default function EventsClient({
     };
   }, [checkoutOpen, closeCheckout]);
 
-  const reset = () => {
-    setSelected({});
-    try {
-      localStorage.removeItem(CART_KEY);
-    } catch {
-      /* ignore */
-    }
-    setForm({ name: user?.name ?? "", email: user?.email ?? "", phone: "", college: "" });
-    setPhase("idle");
-    setResult(null);
-    setCheckoutOpen(false);
-  };
-
   async function markCancelled(orderId: string, failed: boolean) {
     try {
       await fetch("/api/checkout/cancel", {
@@ -246,14 +229,14 @@ export default function EventsClient({
 
   const succeed = (mode: "razorpay" | "free" | "demo", orderId: string) => {
     track("Registration Completed", { mode, entries: count, totalRupees: total });
-    setPhase("idle");
-    setResult({ kind: "success", mode, orderId });
-    setRegsRefresh((n) => n + 1);
     try {
       localStorage.removeItem(CART_KEY);
     } catch {
       /* ignore */
     }
+    // Confirmed registrations live on the profile page (pass, QR, PDF).
+    // Full document navigation on purpose - vendor scripts re-init per load.
+    window.location.assign(`/profile?paid=${encodeURIComponent(orderId)}`);
   };
 
   const handlePay = async (e: React.FormEvent) => {
@@ -374,10 +357,6 @@ export default function EventsClient({
     }
   };
 
-  const succeeded = result?.kind === "success";
-  const successOrderId = result?.kind === "success" ? result.orderId : "";
-  const showQr = succeeded && UUID_RE.test(successOrderId);
-
   return (
     <div className="ev">
       {/* Masthead */}
@@ -461,7 +440,7 @@ export default function EventsClient({
       </header>
 
       {/* ---- Previous registrations + entry passes ---- */}
-      {user && <MyRegistrations user={user} events={events} refreshToken={regsRefresh} />}
+      {user && <MyRegistrations user={user} events={events} />}
 
       <div className="ev-layout">
         {/* Event grid */}
@@ -560,29 +539,6 @@ export default function EventsClient({
               ×
             </button>
 
-            {succeeded ? (
-              <div className="ev-success">
-                <div className="ev-success-mark" aria-hidden="true">
-                  ✓&#xFE0E;
-                </div>
-                <h2 className="ev-success-head" id="ev-modal-title">
-                  You&#x27;re in<span className="f-span">!</span>
-                </h2>
-                <p className="ev-success-body" role="status">
-                  {form.name ? `See you at the fest, ${form.name.split(" ")[0]}. ` : "See you at the fest. "}
-                  {result?.kind === "success" && result.mode === "razorpay"
-                    ? `Payment received - your ${count} ${count === 1 ? "entry is" : "entries are"} confirmed.`
-                    : result?.kind === "success" && result.mode === "free"
-                      ? `Your free ${count === 1 ? "entry is" : "entries are"} confirmed.`
-                      : `Your registration for ${count} ${count === 1 ? "entry" : "entries"} is recorded (demo mode - no payment taken).`}
-                </p>
-                {showQr && <QrTicket orderId={successOrderId} />}
-                <button type="button" className="ev-pay-btn" onClick={reset}>
-                  Done
-                </button>
-              </div>
-            ) : (
-              <>
                 <div className="ev-modal-head">
                   <span className="ev-modal-kicker">Checkout</span>
                   <h2 className="ev-modal-title" id="ev-modal-title">
@@ -695,12 +651,10 @@ export default function EventsClient({
                   </button>
                   <p className="ev-modal-note">
                     {paymentsLive
-                      ? "Secure payment via Razorpay. Your entry pass QR appears right after."
-                      : "Demo checkout - no real payment is taken. Registration is confirmed instantly."}
+                      ? "Secure payment via Razorpay. Your entry pass appears on your profile right after."
+                      : "Demo checkout - no real payment is taken. Your pass appears on your profile."}
                   </p>
                 </form>
-              </>
-            )}
           </div>
         </div>,
         document.body

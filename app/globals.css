@@ -3909,3 +3909,62 @@ button.nav-link {
     margin-right: 0.7em;
   }
 }
+
+/* ===================================================================
+   Profile page - mobile redesign
+   Full-width account chip, stacked full-width actions, calmer spacing.
+   =================================================================== */
+.pf-empty {
+  margin: 0;
+}
+@media (max-width: 767px) {
+  .pf {
+    padding: 11vh 5vw 16vw;
+  }
+  .pf-signin,
+  .pf-body {
+    margin-top: 7vw;
+    gap: 7vw;
+  }
+  .pf-user {
+    width: 100%;
+    align-self: stretch;
+    justify-content: flex-start;
+    padding: 2.5vw 3.5vw 2.5vw 2.5vw;
+  }
+  .pf-user .ev-user-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .pf-user .ev-user-email {
+    max-width: 100%;
+  }
+  .pf-links {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3.5vw;
+  }
+  .pf-links .ho-cta {
+    justify-content: center;
+    text-align: center;
+    font-size: min(4.4vw, 66px);
+    padding: 4.2vw;
+    border-radius: 12vw;
+  }
+  .pf-note {
+    font-size: min(3.5vw, 52.5px);
+    line-height: 1.55;
+  }
+  .pf .ev-signin-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .pf .ev-signin-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 3vw;
+  }
+  .pf .ev-signin-note {
+    text-align: center;
+  }
+}

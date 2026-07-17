@@ -34,16 +34,21 @@ export default function ProfileClient({
 }) {
   const { user, loading, signInWithGoogle, signOut } = useSupabaseUser();
   const [authError, setAuthError] = useState<string | null>(null);
+  const [paidOrder, setPaidOrder] = useState<string | null>(null);
   const [signingIn, setSigningIn] = useState(false);
   const domain = normalizeDomain(allowedEmailDomain);
 
-  // Surface ?authError=... from the OAuth callback, then clean the URL.
+  // Surface ?authError=... (OAuth callback) and ?paid=... (checkout landing),
+  // then clean the URL.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const err = params.get("authError");
-    if (err) {
-      setAuthError(err);
+    const paid = params.get("paid");
+    if (err) setAuthError(err);
+    if (paid) setPaidOrder(paid);
+    if (err || paid) {
       params.delete("authError");
+      params.delete("paid");
       const qs = params.toString();
       window.history.replaceState({}, "", window.location.pathname + (qs ? `?${qs}` : ""));
     }
@@ -112,7 +117,18 @@ export default function ProfileClient({
         </button>
       </div>
 
-      <MyRegistrations user={user} events={events} />
+      {paidOrder && (
+        <p className="ev-status pf-paid" role="status">
+          Registration confirmed. Your entry pass is below - show the QR at the gate.
+        </p>
+      )}
+
+      <MyRegistrations
+        user={user}
+        events={events}
+        showEmpty
+        autoOpenOrder={paidOrder ?? undefined}
+      />
 
       <div className="pf-links">
         <a href="/events" className="ho-cta ghost">

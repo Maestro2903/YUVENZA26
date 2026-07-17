@@ -25,16 +25,22 @@ export default function MyRegistrations({
   user,
   events,
   refreshToken = 0,
+  showEmpty = false,
+  autoOpenOrder,
 }: {
   user: SiteUser;
   events: EventItem[];
   /** Bump to refetch (e.g. right after a successful payment). */
   refreshToken?: number;
+  /** Render a friendly empty state instead of nothing (profile page). */
+  showEmpty?: boolean;
+  /** Order id whose QR pass starts expanded (post-checkout landing). */
+  autoOpenOrder?: string;
 }) {
   const [orders, setOrders] = useState<OwnOrder[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
-  const [openQr, setOpenQr] = useState<string | null>(null);
+  const [openQr, setOpenQr] = useState<string | null>(autoOpenOrder ?? null);
 
   useEffect(() => {
     let cancelled = false;
@@ -66,6 +72,11 @@ export default function MyRegistrations({
     };
   }, [user.id, refreshToken, retry]);
 
+  // Post-checkout landing: expand the fresh order's pass once we know its id.
+  useEffect(() => {
+    if (autoOpenOrder) setOpenQr(autoOpenOrder);
+  }, [autoOpenOrder]);
+
   const titleFor = (slug: string) => events.find((e) => e.slug === slug)?.title ?? slug;
 
   if (error) {
@@ -87,7 +98,21 @@ export default function MyRegistrations({
       </section>
     );
   }
-  if (orders.length === 0) return null;
+  if (orders.length === 0) {
+    if (!showEmpty) return null;
+    return (
+      <section className="ev-myregs" aria-label="Your registrations">
+        <div className="ev-myregs-head">
+          <span className="ev-myregs-title">Your registrations</span>
+          <span className="ev-myregs-count">0</span>
+        </div>
+        <p className="ev-qr-caption pf-empty">
+          Nothing here yet. Pick your entries on the events page and your passes will show up
+          here, ready to scan at the gate.
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className="ev-myregs" aria-label="Your registrations">
