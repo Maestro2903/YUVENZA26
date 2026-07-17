@@ -3973,55 +3973,74 @@ button.nav-link {
 }
 
 /* ===================================================================
-   Footer - mobile: the vendor sheet keeps desktop vw sizes here
-   (~7px text on phones). Stack the columns and size for thumbs.
+   Footer - mobile redesign. The vendor sheet sizes this row for
+   desktop (about 7px text on phones) with high-specificity variants
+   like .f-li.new-tab.f, so every override here carries the .footer
+   prefix to win the cascade at any small width.
+   Layout: brand row (title, year, stamp right), contact email on its
+   own line, Profile / Legal row, then the social links.
    =================================================================== */
 @media (max-width: 767px) {
-  .f-info {
+  .footer .f-info {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 5vw;
-    margin-top: 10vw;
-    padding-bottom: 8vw;
+    align-items: stretch;
+    gap: 4.5vw;
+    margin-top: 12vw;
+    padding-bottom: 10vw;
   }
-  .f-col.left {
+  .footer .f-col.left {
+    width: 100%;
     flex-wrap: wrap;
-    row-gap: 2.5vw;
+    align-items: center;
+    row-gap: 3.5vw;
   }
-  .f-title {
+  .footer .f-col.left .f-title {
     display: inline-block;
-    font-size: min(5.5vw, 82.5px);
+    font-size: min(6vw, 90px);
     line-height: 1;
     padding-top: 0;
   }
-  .f-year {
+  .footer .f-col.left .f-year {
     display: inline-block;
-    font-size: min(4.5vw, 67.5px);
+    font-size: min(5vw, 75px);
     line-height: 1;
-    margin-left: 1.5vw;
+    margin-left: 2vw;
     top: 0;
   }
-  .f-stamp {
-    width: 8vw;
-    margin-left: 3vw;
+  .footer .f-col.left .f-stamp {
+    width: 9vw;
+    margin-left: auto;
   }
-  .legal-w {
-    margin-left: 4vw;
+  .footer .f-col.left .legal-w {
+    margin-left: 0;
+    margin-right: 7vw;
   }
-  .f-link {
-    font-size: min(4vw, 60px);
-    line-height: 1.35;
+  /* The contact email gets its own full-width line. */
+  .footer .f-col.left .legal-w:has(a[href^="mailto"]) {
+    flex-basis: 100%;
+    margin-right: 0;
   }
-  .f-info .f-block {
+  .footer .legal-w a.f-link,
+  .footer .legal-w a.f-link.new-tab {
+    font-size: min(4.2vw, 63px);
+    line-height: 1.4;
+  }
+  .footer .f-info .f-block {
     justify-content: flex-start;
+    align-items: baseline;
   }
-  .f-li {
-    font-size: min(4vw, 60px);
-    line-height: 1.35;
+  .footer .f-block a.f-li,
+  .footer .f-block a.f-li.new-tab.f {
+    float: none;
+    font-size: min(4.5vw, 67.5px);
+    line-height: 1.25;
   }
-  .f-li.ci {
-    font-size: min(4vw, 60px);
-    margin-left: 1.5vw;
-    margin-right: 1.5vw;
+  .footer .f-block .f-li.ci,
+  .footer .f-block .f-li.ci.f {
+    float: none;
+    font-size: min(4.5vw, 67.5px);
+    line-height: 1.25;
+    margin-left: 2vw;
+    margin-right: 2vw;
   }
 }
