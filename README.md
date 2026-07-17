@@ -120,15 +120,21 @@ What the migrations create: 13 RLS-protected tables (content, events, orders, pa
 ### 4. Confirmation emails — ~10 minutes, free tier
 
 1. Gmail account → enable 2FA → create an **App password**.
-2. Deploy the function (full walkthrough in [google-cloud/email-function/README.md](google-cloud/email-function/README.md)):
-   ```bash
-   cd google-cloud/email-function
-   gcloud functions deploy yuvenza-send-confirmation --gen2 --runtime=nodejs20 \
-     --region=asia-south1 --source=. --entry-point=sendConfirmation \
-     --trigger-http --allow-unauthenticated \
-     --set-env-vars GMAIL_USER=...,FROM_NAME="Yuvenza",GMAIL_APP_PASSWORD=...,EMAIL_SHARED_SECRET=$(openssl rand -hex 32)
-   ```
-3. Put the printed URL + the shared secret into `EMAIL_FUNCTION_URL` / `EMAIL_FUNCTION_SECRET`.
+2. Host the sender — pick ONE (full walkthrough in [google-cloud/email-function/README.md](google-cloud/email-function/README.md)):
+   - **Render (recommended, no CLI):** render.com → **New → Blueprint** →
+     select this repo → Apply. The `render.yaml` blueprint creates the free
+     `yuvenza-email` web service; then set `GMAIL_USER` +
+     `GMAIL_APP_PASSWORD` in its Environment tab and copy the generated
+     `EMAIL_SHARED_SECRET`.
+   - **Google Cloud Functions:**
+     ```bash
+     cd google-cloud/email-function
+     gcloud functions deploy yuvenza-send-confirmation --gen2 --runtime=nodejs20 \
+       --region=asia-south1 --source=. --entry-point=sendConfirmation \
+       --trigger-http --allow-unauthenticated \
+       --set-env-vars GMAIL_USER=...,FROM_NAME="Yuvenza",GMAIL_APP_PASSWORD=...,EMAIL_SHARED_SECRET=$(openssl rand -hex 32)
+     ```
+3. Put the service URL + the shared secret into `EMAIL_FUNCTION_URL` / `EMAIL_FUNCTION_SECRET` on Vercel and redeploy.
 4. Preview the template anytime: `node scripts/email-demo.mjs` → HTML + PDF in `~/Downloads`.
 
 Emails fire on every paid order (checkout, verify, webhook, mark-paid, comp) - idempotent, never double-sent, never blocking a payment. Gmail caps ~500 mails/day.

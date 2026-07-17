@@ -34,6 +34,12 @@ function bad(res, status, error) {
 }
 
 functions.http("sendConfirmation", async (req, res) => {
+  // Health check (Render pings this; also handy for uptime monitors).
+  // No secret required - it reveals nothing and sends nothing.
+  if (req.method === "GET") {
+    return res.status(200).json({ ok: true, service: "yuvenza-email" });
+  }
+
   // Shared-secret auth - constant shape regardless of failure reason.
   const secret = process.env.EMAIL_SHARED_SECRET;
   if (!secret || req.get("x-email-secret") !== secret) {

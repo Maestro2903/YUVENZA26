@@ -1,12 +1,38 @@
 # Yuvenza confirmation-email function
 
 Sends the branded registration-confirmation email (stamp logo, signed QR
-pass, PDF-download button) through **Gmail + Nodemailer**, hosted on
-**Google Cloud Functions gen2** — comfortably inside the free tier
-(2M invocations/month).
+pass, PDF-download button) through **Gmail + Nodemailer**. Host it on
+**Render** (free web service, easiest — see §2A) or on **Google Cloud
+Functions gen2** (§2B).
 
 The Next.js app calls this after every successful payment (idempotently —
 see `lib/email/notify.ts`).
+
+## 2A. Deploy on Render (recommended, ~5 minutes, no CLI)
+
+The repo root has a `render.yaml` blueprint that sets everything up.
+
+1. Do §1 below first (Gmail app password).
+2. Sign in at render.com (the GitHub account that owns this repo) →
+   **New → Blueprint** → select this repository → **Apply**. Render creates
+   a free web service named `yuvenza-email` from
+   `google-cloud/email-function/`.
+3. Open the service → **Environment**:
+   - set `GMAIL_USER` (the Gmail address) and `GMAIL_APP_PASSWORD`
+     (the 16-character app password),
+   - copy the auto-generated `EMAIL_SHARED_SECRET` value.
+4. In the **Vercel** project add:
+   - `EMAIL_FUNCTION_URL` = `https://yuvenza-email.onrender.com`
+     (your service's URL from the Render dashboard),
+   - `EMAIL_FUNCTION_SECRET` = the value copied in step 3,
+   then redeploy.
+5. Test: `GET` the service URL in a browser → `{"ok":true,...}`.
+
+> Free-tier behaviour: the service sleeps after ~15 min idle, so the first
+> email after a quiet spell can take up to a minute. The app releases its
+> send-claim on failure, so Razorpay webhook retries deliver the mail
+> anyway. To keep it warm during the fest, point a free uptime monitor
+> (e.g. UptimeRobot) at `GET /` every 10 minutes.
 
 ## 1. Gmail app password (one time)
 
@@ -20,7 +46,7 @@ see `lib/email/notify.ts`).
 > a fest. If you outgrow it, swap the transport for Brevo/Resend later; the
 > template and the app contract stay identical.
 
-## 2. Deploy (one time, ~3 minutes)
+## 2B. Deploy on Google Cloud Functions (alternative)
 
 Install the gcloud CLI (`brew install google-cloud-sdk`), then:
 

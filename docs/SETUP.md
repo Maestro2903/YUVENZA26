@@ -147,7 +147,7 @@ both claim it); scanning the same pass again shows an "ALREADY CHECKED IN at
 previously scanned-and-saved payload copies, but passes are re-issued live on
 every view, so attendees are unaffected.
 
-### Confirmation emails (Gmail + Google Cloud Function)
+### Confirmation emails (Gmail + Nodemailer, hosted on Render or Google Cloud)
 
 When an order becomes paid (card payment verified, webhook capture, or a
 free/demo registration), the app sends a branded confirmation email: stamp
@@ -157,8 +157,11 @@ ticket (PDF)" button back to the site.
 
 Setup (see `google-cloud/email-function/README.md` for the full walkthrough):
 1. Create a Gmail app password (2FA required).
-2. Deploy the function: `gcloud functions deploy … --gen2 --runtime=nodejs20`
-   (free tier; exact command in the README).
+2. Host the sender. **Render (recommended, no CLI):** New → Blueprint →
+   pick this repo — `render.yaml` creates the `yuvenza-email` free web
+   service; fill in the Gmail env vars. **Or Google Cloud:**
+   `gcloud functions deploy … --gen2 --runtime=nodejs20` (exact command in
+   the README).
 3. Set `EMAIL_FUNCTION_URL` + `EMAIL_FUNCTION_SECRET` in the app's env.
 4. Run `supabase/migrations/0006_confirmation_email.sql`.
 

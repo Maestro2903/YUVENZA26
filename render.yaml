@@ -1,0 +1,30 @@
+# Render blueprint - hosts the confirmation-email sender as a free web
+# service. In the Render dashboard: New -> Blueprint -> pick this repo.
+# After the first deploy:
+#   1. Set GMAIL_USER and GMAIL_APP_PASSWORD in the service's Environment tab
+#      (app password requires 2-step verification on the Google account).
+#   2. Copy the generated EMAIL_SHARED_SECRET value into the Vercel project
+#      as EMAIL_FUNCTION_SECRET, and set EMAIL_FUNCTION_URL to the service
+#      URL (https://<service-name>.onrender.com).
+# Free-tier note: the service sleeps after ~15 min idle; the first email
+# after a quiet spell takes up to a minute (the app releases its send-claim
+# on failure, so webhook retries deliver it). An uptime monitor pinging
+# GET / keeps it warm.
+services:
+  - type: web
+    name: yuvenza-email
+    runtime: node
+    rootDir: google-cloud/email-function
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: GMAIL_USER
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: EMAIL_SHARED_SECRET
+        generateValue: true
+      - key: FROM_NAME
+        value: Yuvenza · The Youth Club
