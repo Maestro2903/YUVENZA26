@@ -34,11 +34,12 @@ function formatTime(t) {
 function eventRow(e) {
   const time =
     e.startTime && e.endTime ? ` &middot; ${formatTime(e.startTime)} &ndash; ${formatTime(e.endTime)}` : "";
+  const venue = e.venue ? ` &middot; ${esc(e.venue)}` : "";
   return `
     <tr>
       <td style="padding:10px 0;border-bottom:1px dashed rgba(29,29,27,0.3);">
         <div style="font-size:16px;font-weight:bold;color:${INK};">${esc(e.title)}</div>
-        <div style="font-size:13px;color:${MUTED};padding-top:2px;">${esc(e.dateLabel)}${time}</div>
+        <div style="font-size:13px;color:${MUTED};padding-top:2px;">${esc(e.dateLabel)}${time}${venue}</div>
       </td>
     </tr>`;
 }

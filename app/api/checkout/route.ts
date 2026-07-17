@@ -58,6 +58,19 @@ export async function POST(req: Request) {
   // The verified account email overrides whatever the form submitted, and the
   // order is linked to the user so they can see their tickets.
   const registration = await getRegistrationSettings();
+
+  // Published deadline is enforced here, not by someone staying up to flip a
+  // toggle at midnight.
+  if (registration.closesAt) {
+    const closes = new Date(registration.closesAt).getTime();
+    if (!Number.isNaN(closes) && Date.now() > closes) {
+      return NextResponse.json(
+        { ok: false, error: "Registration has closed. See you at the fest!" },
+        { status: 403 }
+      );
+    }
+  }
+
   let userId: string | null = null;
   if (registration.requireLogin) {
     const supabase = await getServerSupabase();

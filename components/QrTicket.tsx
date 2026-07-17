@@ -23,6 +23,7 @@ type TicketEvent = {
   dateLabel: string;
   startTime: string | null;
   endTime: string | null;
+  venue?: string | null;
 };
 
 type TicketData = {
@@ -85,7 +86,7 @@ function drawNamePill(canvas: HTMLCanvasElement, name: string) {
 
 function eventLine(e: TicketEvent): string {
   const time = formatTimeRange(e.startTime ?? undefined, e.endTime ?? undefined);
-  return `${e.title} — ${e.dateLabel}${time ? ` · ${time}` : ""}`;
+  return `${e.title} — ${e.dateLabel}${time ? ` · ${time}` : ""}${e.venue ? ` · ${e.venue}` : ""}`;
 }
 
 /** Draw the full A4 ticket and trigger the download (jsPDF loaded on demand). */

@@ -3,7 +3,7 @@ import BodyClass from "./BodyClass";
 import Nav from "./Nav";
 import Footer from "./Footer";
 import PageReveal from "./PageReveal";
-import { getGeneralSettings } from "@/lib/content/queries";
+import { getGeneralSettings, getSection } from "@/lib/content/queries";
 
 function Grid() {
   return (
@@ -45,7 +45,10 @@ export default async function AppShell({
   withNav = true,
   withFooter = true,
 }: AppShellProps) {
-  const settings = await getGeneralSettings();
+  const [settings, announcement] = await Promise.all([
+    getGeneralSettings(),
+    getSection("announcement"),
+  ]);
 
   return (
     <>
@@ -61,6 +64,22 @@ export default async function AppShell({
         <div className="paper-background">
           <div className="paper-mode w-embed" />
         </div>
+        {announcement.enabled && announcement.text && (
+          <div className="site-banner" role="status">
+            <span className="site-banner-dot" aria-hidden="true">✳</span>
+            {announcement.text}
+            {announcement.linkLabel && announcement.linkHref && (
+              <a
+                href={announcement.linkHref}
+                className="site-banner-link"
+                target={announcement.linkHref.startsWith("http") ? "_blank" : undefined}
+                rel={announcement.linkHref.startsWith("http") ? "noopener noreferrer" : undefined}
+              >
+                {announcement.linkLabel} <span aria-hidden="true">↗</span>
+              </a>
+            )}
+          </div>
+        )}
         {withNav && (
           <Nav
             current={current}
@@ -72,7 +91,11 @@ export default async function AppShell({
         <Grid />
         {children}
         {withFooter && (
-          <Footer instagramUrl={settings.instagramUrl} linkedinUrl={settings.linkedinUrl} />
+          <Footer
+            instagramUrl={settings.instagramUrl}
+            linkedinUrl={settings.linkedinUrl}
+            contactEmail={settings.contactEmail}
+          />
         )}
       </main>
       <PageReveal />

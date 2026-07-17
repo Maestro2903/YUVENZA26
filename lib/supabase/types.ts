@@ -80,6 +80,8 @@ export type EventRow = {
   details: string | null;
   /** Rules, one per line; rendered on the event's own page. */
   rules: string | null;
+  /** Where the event happens (shown on pages, passes, emails). */
+  venue: string | null;
   badge: EventBadge | null;
   sort_order: number;
   published: boolean;
@@ -154,6 +156,14 @@ export type PaymentRow = {
   created_at: string;
 };
 
+export type OrderCheckinRow = {
+  id: string;
+  order_id: string;
+  event_slug: string;
+  scanned_by: string | null;
+  scanned_at: string;
+};
+
 export type AppSecretRow = {
   key: string;
   value: string; // AES-256-GCM ciphertext, never plaintext
@@ -186,6 +196,7 @@ export interface Database {
         "amount" | "customer_name" | "customer_email" | "customer_phone" | "event_slugs"
       >;
       payments: TableDef<PaymentRow, "order_id" | "status">;
+      order_checkins: TableDef<OrderCheckinRow, "order_id" | "event_slug">;
       app_secrets: TableDef<AppSecretRow, "key" | "value">;
     };
     Views: Record<string, never>;

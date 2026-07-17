@@ -37,6 +37,7 @@ export default async function RegistrationPage() {
         requireLogin={registration.requireLogin}
         allowedEmailDomain={registration.allowedEmailDomain}
         initialSlotCounts={slotCounts}
+        closesAt={registration.closesAt}
       />
     </AppShell>
   );

@@ -32,6 +32,8 @@ export default function MyRegistrations({
   refreshToken?: number;
 }) {
   const [orders, setOrders] = useState<OwnOrder[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [retry, setRetry] = useState(0);
   const [openQr, setOpenQr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -41,16 +43,20 @@ export default function MyRegistrations({
       setOrders([]);
       return;
     }
+    setError(null);
     supabase
       .from("orders")
       .select("id, amount, status, demo, event_slugs, created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
+      .then(({ data, error: fetchError }) => {
         if (cancelled) return;
-        if (error) {
-          console.warn("[registrations] fetch failed:", error.message);
-          setOrders([]);
+        if (fetchError) {
+          // NEVER render this the same as "no registrations" - a paid student
+          // on flaky venue Wi-Fi would conclude their order is lost and pay
+          // again.
+          console.warn("[registrations] fetch failed:", fetchError.message);
+          setError("Couldn't load your registrations - check your connection.");
           return;
         }
         setOrders((data as OwnOrder[]) ?? []);
@@ -58,11 +64,30 @@ export default function MyRegistrations({
     return () => {
       cancelled = true;
     };
-  }, [user.id, refreshToken]);
+  }, [user.id, refreshToken, retry]);
 
   const titleFor = (slug: string) => events.find((e) => e.slug === slug)?.title ?? slug;
 
-  if (orders === null || orders.length === 0) return null;
+  if (error) {
+    return (
+      <section className="ev-myregs" aria-label="Your registrations">
+        <p className="ev-status error" role="alert">
+          {error}{" "}
+          <button type="button" className="ev-myregs-qrbtn" onClick={() => setRetry((n) => n + 1)}>
+            Retry
+          </button>
+        </p>
+      </section>
+    );
+  }
+  if (orders === null) {
+    return (
+      <section className="ev-myregs" aria-label="Your registrations">
+        <p className="ev-qr-caption">Loading your registrations…</p>
+      </section>
+    );
+  }
+  if (orders.length === 0) return null;
 
   return (
     <section className="ev-myregs" aria-label="Your registrations">

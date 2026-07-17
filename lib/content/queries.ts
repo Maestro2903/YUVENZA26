@@ -70,6 +70,7 @@ export function mapEventRow(row: EventRow): EventItem {
     imageAlt: row.image_alt ?? undefined,
     details: row.details ?? undefined,
     rules: row.rules ?? undefined,
+    venue: row.venue ?? undefined,
     badge: row.badge ?? undefined,
   };
 }

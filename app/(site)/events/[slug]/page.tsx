@@ -27,6 +27,14 @@ export async function generateMetadata({
   return {
     title: `Yuvenza | ${event.title}`,
     description: event.description,
+    // The admin-uploaded 4:3 image becomes the share card; pages without one
+    // fall back to the branded opengraph-image at the (site) root.
+    ...(event.imageUrl
+      ? {
+          openGraph: { title: event.title, description: event.description, images: [event.imageUrl] },
+          twitter: { card: "summary_large_image" as const, images: [event.imageUrl] },
+        }
+      : {}),
   };
 }
 
@@ -55,7 +63,10 @@ export default async function EventDetailPage({
       <div className="evd">
         <header className="ev-masthead">
           <div className="ev-kicker">
-            <span>{event.category}</span>
+            <span>
+              {event.category}
+              {event.venue && <> · {event.venue}</>}
+            </span>
             <span>
               {event.dateLabel}
               {timeRange && <> · {timeRange}</>}

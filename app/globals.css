@@ -3763,3 +3763,57 @@ button.nav-link {
     font-size: 3.4vw;
   }
 }
+
+/* ============================================================
+   Site announcement banner + rotate-overlay fix
+   ============================================================ */
+.site-banner {
+  position: relative;
+  z-index: 50;
+  background: #1d1d1b;
+  color: #cdc6be;
+  font-family: "Canopee", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: clamp(0.72rem, 1vw, 1rem);
+  text-align: center;
+  padding: 0.7em 4vw;
+  line-height: 1.45;
+}
+.site-banner-dot {
+  margin-right: 0.6em;
+}
+
+/* The Webflow "rotate your device" overlay blocked ALL 480-767px viewports
+   (foldables, split-screen, landscape phones) - show it only when the
+   viewport is genuinely a short landscape phone. */
+.rotate {
+  display: none !important;
+}
+@media (max-height: 420px) and (orientation: landscape) and (max-width: 950px) {
+  .rotate {
+    display: flex !important;
+  }
+}
+
+/* Announcement banner CTA link */
+.site-banner-link {
+  color: #cdc6be;
+  margin-left: 1.2em;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  text-decoration-thickness: 1px;
+  white-space: nowrap;
+}
+.site-banner-link:hover {
+  opacity: 0.8;
+}
+.site-banner-link:focus-visible {
+  outline-color: #cdc6be;
+}
+@media (max-width: 767px) {
+  .site-banner-link {
+    display: block;
+    margin: 0.3em 0 0;
+  }
+}

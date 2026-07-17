@@ -94,3 +94,30 @@ export async function createRazorpayOrder(
   }
   return (await res.json()) as RazorpayOrder;
 }
+
+export type RazorpayRefund = { id: string; payment_id: string; amount: number; status: string };
+
+/** Full refund of a captured payment via the Razorpay Refunds API. */
+export async function refundRazorpayPayment(
+  config: RazorpayConfig,
+  params: { paymentId: string; notes?: Record<string, string> }
+): Promise<RazorpayRefund> {
+  const auth = Buffer.from(`${config.keyId}:${config.keySecret}`).toString("base64");
+  const res = await fetch(
+    `https://api.razorpay.com/v1/payments/${encodeURIComponent(params.paymentId)}/refund`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Basic ${auth}` },
+      body: JSON.stringify({ notes: params.notes ?? {} }),
+      cache: "no-store",
+    }
+  );
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    console.error(`[razorpay] Refund failed (${res.status}): ${detail}`);
+    throw new Error(
+      "Razorpay rejected the refund - check the payment in the Razorpay dashboard."
+    );
+  }
+  return (await res.json()) as RazorpayRefund;
+}

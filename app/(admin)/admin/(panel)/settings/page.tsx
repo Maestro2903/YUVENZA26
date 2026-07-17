@@ -122,9 +122,15 @@ export default async function AdminSettingsPage({
                 <input id="st-li" name="linkedinUrl" type="url" defaultValue={general.linkedinUrl} />
               </div>
             </div>
-            <div className="adm-field">
-              <label htmlFor="st-loc">Location label (nav)</label>
-              <input id="st-loc" name="locationLabel" defaultValue={general.locationLabel} maxLength={60} />
+            <div className="adm-field-row">
+              <div className="adm-field">
+                <label htmlFor="st-loc">Location label (nav)</label>
+                <input id="st-loc" name="locationLabel" defaultValue={general.locationLabel} maxLength={60} />
+              </div>
+              <div className="adm-field">
+                <label htmlFor="st-contact">Contact email (footer & support copy)</label>
+                <input id="st-contact" name="contactEmail" type="email" defaultValue={general.contactEmail} maxLength={120} />
+              </div>
             </div>
             <div className="adm-form-actions">
               <SubmitButton>Save general settings</SubmitButton>
@@ -141,6 +147,28 @@ export default async function AdminSettingsPage({
               <input type="checkbox" name="requireLogin" defaultChecked={registration.requireLogin} />
               Visitors must sign in with Google before registering
             </label>
+            <div className="adm-field">
+              <label htmlFor="rg-closes">Registration closes at (optional)</label>
+              <input
+                id="rg-closes"
+                name="closesAt"
+                type="datetime-local"
+                defaultValue={
+                  registration.closesAt
+                    ? new Date(
+                        new Date(registration.closesAt).getTime() -
+                          new Date().getTimezoneOffset() * 60000
+                      )
+                        .toISOString()
+                        .slice(0, 16)
+                    : ""
+                }
+              />
+              <p className="adm-help">
+                Checkout refuses new registrations after this moment (your local time) - no one
+                needs to flip the switch at midnight. Leave empty for no deadline.
+              </p>
+            </div>
             <div className="adm-field">
               <label htmlFor="rg-domain">Allowed Google email domain</label>
               <input

@@ -60,6 +60,7 @@ export default function EventsShowcase({
               <p className="evx-meta">
                 {event.dateLabel}
                 {timeRange && <> · {timeRange}</>}
+                {event.venue && <> · {event.venue}</>}
                 {" · "}
                 <span className="evx-price">{INR(event.price)}</span>
               </p>

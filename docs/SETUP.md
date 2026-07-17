@@ -129,7 +129,13 @@ orders and only to the order's owner** (or an admin) — the browser never
 constructs a payload, so nobody can generate a valid pass themselves, and an
 unpaid/cancelled order has no pass at all.
 
-**Check-in:** Admin → Orders & payments → *Verify entry pass · gate check-in*.
+**Check-in:** use **Admin → Gate check-in** (`/admin/checkin`) - phone-first,
+needs only the `checkin.verify` permission (make a "gate_staff" role with just
+that; volunteers never see revenue or attendee exports). Pick the gate's
+event: check-ins are recorded **per event** with who scanned, so multi-event
+orders scan cleanly at each of their gates while a repeat at the same gate
+warns; mis-scans have an **Undo** button. The same tool also lives on Orders
+& payments.
 Tap **Open camera scanner** (rear camera; native BarcodeDetector with a jsQR
 fallback for iOS) and point it at the pass, or focus the text box and use a
 hardware scanner / paste. The signature is verified server-side and the

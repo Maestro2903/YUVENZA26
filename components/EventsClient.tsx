@@ -85,6 +85,7 @@ export default function EventsClient({
   requireLogin = true,
   allowedEmailDomain = "citchennai.net",
   initialSlotCounts = {},
+  closesAt = "",
 }: {
   events: EventItem[];
   festName?: string;
@@ -94,6 +95,8 @@ export default function EventsClient({
   allowedEmailDomain?: string;
   /** Server-rendered paid-registration counts; kept live via Realtime. */
   initialSlotCounts?: Record<string, number>;
+  /** ISO datetime after which checkout refuses registrations ("" = never). */
+  closesAt?: string;
 }) {
   const { user, loading: authLoading, signInWithGoogle, signOut } = useSupabaseUser();
   const [selected, setSelected] = useState<Record<string, boolean>>({});
@@ -108,6 +111,8 @@ export default function EventsClient({
   const triggerRef = useRef<HTMLElement | null>(null);
 
   const slotCounts = useLiveSlots(initialSlotCounts);
+  const closesTime = closesAt ? new Date(closesAt).getTime() : NaN;
+  const registrationClosed = !Number.isNaN(closesTime) && Date.now() > closesTime;
   const domain = normalizeDomain(allowedEmailDomain);
   const mustSignIn = requireLogin && !user;
 
@@ -383,6 +388,14 @@ export default function EventsClient({
           flows straight into the community causes we back. What we create, we contribute.
         </p>
 
+        {closesAt && !Number.isNaN(closesTime) && (
+          <p className={"ev-status" + (registrationClosed ? " error" : "")} role="status">
+            {registrationClosed
+              ? "Registration has closed. See you at the fest!"
+              : `Registration closes ${new Date(closesTime).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}.`}
+          </p>
+        )}
+
         {/* ---- Visitor account (Google) ---- */}
         {!authLoading && (
           <div className="ev-auth">
@@ -492,7 +505,7 @@ export default function EventsClient({
             <button
               type="button"
               className="ev-checkout-btn"
-              disabled={count === 0}
+              disabled={count === 0 || registrationClosed}
               onClick={openCheckout}
             >
               {mustSignIn ? "Sign in to register" : "Proceed to Register"}

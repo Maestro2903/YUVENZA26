@@ -22,6 +22,7 @@ insert into public.permissions (key, label, category) values
   ('media.delete',    'Delete media',                  'Media'),
   ('payments.view',   'View orders & payments',        'Payments'),
   ('payments.manage', 'Manage payment configuration',  'Payments'),
+  ('checkin.verify',  'Verify passes & check in attendees', 'Gate'),
   ('users.manage',    'Manage users',                  'Administration'),
   ('roles.manage',    'Manage roles & permissions',    'Administration'),
   ('settings.manage', 'Manage site settings',          'Administration')
@@ -49,7 +50,7 @@ select r.id, perm from public.roles r,
 unnest(array[
   'content.view','content.create','content.edit','content.delete','content.publish',
   'media.view','media.upload','media.delete',
-  'payments.view','users.manage','settings.manage'
+  'payments.view','checkin.verify','users.manage','settings.manage'
 ]) as perm
 where r.name = 'admin'
 on conflict do nothing;
@@ -240,6 +241,9 @@ insert into public.site_content (key, data) values
       "heading": "J*_o*in the movement"
     }
   $json$::jsonb),
+  ('announcement', $json$
+    { "enabled": false, "text": "", "linkLabel": "", "linkHref": "" }
+  $json$::jsonb),
   ('fest', $json$
     {
       "name": "The Flagship Fest",
@@ -261,13 +265,14 @@ insert into public.site_settings (key, value) values
       "siteDescription": "Yuvenza is the youth club of Chennai Institute of Technology, igniting passion, creativity and unity, and channelling every event and campaign we create into real social impact for the community.",
       "instagramUrl": "https://www.instagram.com/yuvenza_cit/",
       "linkedinUrl": "https://www.linkedin.com/company/yuvenza-cit/",
-      "locationLabel": "Chennai, India"
+      "locationLabel": "Chennai, India",
+      "contactEmail": "yuvenza@citchennai.net"
     }
   $json$::jsonb),
   ('payments', $json$
     { "enabled": true }
   $json$::jsonb),
   ('registration', $json$
-    { "allowedEmailDomain": "citchennai.net", "requireLogin": true }
+    { "allowedEmailDomain": "citchennai.net", "requireLogin": true, "closesAt": "" }
   $json$::jsonb)
 on conflict (key) do nothing;

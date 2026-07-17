@@ -138,6 +138,18 @@ export default async function AdminEventEdit({
           </div>
 
           <div className="adm-field">
+            <label htmlFor="ev-venue">Venue</label>
+            <input
+              id="ev-venue"
+              name="venue"
+              maxLength={120}
+              defaultValue={event?.venue ?? ""}
+              placeholder="Main Stage, Open Grounds"
+            />
+            <p className="adm-help">Shown on the events pages and on tickets - tell people where to go.</p>
+          </div>
+
+          <div className="adm-field">
             <label htmlFor="ev-slots">Slots label (only shown when no capacity is set)</label>
             <input id="ev-slots" name="slots" maxLength={60} defaultValue={event?.slots ?? ""} placeholder="Open entry" />
           </div>

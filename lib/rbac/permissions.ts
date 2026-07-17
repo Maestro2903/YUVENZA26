@@ -19,6 +19,8 @@ export const PERMISSIONS = {
   // Payments & registrations
   "payments.view": { label: "View orders & payments", category: "Payments" },
   "payments.manage": { label: "Manage payment configuration", category: "Payments" },
+  // Gate operations
+  "checkin.verify": { label: "Verify passes & check in attendees", category: "Gate" },
   // Administration
   "users.manage": { label: "Manage users", category: "Administration" },
   "roles.manage": { label: "Manage roles & permissions", category: "Administration" },
@@ -62,6 +64,7 @@ export const DEFAULT_ROLES: {
       "media.upload",
       "media.delete",
       "payments.view",
+      "checkin.verify",
       "users.manage",
       "settings.manage",
     ],

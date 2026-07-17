@@ -197,6 +197,7 @@ export async function saveEventAction(formData: FormData): Promise<void> {
       description,
       details: str(formData, "details") || null,
       rules: str(formData, "rules") || null,
+      venue: str(formData, "venue") || null,
       slots: str(formData, "slots") || null,
       capacity,
       image_url: str(formData, "image_url") || null,
@@ -255,6 +256,23 @@ export async function deleteEventAction(formData: FormData): Promise<void> {
     await requirePermission("content.delete");
     const supabase = await getServerSupabase();
     if (!supabase) throw new Error("Supabase is not configured.");
+
+    // Never orphan real registrations: an event with paid orders must be
+    // refunded/handled first (unpublish it to stop new sales meanwhile).
+    const { data: target } = await supabase.from("events").select("slug").eq("id", id).single();
+    if (target) {
+      const { count } = await supabase
+        .from("orders")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "paid")
+        .contains("event_slugs", [target.slug]);
+      if ((count ?? 0) > 0) {
+        throw new Error(
+          `${count} paid registration(s) reference this event. Unpublish it instead, and refund the orders before deleting.`
+        );
+      }
+    }
+
     const { error } = await supabase.from("events").delete().eq("id", id);
     if (error) throw error;
     revalidatePublic();

@@ -77,6 +77,7 @@ functions.http("sendConfirmation", async (req, res) => {
         dateLabel: String(e.dateLabel ?? ""),
         startTime: e.startTime ?? null,
         endTime: e.endTime ?? null,
+        venue: e.venue ? String(e.venue) : null,
       })),
       siteUrl,
       qrSrc: "cid:qr-pass",

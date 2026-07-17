@@ -45,6 +45,8 @@ export type EventItem = {
   details?: string;
   /** Rules, one per line; rendered on the event's own page. */
   rules?: string;
+  /** Where the event happens. */
+  venue?: string;
   badge?: EventBadge;
 };
 
@@ -79,6 +81,14 @@ export type QuotesContent = {
 };
 export type StatsContent = { items: { num: string; label: string }[] };
 export type JoinContent = { kicker: string; heading: string };
+export type AnnouncementContent = {
+  /** Show the banner site-wide when true. */
+  enabled: boolean;
+  text: string;
+  /** Optional call-to-action; both must be set for the link to render. */
+  linkLabel: string;
+  linkHref: string;
+};
 export type FestContent = {
   name: string;
   dateLabel: string;
@@ -100,6 +110,7 @@ export type SiteSections = {
   stats: StatsContent;
   join: JoinContent;
   fest: FestContent;
+  announcement: AnnouncementContent;
 };
 
 export type SectionKey = keyof SiteSections;
@@ -110,6 +121,8 @@ export type GeneralSettings = {
   instagramUrl: string;
   linkedinUrl: string;
   locationLabel: string;
+  /** Support inbox shown in the footer and in payment-help copy. */
+  contactEmail: string;
 };
 
 export type PaymentSettings = {
@@ -121,6 +134,8 @@ export type RegistrationSettings = {
   allowedEmailDomain: string;
   /** Checkout requires a signed-in (Google) user. */
   requireLogin: boolean;
+  /** ISO datetime after which checkout refuses new registrations ("" = never). */
+  closesAt: string;
 };
 
 export const INR = (n: number) => (n === 0 ? "Free" : "₹" + n.toLocaleString("en-IN"));

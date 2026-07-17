@@ -21,9 +21,11 @@ function MarqueeContent({ joinHref }: { joinHref: string }) {
 export default function Footer({
   instagramUrl = "https://www.instagram.com/yuvenza_cit/",
   linkedinUrl = "https://www.linkedin.com/company/yuvenza-cit/",
+  contactEmail = "",
 }: {
   instagramUrl?: string;
   linkedinUrl?: string;
+  contactEmail?: string;
 }) {
   const socials = [
     {
@@ -63,6 +65,18 @@ export default function Footer({
           <div className="f-year">{year}</div>
           { }
           <img src={AVATARS.stamp} loading="lazy" alt="" className="f-stamp" />
+          {contactEmail && (
+            <div className="legal-w">
+              <a
+                aria-label="Contact Yuvenza by email"
+                draggable={false}
+                href={`mailto:${contactEmail}`}
+                className="f-link new-tab"
+              >
+                {contactEmail}
+              </a>
+            </div>
+          )}
           <div className="legal-w">
             <a
               data-color="#1D1D1B"

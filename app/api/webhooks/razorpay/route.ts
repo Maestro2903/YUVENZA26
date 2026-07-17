@@ -76,9 +76,11 @@ export async function POST(req: Request) {
         ? "captured"
         : eventName === "payment.failed"
           ? "failed"
-          : payment.status === "captured"
-            ? "captured"
-            : "pending";
+          : eventName === "payment.refunded" || payment.status === "refunded"
+            ? "refunded"
+            : payment.status === "captured"
+              ? "captured"
+              : "pending";
 
     await service.from("payments").upsert(
       {
@@ -98,6 +100,10 @@ export async function POST(req: Request) {
       await sendConfirmationEmail(order.id); // idempotent, never throws
     } else if (paymentStatus === "failed" && order.status !== "paid") {
       await service.from("orders").update({ status: "failed" }).eq("id", order.id);
+    } else if (paymentStatus === "refunded") {
+      // Money went back: cancel the order (releases the slot via the counter
+      // trigger) and stop the QR pass from admitting.
+      await service.from("orders").update({ status: "cancelled" }).eq("id", order.id);
     }
 
     return NextResponse.json({ ok: true });

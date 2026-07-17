@@ -19,6 +19,7 @@ const SECTION_LABELS: Record<SectionKey, string> = {
   stats: "Impact stats",
   join: "Join CTA",
   fest: "Fest & countdown",
+  announcement: "Announcement banner",
 };
 
 export default async function AdminContentPage({

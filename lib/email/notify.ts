@@ -50,6 +50,7 @@ export async function sendConfirmationEmail(orderId: string): Promise<boolean> {
         dateLabel: e?.dateLabel ?? "",
         startTime: e?.startTime ?? null,
         endTime: e?.endTime ?? null,
+        venue: e?.venue ?? null,
       };
     });
 

@@ -15,6 +15,7 @@ const NAV: { href: string; label: string; group?: string; permission?: Permissio
   { href: "/admin/content", label: "Site sections", group: "Content", permission: "content.view" },
   { href: "/admin/media", label: "Media library", group: "Content", permission: "media.view" },
   { href: "/admin/payments", label: "Orders & payments", group: "Payments", permission: "payments.view" },
+  { href: "/admin/checkin", label: "Gate check-in", group: "Payments", permission: "checkin.verify" },
   { href: "/admin/users", label: "Users", group: "Administration", permission: "users.manage" },
   { href: "/admin/roles", label: "Roles & permissions", group: "Administration", permission: "roles.manage" },
   { href: "/admin/settings", label: "Settings", group: "Administration", permission: "settings.manage" },

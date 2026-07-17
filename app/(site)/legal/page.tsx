@@ -17,22 +17,27 @@ const SECTIONS = [
   {
     n: "02",
     title: "Registrations & Fees",
-    body: "Event entry fees shown on the Events page are in Indian Rupees. Fees support the community causes we back. The current checkout is a demo and does not process real payments; a secure payment provider will be connected before registrations go live. Places are confirmed only once a registration is completed through the official channel we announce.",
+    body: "Event entry fees shown on the Events page are in Indian Rupees and are processed securely by Razorpay; we never see or store your card, UPI or banking details. A place is confirmed when your payment succeeds, and your entry pass (a signed QR code) appears on this site and in your confirmation email. Fees fund the community causes we back.",
   },
   {
     n: "03",
-    title: "Privacy",
-    body: "If you register for an event we collect only what we need to reach you, such as your name, email, phone and college. We use it to confirm your entry and share event updates. We do not sell your data or pass it to third parties beyond what a registration requires.",
+    title: "Cancellations & Refunds",
+    body: "If we cancel or materially change an event, you are entitled to a full refund of that entry fee, issued to your original payment method through Razorpay, typically within 5 to 7 working days. If you can no longer attend, contact us before the event starts and we will do our best to help; refunds for change of mind are at the organising team's discretion. Passes are personal and are verified at the gate.",
   },
   {
     n: "04",
-    title: "Imagery",
-    body: "Photography on this site is shown as labelled placeholders while our own event imagery is prepared. Final images will feature Yuvenza's own work and members, shared with their consent.",
+    title: "Privacy",
+    body: "If you register we collect only what we need: your name, email, phone and college, plus your Google account email for sign-in. We use it to confirm your entry, issue your pass and share essential event updates. We do not sell your data or pass it to third parties beyond what payment processing (Razorpay) and email delivery require, and we delete registration data after the fest concludes.",
   },
   {
     n: "05",
+    title: "Imagery",
+    body: "Photography on this site features Yuvenza's own work and members, shared with their consent. Events may be photographed for the club's archives and social channels; tell a volunteer if you prefer not to appear.",
+  },
+  {
+    n: "06",
     title: "Contact",
-    body: "Questions about anything here? Reach us on Instagram and we'll get back to you.",
+    body: "Questions about payments, refunds or anything here? Reach us on Instagram or the contact email in the footer and we'll get back to you quickly.",
   },
 ];
 

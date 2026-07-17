@@ -3,7 +3,13 @@ import Flash from "@/components/admin/Flash";
 import Pagination from "@/components/admin/Pagination";
 import VerifyTicket from "@/components/admin/VerifyTicket";
 import SubmitButton from "@/components/admin/SubmitButton";
-import { resendConfirmationEmailAction } from "@/app/(admin)/admin/actions/payments";
+import {
+  createCompOrderAction,
+  markOrderPaidAction,
+  refundOrderAction,
+  resendConfirmationEmailAction,
+} from "@/app/(admin)/admin/actions/payments";
+import ConfirmButton from "@/components/admin/ConfirmButton";
 import { identityHasPermission, requirePagePermission } from "@/lib/rbac/guards";
 import { getServerSupabase } from "@/lib/supabase/server";
 import { INR } from "@/lib/content/types";
@@ -111,6 +117,7 @@ export default async function AdminPaymentsPage({
   const canManagePayments = identityHasPermission(identity, "payments.manage");
   const filterParams = { q, status, event, checkin };
   const exportHref = `/admin/payments/export?${new URLSearchParams(filterParams).toString()}`;
+  const backHref = `/admin/payments?${new URLSearchParams({ ...filterParams, page: String(page) }).toString()}`;
 
   return (
     <>
@@ -136,7 +143,55 @@ export default async function AdminPaymentsPage({
       </header>
       <Flash ok={ok} err={err ?? error?.message} />
 
-      <VerifyTicket />
+      <VerifyTicket events={eventOptions} />
+
+      {canManagePayments && (
+        <div className="adm-card" style={{ marginTop: "1.25rem" }}>
+          <details className="adm-details">
+            <summary>Issue a complimentary pass (judges, guests, volunteers)</summary>
+            <form action={createCompOrderAction} className="adm-form" style={{ marginTop: "0.9rem" }}>
+              <div className="adm-field-row">
+                <div className="adm-field">
+                  <label htmlFor="cp-name">Full name *</label>
+                  <input id="cp-name" name="name" required maxLength={120} />
+                </div>
+                <div className="adm-field">
+                  <label htmlFor="cp-email">Email *</label>
+                  <input id="cp-email" name="email" type="email" required />
+                </div>
+              </div>
+              <div className="adm-field-row">
+                <div className="adm-field">
+                  <label htmlFor="cp-phone">Phone *</label>
+                  <input id="cp-phone" name="phone" required pattern="[0-9]{10}" title="10-digit number" />
+                </div>
+                <div className="adm-field">
+                  <label htmlFor="cp-college">College / organisation</label>
+                  <input id="cp-college" name="college" maxLength={200} />
+                </div>
+              </div>
+              <div className="adm-field">
+                <label>Events *</label>
+                <div className="adm-checks">
+                  {eventOptions.map((e) => (
+                    <label className="adm-check" key={e.slug}>
+                      <input type="checkbox" name="event_slugs" value={e.slug} />
+                      {e.title}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className="adm-field">
+                <label htmlFor="cp-note">Note</label>
+                <input id="cp-note" name="note" maxLength={200} placeholder="e.g. judge - robotics" />
+              </div>
+              <div className="adm-form-actions">
+                <SubmitButton pendingLabel="Issuing…">Issue free pass &amp; email it</SubmitButton>
+              </div>
+            </form>
+          </details>
+        </div>
+      )}
 
       <div className="adm-stats" style={{ marginTop: "1.25rem" }}>
         <div className="adm-stat">
@@ -262,19 +317,41 @@ export default async function AdminPaymentsPage({
                     <td>{new Date(o.created_at).toLocaleString("en-IN")}</td>
                     {canManagePayments && (
                       <td>
-                        {o.status === "paid" && (
-                          <form action={resendConfirmationEmailAction}>
-                            <input type="hidden" name="order_id" value={o.id} />
-                            <input
-                              type="hidden"
-                              name="back"
-                              value={`/admin/payments?${new URLSearchParams({ ...filterParams, page: String(page) }).toString()}`}
-                            />
-                            <SubmitButton className="adm-btn ghost small" pendingLabel="Sending…">
-                              Resend email
-                            </SubmitButton>
-                          </form>
-                        )}
+                        <div className="adm-row-actions">
+                          {o.status === "paid" && (
+                            <form action={resendConfirmationEmailAction}>
+                              <input type="hidden" name="order_id" value={o.id} />
+                              <input type="hidden" name="back" value={backHref} />
+                              <SubmitButton className="adm-btn ghost small" pendingLabel="Sending…">
+                                Resend email
+                              </SubmitButton>
+                            </form>
+                          )}
+                          {(o.status === "created" || o.status === "pending" || o.status === "failed") && (
+                            <form action={markOrderPaidAction}>
+                              <input type="hidden" name="order_id" value={o.id} />
+                              <input type="hidden" name="back" value={backHref} />
+                              <input type="hidden" name="reason" value="verified manually" />
+                              <ConfirmButton
+                                className="adm-btn ghost small"
+                                confirmText={`Mark ${o.customer_name}'s order as PAID? Only do this after verifying the money (Razorpay dashboard / cash at desk).`}
+                              >
+                                Mark paid
+                              </ConfirmButton>
+                            </form>
+                          )}
+                          {o.status === "paid" && (
+                            <form action={refundOrderAction}>
+                              <input type="hidden" name="order_id" value={o.id} />
+                              <input type="hidden" name="back" value={backHref} />
+                              <ConfirmButton
+                                confirmText={`Refund ${o.customer_name}'s ${o.amount === 0 ? "free" : INR(Math.round(o.amount / 100))} order? Money returns via Razorpay, the order is cancelled and the slot is released.`}
+                              >
+                                {o.demo || o.amount === 0 ? "Cancel" : "Refund"}
+                              </ConfirmButton>
+                            </form>
+                          )}
+                        </div>
                       </td>
                     )}
                   </tr>

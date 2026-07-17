@@ -89,6 +89,7 @@ export async function GET(
       dateLabel: e?.dateLabel ?? "",
       startTime: e?.startTime ?? null,
       endTime: e?.endTime ?? null,
+      venue: e?.venue ?? null,
     };
   });
 

@@ -27,12 +27,17 @@ export async function saveGeneralSettingsAction(formData: FormData): Promise<voi
     const supabase = await getServerSupabase();
     if (!supabase) throw new Error("Supabase is not configured.");
 
+    const contactEmail = str(formData, "contactEmail");
+    if (contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
+      throw new Error("Contact email doesn't look like an email address.");
+    }
     const value = {
       siteName: str(formData, "siteName"),
       siteDescription: str(formData, "siteDescription"),
       instagramUrl: str(formData, "instagramUrl"),
       linkedinUrl: str(formData, "linkedinUrl"),
       locationLabel: str(formData, "locationLabel"),
+      contactEmail,
     };
     for (const url of [value.instagramUrl, value.linkedinUrl]) {
       if (url && !/^https:\/\//.test(url)) throw new Error("Social links must start with https://");
@@ -62,9 +67,17 @@ export async function saveRegistrationSettingsAction(formData: FormData): Promis
     if (rawDomain !== "*" && !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(rawDomain)) {
       throw new Error('Enter a domain like "citchennai.net", or "*" to allow any Google account.');
     }
+    const closesAtRaw = str(formData, "closesAt");
+    let closesAt = "";
+    if (closesAtRaw) {
+      const t = new Date(closesAtRaw);
+      if (Number.isNaN(t.getTime())) throw new Error("Close date/time is not valid.");
+      closesAt = t.toISOString();
+    }
     const value = {
       allowedEmailDomain: rawDomain,
       requireLogin: bool(formData, "requireLogin"),
+      closesAt,
     };
 
     const { error } = await supabase

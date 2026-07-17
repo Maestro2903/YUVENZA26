@@ -1,13 +1,15 @@
 "use client";
 
 /**
- * Gate check-in tool: scan an entry-pass QR with the device camera (or paste
- * the payload / use a keyboard-wedge scanner). Every pass is verified
- * server-side - signature first, then the order - and the first valid scan
- * marks the attendee checked-in; re-scans of the same pass raise a warning.
+ * Gate check-in tool: pick the gate's event, scan passes with the camera (or
+ * paste / hardware-scan the payload). Verification is server-side (signature
+ * first, then the order); check-ins are recorded PER EVENT with who scanned,
+ * repeat scans at the same event warn, and mis-scans can be undone. Network
+ * failures surface an error instead of a dead scanner.
  */
 import { useCallback, useRef, useState, useTransition } from "react";
 import {
+  undoCheckinAction,
   verifyTicketAction,
   type VerifyTicketState,
 } from "@/app/(admin)/admin/actions/tickets";
@@ -15,6 +17,8 @@ import QrCamera from "@/components/admin/QrCamera";
 import { INR } from "@/lib/content/types";
 
 const INITIAL: VerifyTicketState = { checked: false, valid: false, message: "" };
+
+export type GateEventOption = { slug: string; title: string };
 
 /** Short feedback tone so staff don't need to look at the screen. */
 function beep(kind: "ok" | "warn" | "fail") {
@@ -35,29 +39,70 @@ function beep(kind: "ok" | "warn" | "fail") {
   }
 }
 
-export default function VerifyTicket() {
+export default function VerifyTicket({
+  events = [],
+  compact = false,
+}: {
+  /** Events offered in the gate selector. */
+  events?: GateEventOption[];
+  /** Compact mode hides the card chrome (used by /admin/checkin). */
+  compact?: boolean;
+}) {
   const [state, setState] = useState<VerifyTicketState>(INITIAL);
+  const [gateEvent, setGateEvent] = useState("");
+  const [undoMessage, setUndoMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
   const verifyingRef = useRef(false);
+  const gateRef = useRef(gateEvent);
+  gateRef.current = gateEvent;
 
   const runVerify = useCallback((payload: string) => {
     if (verifyingRef.current || !payload.trim()) return;
     verifyingRef.current = true;
+    setUndoMessage(null);
     startTransition(async () => {
       try {
         const formData = new FormData();
         formData.set("payload", payload.trim());
+        formData.set("gate_event", gateRef.current);
         const result = await verifyTicketAction(INITIAL, formData);
         setState(result);
         if (result.checked) {
           beep(!result.valid ? "fail" : result.alreadyCheckedIn ? "warn" : "ok");
         }
+      } catch (err) {
+        // Venue networks drop - never leave the scanner looking dead.
+        console.warn("[checkin] verify failed:", err);
+        beep("fail");
+        setState({
+          checked: true,
+          valid: false,
+          message: "Network problem - the scan did NOT go through. Check connection and rescan.",
+        });
       } finally {
         verifyingRef.current = false;
       }
     });
   }, []);
+
+  const runUndo = useCallback(() => {
+    const { orderId, gateEvent: scannedGate } = state;
+    if (!orderId) return;
+    startTransition(async () => {
+      try {
+        const formData = new FormData();
+        formData.set("order_id", orderId);
+        formData.set("gate_event", scannedGate ?? "");
+        const result = await undoCheckinAction({ done: false, message: "" }, formData);
+        setUndoMessage(result.message);
+        if (result.done) setState(INITIAL);
+      } catch (err) {
+        console.warn("[checkin] undo failed:", err);
+        setUndoMessage("Network problem - undo did not go through.");
+      }
+    });
+  }, [state]);
 
   const flashClass = !state.checked
     ? ""
@@ -67,9 +112,28 @@ export default function VerifyTicket() {
         ? "warn"
         : "ok";
 
-  return (
-    <div className="adm-card">
-      <h2 className="adm-card-title">Verify entry pass · gate check-in</h2>
+  const body = (
+    <>
+      <div className="adm-field" style={{ maxWidth: 420 }}>
+        <label htmlFor="vt-gate">This gate&#x27;s event</label>
+        <select
+          id="vt-gate"
+          value={gateEvent}
+          onChange={(e) => setGateEvent(e.target.value)}
+          className="adm-input"
+        >
+          <option value="">Any event (general entry)</option>
+          {events.map((e) => (
+            <option key={e.slug} value={e.slug}>
+              {e.title}
+            </option>
+          ))}
+        </select>
+        <p className="adm-help">
+          Pick the event this gate admits: passes check in per event, so multi-event orders scan
+          cleanly at each of their gates and re-use at the same gate warns.
+        </p>
+      </div>
 
       <QrCamera onDecode={runVerify} paused={pending} />
 
@@ -95,11 +159,6 @@ export default function VerifyTicket() {
             autoComplete="off"
             spellCheck={false}
           />
-          <p className="adm-help">
-            Passes are cryptographically signed - anything not issued by this site is rejected.
-            The first valid scan checks the attendee in; scanning the same pass again shows a
-            re-use warning.
-          </p>
         </div>
         <div className="adm-form-actions">
           <button type="submit" className="adm-btn" disabled={pending}>
@@ -107,6 +166,12 @@ export default function VerifyTicket() {
           </button>
         </div>
       </form>
+
+      {undoMessage && (
+        <p className="adm-flash ok" style={{ marginTop: "1rem", marginBottom: 0 }} role="status">
+          {undoMessage}
+        </p>
+      )}
 
       {state.checked && (
         <div
@@ -133,16 +198,38 @@ export default function VerifyTicket() {
                 {state.order.demo ? " (demo)" : ""} ·{" "}
                 {new Date(state.order.createdAt).toLocaleString("en-IN")}
               </dd>
-              {state.order.checkedInAt && (
+              {state.order.checkins.length > 0 && (
                 <>
-                  <dt>Checked in</dt>
-                  <dd>{new Date(state.order.checkedInAt).toLocaleString("en-IN")}</dd>
+                  <dt>Scans</dt>
+                  <dd>
+                    {state.order.checkins
+                      .map(
+                        (c) =>
+                          `${c.eventTitle} at ${new Date(c.scannedAt).toLocaleTimeString("en-IN")}`
+                      )
+                      .join(" · ")}
+                  </dd>
                 </>
               )}
             </dl>
           )}
+          {state.valid && state.orderId && (
+            <div className="adm-form-actions" style={{ marginTop: "0.6rem" }}>
+              <button type="button" className="adm-btn ghost small" onClick={runUndo} disabled={pending}>
+                Undo this check-in
+              </button>
+            </div>
+          )}
         </div>
       )}
+    </>
+  );
+
+  if (compact) return <div>{body}</div>;
+  return (
+    <div className="adm-card">
+      <h2 className="adm-card-title">Verify entry pass · gate check-in</h2>
+      {body}
     </div>
   );
 }

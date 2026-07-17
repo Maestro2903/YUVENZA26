@@ -1,4 +1,4 @@
-https://vercel.com/docs/analytics/quickstart# CLAUDE.md
+# CLAUDE.md
 
 Guidance for Claude Code when working in this repository.
 
@@ -53,6 +53,16 @@ Always run lint + typecheck + test + build before declaring work done.
 - **Money**: `orders.amount` and Razorpay amounts are in **paise**;
   `events.price` is in **rupees**. Totals are always recomputed server-side
   (`lib/checkout.ts`) — client amounts are never trusted.
+- **Check-in is per event** (`order_checkins`, unique per order+event, with
+  `scanned_by`): the gate scanner takes an event context; order-level
+  `orders.checked_in_at` is only the "first scan anywhere" aggregate. Gate
+  staff use the `checkin.verify` permission and `/admin/checkin` - never
+  hand volunteers `payments.view`.
+- **Money ops are actions, not SQL**: mark-paid, comp passes and refunds
+  (Razorpay refund API; order -> cancelled releases the slot via trigger)
+  live in `app/(admin)/admin/actions/payments.ts` and append to the
+  `orders.notes.log` audit trail. Event deletion is blocked while paid
+  orders reference the slug.
 - **QR passes are server-signed** (`lib/ticket.ts`,
   `YUV26|v1|orderId|HMAC-sig`, key derived from `APP_ENCRYPTION_KEY`).
   Payloads are only minted by `/api/ticket/[orderId]` (paid orders,
@@ -79,7 +89,7 @@ Always run lint + typecheck + test + build before declaring work done.
 
 ## Database changes
 
-Migrations are numbered files in `supabase/migrations/` (0001–0006 so far),
+Migrations are numbered files in `supabase/migrations/` (0001–0007 so far),
 applied manually in the Supabase SQL editor. When adding one:
 1. Create `supabase/migrations/000N_name.sql` (idempotent where possible).
 2. Update `supabase/seed.sql` if seed data is affected.

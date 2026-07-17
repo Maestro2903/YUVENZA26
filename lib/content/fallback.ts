@@ -103,6 +103,7 @@ export const FALLBACK_EVENTS: EventItem[] = [
     dateLabel: "Aug 11-12",
     eventDate: "2026-08-11",
     price: 299,
+    venue: "Innovation Lab, Block C",
     capacity: 120,
     description:
       "A 24-hour build sprint where teams ship something that matters. Mentors on tap, midnight chai included.",
@@ -118,6 +119,7 @@ export const FALLBACK_EVENTS: EventItem[] = [
     startTime: "18:00",
     endTime: "21:00",
     price: 199,
+    venue: "Main Stage, Open Grounds",
     capacity: 16,
     description:
       "The loudest night of the fest. Bring your band, own the stage and play for the crowd.",
@@ -132,6 +134,7 @@ export const FALLBACK_EVENTS: EventItem[] = [
     startTime: "10:00",
     endTime: "13:00",
     price: 149,
+    venue: "Design Studio, Block B",
     capacity: 60,
     description:
       "A hands-on studio session on brand, type and interface, run by working designers.",
@@ -145,6 +148,7 @@ export const FALLBACK_EVENTS: EventItem[] = [
     dateLabel: "Aug 11-12",
     eventDate: "2026-08-11",
     price: 99,
+    venue: "Exhibition Hall",
     description:
       "A campus-wide photography contest on the theme of kindness. Shoot, submit, get exhibited.",
     slots: "Open entry",
@@ -158,6 +162,7 @@ export const FALLBACK_EVENTS: EventItem[] = [
     startTime: "10:00",
     endTime: "14:00",
     price: 149,
+    venue: "E-Sports Arena, Block A",
     capacity: 32,
     description:
       "Squad up for the fest gaming tournament. Brackets, big screens and bragging rights.",
@@ -172,6 +177,7 @@ export const FALLBACK_EVENTS: EventItem[] = [
     startTime: "14:00",
     endTime: "17:00",
     price: 79,
+    venue: "Art Room, Block B",
     capacity: 80,
     description:
       "A live art and craft contest. Paints, paper and a few hours to make something beautiful.",
@@ -186,6 +192,7 @@ export const FALLBACK_EVENTS: EventItem[] = [
     startTime: "15:00",
     endTime: "17:00",
     price: 0,
+    venue: "Seminar Hall 1",
     capacity: 48,
     description:
       "Free and open floor. Take a side, make your case and change a few minds.",
@@ -201,6 +208,7 @@ export const FALLBACK_EVENTS: EventItem[] = [
     startTime: "06:00",
     endTime: "09:00",
     price: 249,
+    venue: "Campus Main Gate (start)",
     capacity: 300,
     description:
       "A 5K charity run to close the fest. Every rupee raised goes straight to our community drives.",
@@ -294,6 +302,12 @@ export const DEFAULT_SECTIONS: SiteSections = {
     kicker: "Let's create change together",
     heading: "J*_o*in the movement",
   },
+  announcement: {
+    enabled: false,
+    text: "",
+    linkLabel: "",
+    linkHref: "",
+  },
   fest: {
     name: "The Flagship Fest",
     dateLabel: "Aug 2026",
@@ -306,6 +320,7 @@ export const DEFAULT_SECTIONS: SiteSections = {
 export const DEFAULT_REGISTRATION_SETTINGS = {
   allowedEmailDomain: "citchennai.net",
   requireLogin: true,
+  closesAt: "",
 };
 
 export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
@@ -315,4 +330,5 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
   instagramUrl: "https://www.instagram.com/yuvenza_cit/",
   linkedinUrl: "https://www.linkedin.com/company/yuvenza-cit/",
   locationLabel: "Chennai, India",
+  contactEmail: "yuvenza@citchennai.net",
 };
