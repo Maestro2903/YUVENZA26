@@ -237,7 +237,7 @@ body:not(.index):not(.work-case) #app:not(.appear) {
 .brand-text {
   font-family: "Youth Blackletter", "Canopee", serif;
   color: #1d1d1b;
-  font-size: 3.4vh;
+  font-size: min(3.4vh, 28.9px);
   line-height: 1;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -245,7 +245,7 @@ body:not(.index):not(.work-case) #app:not(.appear) {
 }
 
 .nav.work .brand-text {
-  font-size: 2.2vh;
+  font-size: min(2.2vh, 18.7px);
 }
 
 /* ============================================================
@@ -266,7 +266,7 @@ body:not(.index):not(.work-case) #app:not(.appear) {
   align-items: baseline;
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1.2vw;
+  font-size: min(1.2vw, 18px);
   letter-spacing: 0.02em;
   padding-bottom: 1vw;
   border-bottom: 1px solid #1d1d1b;
@@ -275,7 +275,7 @@ body:not(.index):not(.work-case) #app:not(.appear) {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.04em;
-  font-size: 13vw;
+  font-size: min(13vw, 195px);
   line-height: 0.92;
   margin: 2vw 0 0;
   padding: 0;
@@ -285,8 +285,8 @@ body:not(.index):not(.work-case) #app:not(.appear) {
   margin: 2vw 0 0;
   font-family: "Editorial New", serif;
   font-weight: 300;
-  font-size: 1.8vw;
-  line-height: 2.2vw;
+  font-size: min(1.8vw, 27px);
+  line-height: min(2.2vw, 33px);
   letter-spacing: -0.01em;
 }
 .wk-list {
@@ -312,14 +312,14 @@ body:not(.index):not(.work-case) #app:not(.appear) {
 .wk-num {
   font-family: "Domaine Display", serif;
   font-weight: 500;
-  font-size: 1.4vw;
+  font-size: min(1.4vw, 21px);
   opacity: 0.5;
 }
 .wk-name {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 4.8vw;
+  font-size: min(4.8vw, 72px);
   line-height: 1;
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -350,14 +350,14 @@ body:not(.index):not(.work-case) #app:not(.appear) {
   align-items: center;
   gap: 1.4vw;
   font-family: "Editorial New", serif;
-  font-size: 1.4vw;
+  font-size: min(1.4vw, 21px);
 }
 .wk-year {
   opacity: 0.6;
 }
 .wk-arrow {
   font-family: "Canopee", sans-serif;
-  font-size: 2vw;
+  font-size: min(2vw, 30px);
   opacity: 0;
   transform: translate(-0.6vw, 0.3vw);
   transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
@@ -384,7 +384,7 @@ body:not(.index):not(.work-case) #app:not(.appear) {
   margin-top: 3vw;
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   letter-spacing: 0.02em;
   opacity: 0.75;
 }
@@ -394,15 +394,15 @@ body:not(.index):not(.work-case) #app:not(.appear) {
     padding: 14vh 4vw 8vw;
   }
   .wk-kicker {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .wk-h1 {
-    font-size: 24vw;
+    font-size: min(24vw, 360px);
   }
   .wk-lead {
     max-width: 100%;
-    font-size: 4.6vw;
-    line-height: 5.6vw;
+    font-size: min(4.6vw, 69px);
+    line-height: min(5.6vw, 84px);
   }
   .wk-list {
     margin-top: 8vw;
@@ -413,16 +413,16 @@ body:not(.index):not(.work-case) #app:not(.appear) {
     gap: 3vw;
   }
   .wk-num {
-    font-size: 3.5vw;
+    font-size: min(3.5vw, 52.5px);
   }
   .wk-name {
-    font-size: 9vw;
+    font-size: min(9vw, 135px);
   }
   .wk-meta {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .wk-arrow {
-    font-size: 5vw;
+    font-size: min(5vw, 75px);
     opacity: 1;
     transform: none;
   }
@@ -430,7 +430,7 @@ body:not(.index):not(.work-case) #app:not(.appear) {
     display: none;
   }
   .wk-foot {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
 }
 
@@ -496,8 +496,8 @@ html.no-scroll nav.nav {
 
 /* --- dropcap (home intro paragraphs) --- */
 .has-dropcap {
-  font-size: 2.25vw;
-  line-height: 2.7vw;
+  font-size: min(2.25vw, 33.75px);
+  line-height: min(2.7vw, 40.5px);
   text-align: left;
 }
 
@@ -505,8 +505,8 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   font-feature-settings: "ss03";
   float: left;
-  font-size: 7vw;
-  line-height: 5vw;
+  font-size: min(7vw, 105px);
+  line-height: min(5vw, 75px);
   margin: 0.7vw 1vw 1vw 0vw;
   background-color: #1d1d1b;
   color: #cdc6be;
@@ -515,8 +515,8 @@ html.no-scroll nav.nav {
 
 @media (max-width: 479px) {
   .has-dropcap {
-    font-size: 6vw;
-    line-height: 7.5vw;
+    font-size: min(6vw, 90px);
+    line-height: min(7.5vw, 112.5px);
     text-align: left;
     letter-spacing: -0.02em;
   }
@@ -525,8 +525,8 @@ html.no-scroll nav.nav {
     font-family: "Canopee", sans-serif;
     font-feature-settings: "ss03";
     float: left;
-    font-size: 20vw;
-    line-height: 17vw;
+    font-size: min(20vw, 300px);
+    line-height: min(17vw, 255px);
     margin: 1vw 2vw 1vw 0vw;
     background-color: #1d1d1b;
     color: #cdc6be;
@@ -739,7 +739,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   opacity: 0.85;
   padding-bottom: 0.6vw;
 }
@@ -747,7 +747,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.04em;
-  font-size: 8.4vw;
+  font-size: min(8.4vw, 126px);
   line-height: 0.9;
   margin: 0;
   padding: 0;
@@ -779,14 +779,14 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-size: 0.85vw;
+  font-size: min(0.85vw, 12.75px);
   opacity: 0.6;
 }
 .cs-bar-val {
   font-family: "Editorial New", serif;
   font-weight: 300;
   letter-spacing: -0.01em;
-  font-size: 1.5vw;
+  font-size: min(1.5vw, 22.5px);
   line-height: 1.1;
 }
 
@@ -833,7 +833,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-size: 1vw;
+  font-size: min(1vw, 15px);
   opacity: 0.55;
 }
 .cs-pager-thumb {
@@ -858,12 +858,12 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 3vw;
+  font-size: min(3vw, 45px);
   line-height: 1;
 }
 .cs-pager-meta {
   font-family: "Editorial New", serif;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   opacity: 0.65;
   margin-top: 0.5vw;
 }
@@ -879,14 +879,14 @@ html.no-scroll nav.nav {
 }
 .cs-more-kicker {
   font-family: "Editorial New", serif;
-  font-size: 1.3vw;
+  font-size: min(1.3vw, 19.5px);
   opacity: 0.6;
 }
 .cs-more-head {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.04em;
-  font-size: 5vw;
+  font-size: min(5vw, 75px);
   line-height: 0.9;
 }
 
@@ -895,10 +895,10 @@ html.no-scroll nav.nav {
     padding: 22vw 5vw 6vw;
   }
   .cs-eyebrow {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .cs-title {
-    font-size: 15vw;
+    font-size: min(15vw, 225px);
   }
   .cs-bar {
     gap: 3vw;
@@ -906,10 +906,10 @@ html.no-scroll nav.nav {
     padding-top: 3vw;
   }
   .cs-bar-key {
-    font-size: 2.4vw;
+    font-size: min(2.4vw, 36px);
   }
   .cs-bar-val {
-    font-size: 3.4vw;
+    font-size: min(3.4vw, 51px);
   }
   .cs-more {
     grid-template-columns: 1fr;
@@ -923,10 +923,10 @@ html.no-scroll nav.nav {
     padding: 0;
   }
   .cs-more-kicker {
-    font-size: 4vw;
+    font-size: min(4vw, 60px);
   }
   .cs-more-head {
-    font-size: 14vw;
+    font-size: min(14vw, 210px);
   }
   .cs-pager-card,
   .cs-pager-card.next {
@@ -935,17 +935,17 @@ html.no-scroll nav.nav {
     padding: 5vw;
   }
   .cs-pager-label {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .cs-pager-thumb {
     height: 40vw;
     margin: 3vw 0;
   }
   .cs-pager-name {
-    font-size: 9vw;
+    font-size: min(9vw, 135px);
   }
   .cs-pager-meta {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
 }
 
@@ -971,7 +971,7 @@ html.no-scroll nav.nav {
   gap: 2vw;
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1.2vw;
+  font-size: min(1.2vw, 18px);
   letter-spacing: 0.02em;
   padding-bottom: 1vw;
   border-bottom: 1px solid #1d1d1b;
@@ -980,7 +980,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.04em;
-  font-size: 15vw;
+  font-size: min(15vw, 225px);
   line-height: 0.9;
   margin: 2vw 0 0;
   padding: 0;
@@ -997,8 +997,8 @@ html.no-scroll nav.nav {
   margin: 0;
   font-family: "Editorial New", serif;
   font-weight: 300;
-  font-size: 1.9vw;
-  line-height: 2.3vw;
+  font-size: min(1.9vw, 28.5px);
+  line-height: min(2.3vw, 34.5px);
   letter-spacing: -0.01em;
 }
 .ab-lead-mark {
@@ -1041,7 +1041,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 2.6vw;
+  font-size: min(2.6vw, 39px);
   line-height: 1;
 }
 
@@ -1050,7 +1050,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.04em;
-  font-size: 7vw;
+  font-size: min(7vw, 105px);
   line-height: 0.9;
   margin: 0 0 3vw;
   padding: 0;
@@ -1079,14 +1079,14 @@ html.no-scroll nav.nav {
   display: block;
   font-family: "Domaine Display", serif;
   font-weight: 500;
-  font-size: 1.4vw;
+  font-size: min(1.4vw, 21px);
   opacity: 0.5;
 }
 .ab-value-title {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 3.4vw;
+  font-size: min(3.4vw, 51px);
   line-height: 1;
   margin: 1.2vw 0 1vw;
 }
@@ -1095,8 +1095,8 @@ html.no-scroll nav.nav {
   max-width: 92%;
   font-family: "Editorial New", serif;
   font-weight: 300;
-  font-size: 1.2vw;
-  line-height: 1.6vw;
+  font-size: min(1.2vw, 18px);
+  line-height: min(1.6vw, 24px);
 }
 
 /* --- stats --- */
@@ -1119,7 +1119,7 @@ html.no-scroll nav.nav {
   display: block;
   font-family: "Canopee", sans-serif;
   letter-spacing: -0.04em;
-  font-size: 5.5vw;
+  font-size: min(5.5vw, 82.5px);
   line-height: 1;
 }
 .ab-stat-label {
@@ -1127,7 +1127,7 @@ html.no-scroll nav.nav {
   margin-top: 0.8vw;
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1vw;
+  font-size: min(1vw, 15px);
   letter-spacing: 0.03em;
   opacity: 0.65;
 }
@@ -1159,21 +1159,21 @@ html.no-scroll nav.nav {
 .ab-do-num {
   font-family: "Domaine Display", serif;
   font-weight: 500;
-  font-size: 1.4vw;
+  font-size: min(1.4vw, 21px);
   opacity: 0.5;
 }
 .ab-do-title {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 2.6vw;
+  font-size: min(2.6vw, 39px);
   line-height: 1.05;
 }
 .ab-do-body {
   font-family: "Editorial New", serif;
   font-weight: 300;
-  font-size: 1.2vw;
-  line-height: 1.6vw;
+  font-size: min(1.2vw, 18px);
+  line-height: min(1.6vw, 24px);
 }
 
 /* --- join CTA (inverted ink panel) --- */
@@ -1192,7 +1192,7 @@ html.no-scroll nav.nav {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
   letter-spacing: 0.04em;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   opacity: 0.7;
 }
 .ab-join-head {
@@ -1200,7 +1200,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.04em;
-  font-size: 9vw;
+  font-size: min(9vw, 135px);
   line-height: 0.9;
   color: #cdc6be;
 }
@@ -1215,7 +1215,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.02em;
-  font-size: 2vw;
+  font-size: min(2vw, 30px);
   text-decoration: underline;
   text-underline-offset: 0.4vw;
   text-decoration-thickness: 1px;
@@ -1237,7 +1237,7 @@ html.no-scroll nav.nav {
   margin-top: 3vw;
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   letter-spacing: 0.02em;
   opacity: 0.75;
 }
@@ -1249,10 +1249,10 @@ html.no-scroll nav.nav {
   .ab-kicker {
     flex-direction: column;
     gap: 1vw;
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ab-h1 {
-    font-size: 27vw;
+    font-size: min(27vw, 405px);
   }
   .ab-lead-row {
     flex-direction: column;
@@ -1261,8 +1261,8 @@ html.no-scroll nav.nav {
   }
   .ab-lead {
     max-width: 100%;
-    font-size: 4.6vw;
-    line-height: 5.6vw;
+    font-size: min(4.6vw, 69px);
+    line-height: min(5.6vw, 84px);
   }
   .ab-logo {
     width: 34vw;
@@ -1276,10 +1276,10 @@ html.no-scroll nav.nav {
     width: 32vw;
   }
   .ab-tagline-text {
-    font-size: 8vw;
+    font-size: min(8vw, 120px);
   }
   .ab-sec-head {
-    font-size: 15vw;
+    font-size: min(15vw, 225px);
     margin-bottom: 6vw;
   }
   .ab-values {
@@ -1298,15 +1298,15 @@ html.no-scroll nav.nav {
     border-bottom: none;
   }
   .ab-value-num {
-    font-size: 3.5vw;
+    font-size: min(3.5vw, 52.5px);
   }
   .ab-value-title {
-    font-size: 9vw;
+    font-size: min(9vw, 135px);
     margin: 3vw 0 2vw;
   }
   .ab-value-body {
-    font-size: 3.6vw;
-    line-height: 4.8vw;
+    font-size: min(3.6vw, 54px);
+    line-height: min(4.8vw, 72px);
     max-width: 100%;
   }
   .ab-stats {
@@ -1322,10 +1322,10 @@ html.no-scroll nav.nav {
     border-right: none;
   }
   .ab-stat-num {
-    font-size: 13vw;
+    font-size: min(13vw, 195px);
   }
   .ab-stat-label {
-    font-size: 2.8vw;
+    font-size: min(2.8vw, 42px);
     margin-top: 2vw;
   }
   .ab-do {
@@ -1340,15 +1340,15 @@ html.no-scroll nav.nav {
     padding-left: 0;
   }
   .ab-do-num {
-    font-size: 3.5vw;
+    font-size: min(3.5vw, 52.5px);
   }
   .ab-do-title {
-    font-size: 7vw;
+    font-size: min(7vw, 105px);
   }
   .ab-do-body {
     grid-column: 2;
-    font-size: 3.6vw;
-    line-height: 4.8vw;
+    font-size: min(3.6vw, 54px);
+    line-height: min(4.8vw, 72px);
   }
   .ab-join {
     margin-top: 20vw;
@@ -1358,22 +1358,22 @@ html.no-scroll nav.nav {
     padding: 14vw 5vw;
   }
   .ab-join-kicker {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ab-join-head {
-    font-size: 16vw;
+    font-size: min(16vw, 240px);
   }
   .ab-join-links {
     gap: 8vw;
     margin-top: 8vw;
   }
   .ab-join-link {
-    font-size: 6vw;
+    font-size: min(6vw, 90px);
   }
   .ab-foot {
     flex-direction: column;
     gap: 1.5vw;
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
     margin-top: 8vw;
   }
 }
@@ -1389,7 +1389,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 1.9vw;
+  font-size: min(1.9vw, 28.5px);
   line-height: 1;
   color: #1d1d1b;
   white-space: nowrap;
@@ -1399,14 +1399,14 @@ html.no-scroll nav.nav {
 .wk-cat {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1vw;
+  font-size: min(1vw, 15px);
   letter-spacing: 0.03em;
   opacity: 0.55;
 }
 
 @media (max-width: 767px) {
   .item-t-text {
-    font-size: 5vw;
+    font-size: min(5vw, 75px);
   }
   .wk-cat {
     display: none;
@@ -1421,8 +1421,8 @@ html.no-scroll nav.nav {
   padding-top: 9vh;
 }
 .menu-title {
-  font-size: 26vh;
-  line-height: 17vh;
+  font-size: min(26vh, 221px);
+  line-height: min(17vh, 144.5px);
   padding-top: 2vh;
 }
 .menu-title.m2 {
@@ -1433,8 +1433,8 @@ html.no-scroll nav.nav {
     padding-top: 8vh;
   }
   .menu-title {
-    font-size: 20vh;
-    line-height: 14vh;
+    font-size: min(20vh, 170px);
+    line-height: min(14vh, 119px);
   }
 }
 @media (max-width: 767px) {
@@ -1442,8 +1442,8 @@ html.no-scroll nav.nav {
     padding-top: 16vh;
   }
   .menu-title {
-    font-size: 20vw;
-    line-height: 18vw;
+    font-size: min(20vw, 300px);
+    line-height: min(18vw, 270px);
     padding-bottom: 0;
   }
 }
@@ -1466,7 +1466,7 @@ html.no-scroll nav.nav {
   gap: 2vw;
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   letter-spacing: 0.03em;
   opacity: 0.75;
 }
@@ -1474,7 +1474,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.04em;
-  font-size: 11vw;
+  font-size: min(11vw, 165px);
   line-height: 0.9;
   margin: 1.5vw 0 0;
   padding: 0;
@@ -1484,8 +1484,8 @@ html.no-scroll nav.nav {
   margin: 1.5vw 0 0;
   font-family: "Editorial New", serif;
   font-weight: 300;
-  font-size: 1.7vw;
-  line-height: 2.1vw;
+  font-size: min(1.7vw, 25.5px);
+  line-height: min(2.1vw, 31.5px);
 }
 .hm-events-grid {
   list-style: none;
@@ -1508,7 +1508,7 @@ html.no-scroll nav.nav {
 .hm-ev-cat {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 0.9vw;
+  font-size: min(0.9vw, 13.5px);
   letter-spacing: 0.04em;
   opacity: 0.55;
 }
@@ -1516,7 +1516,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 2.6vw;
+  font-size: min(2.6vw, 39px);
   line-height: 1;
   margin: 0.8vw 0 1.4vw;
 }
@@ -1525,7 +1525,7 @@ html.no-scroll nav.nav {
   justify-content: space-between;
   align-items: baseline;
   font-family: "Editorial New", serif;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   opacity: 0.75;
 }
 .hm-ev-price {
@@ -1539,7 +1539,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.02em;
-  font-size: 1.8vw;
+  font-size: min(1.8vw, 27px);
   color: #1d1d1b;
   text-decoration: underline;
   text-underline-offset: 0.4vw;
@@ -1571,7 +1571,7 @@ html.no-scroll nav.nav {
   gap: 2vw;
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1.2vw;
+  font-size: min(1.2vw, 18px);
   letter-spacing: 0.02em;
   padding-bottom: 1vw;
   border-bottom: 1px solid #1d1d1b;
@@ -1580,7 +1580,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.04em;
-  font-size: 14vw;
+  font-size: min(14vw, 210px);
   line-height: 0.9;
   margin: 2vw 0 0;
   padding: 0;
@@ -1590,8 +1590,8 @@ html.no-scroll nav.nav {
   margin: 2vw 0 0;
   font-family: "Editorial New", serif;
   font-weight: 300;
-  font-size: 1.8vw;
-  line-height: 2.2vw;
+  font-size: min(1.8vw, 27px);
+  line-height: min(2.2vw, 33px);
 }
 
 /* --- layout (single column; the cart is a persistent bottom bar) --- */
@@ -1629,14 +1629,14 @@ html.no-scroll nav.nav {
 .ev-cat {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 0.95vw;
+  font-size: min(0.95vw, 14.25px);
   letter-spacing: 0.04em;
   opacity: 0.6;
 }
 .ev-badge {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 0.8vw;
+  font-size: min(0.8vw, 12px);
   letter-spacing: 0.03em;
   padding: 0.25vw 0.7vw;
   border: 1px solid #1d1d1b;
@@ -1653,15 +1653,15 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 2.4vw;
+  font-size: min(2.4vw, 36px);
   line-height: 1;
   margin: 1vw 0 0.8vw;
 }
 .ev-desc {
   font-family: "Editorial New", serif;
   font-weight: 300;
-  font-size: 1.05vw;
-  line-height: 1.45vw;
+  font-size: min(1.05vw, 15.75px);
+  line-height: min(1.45vw, 21.75px);
   margin: 0 0 1.4vw;
   flex: 1;
 }
@@ -1670,7 +1670,7 @@ html.no-scroll nav.nav {
   justify-content: space-between;
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
-  font-size: 0.9vw;
+  font-size: min(0.9vw, 13.5px);
   letter-spacing: 0.02em;
   opacity: 0.6;
   padding-bottom: 1.2vw;
@@ -1685,13 +1685,13 @@ html.no-scroll nav.nav {
 .ev-price {
   font-family: "Domaine Display", serif;
   font-weight: 500;
-  font-size: 1.8vw;
+  font-size: min(1.8vw, 27px);
 }
 .ev-add {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.01em;
-  font-size: 1vw;
+  font-size: min(1vw, 15px);
   cursor: pointer;
   padding: 0.6vw 1.4vw;
   color: #1d1d1b;
@@ -1728,18 +1728,18 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.02em;
-  font-size: 1.6vw;
+  font-size: min(1.6vw, 24px);
 }
 .ev-summary-count {
   font-family: "Domaine Display", serif;
   font-weight: 500;
-  font-size: 1.6vw;
+  font-size: min(1.6vw, 24px);
 }
 .ev-empty {
   font-family: "Editorial New", serif;
   font-weight: 300;
-  font-size: 1.1vw;
-  line-height: 1.5vw;
+  font-size: min(1.1vw, 16.5px);
+  line-height: min(1.5vw, 22.5px);
   opacity: 0.6;
   margin: 1.4vw 0;
 }
@@ -1756,7 +1756,7 @@ html.no-scroll nav.nav {
   padding: 0.7vw 0;
   border-bottom: 1px solid rgba(29, 29, 27, 0.2);
   font-family: "Editorial New", serif;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
 }
 .ev-summary-price {
   font-family: "Domaine Display", serif;
@@ -1766,7 +1766,7 @@ html.no-scroll nav.nav {
   cursor: pointer;
   border: none;
   background: transparent;
-  font-size: 1.4vw;
+  font-size: min(1.4vw, 21px);
   line-height: 1;
   color: #1d1d1b;
   opacity: 0.5;
@@ -1784,12 +1784,12 @@ html.no-scroll nav.nav {
   border-top: 1px solid #1d1d1b;
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1.2vw;
+  font-size: min(1.2vw, 18px);
 }
 .ev-total-amt {
   font-family: "Domaine Display", serif;
   font-weight: 500;
-  font-size: 1.8vw;
+  font-size: min(1.8vw, 27px);
 }
 .ev-checkout-btn,
 .ev-bar-btn,
@@ -1799,7 +1799,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.01em;
-  font-size: 1.2vw;
+  font-size: min(1.2vw, 18px);
   color: #cdc6be;
   background-color: #1d1d1b;
   border: 1px solid #1d1d1b;
@@ -1818,7 +1818,7 @@ html.no-scroll nav.nav {
 }
 /* Bigger Pay button in the checkout modal. */
 .ev-pay-btn {
-  font-size: 1.9vw;
+  font-size: min(1.9vw, 28.5px);
   padding: 1.5vw;
   margin-top: 2vw;
 }
@@ -1826,7 +1826,7 @@ html.no-scroll nav.nav {
   margin: 1vw 0 0;
   text-align: center;
   font-family: "Editorial New", serif;
-  font-size: 0.95vw;
+  font-size: min(0.95vw, 14.25px);
   opacity: 0.55;
 }
 
@@ -1858,20 +1858,20 @@ html.no-scroll nav.nav {
 .ev-bar-count {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   letter-spacing: 0.02em;
   opacity: 0.7;
 }
 .ev-bar-total {
   font-family: "Domaine Display", serif;
   font-weight: 500;
-  font-size: 2vw;
+  font-size: min(2vw, 30px);
 }
 .ev-bar .ev-bar-btn {
   width: auto;
   margin-top: 0;
   padding: 1.8vw 7vw;
-  font-size: 2.4vw;
+  font-size: min(2.4vw, 36px);
   border-color: #cdc6be;
 }
 
@@ -1906,14 +1906,14 @@ html.no-scroll nav.nav {
   cursor: pointer;
   border: none;
   background: transparent;
-  font-size: 2vw;
+  font-size: min(2vw, 30px);
   line-height: 1;
   color: #1d1d1b;
 }
 .ev-modal-kicker {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1vw;
+  font-size: min(1vw, 15px);
   letter-spacing: 0.05em;
   opacity: 0.6;
 }
@@ -1921,7 +1921,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 4.5vw;
+  font-size: min(4.5vw, 67.5px);
   line-height: 0.95;
   margin: 0.3vw 0 1.6vw;
 }
@@ -1943,13 +1943,13 @@ html.no-scroll nav.nav {
 .ev-field label {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 0.85vw;
+  font-size: min(0.85vw, 12.75px);
   letter-spacing: 0.03em;
   opacity: 0.6;
 }
 .ev-field input {
   font-family: "Editorial New", serif;
-  font-size: 1.2vw;
+  font-size: min(1.2vw, 18px);
   color: #1d1d1b;
   background-color: transparent;
   border: none;
@@ -1972,7 +1972,7 @@ html.no-scroll nav.nav {
 .ev-order-title {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 0.9vw;
+  font-size: min(0.9vw, 13.5px);
   letter-spacing: 0.04em;
   opacity: 0.6;
 }
@@ -1980,7 +1980,7 @@ html.no-scroll nav.nav {
   display: flex;
   justify-content: space-between;
   font-family: "Editorial New", serif;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   padding: 0.5vw 0;
 }
 .ev-order-total {
@@ -1991,7 +1991,7 @@ html.no-scroll nav.nav {
   border-top: 1px solid rgba(29, 29, 27, 0.3);
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1.2vw;
+  font-size: min(1.2vw, 18px);
 }
 .ev-order-total span:last-child {
   font-family: "Domaine Display", serif;
@@ -2001,7 +2001,7 @@ html.no-scroll nav.nav {
   margin: 1vw 0 0;
   text-align: center;
   font-family: "Editorial New", serif;
-  font-size: 0.9vw;
+  font-size: min(0.9vw, 13.5px);
   opacity: 0.55;
 }
 
@@ -2017,7 +2017,7 @@ html.no-scroll nav.nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.4vw;
+  font-size: min(2.4vw, 36px);
   color: #cdc6be;
   background-color: #1d1d1b;
   border-radius: 50%;
@@ -2026,15 +2026,15 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 4vw;
+  font-size: min(4vw, 60px);
   line-height: 1;
   margin: 0 0 1vw;
 }
 .ev-success-body {
   font-family: "Editorial New", serif;
   font-weight: 300;
-  font-size: 1.3vw;
-  line-height: 1.7vw;
+  font-size: min(1.3vw, 19.5px);
+  line-height: min(1.7vw, 25.5px);
   max-width: 26vw;
   margin: 0 auto 2vw;
 }
@@ -2048,16 +2048,16 @@ html.no-scroll nav.nav {
     padding-top: 8vw;
   }
   .hm-kicker {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .hm-events-title {
-    font-size: 24vw;
+    font-size: min(24vw, 360px);
     margin-top: 4vw;
   }
   .hm-events-lead {
     max-width: 100%;
-    font-size: 4.4vw;
-    line-height: 5.4vw;
+    font-size: min(4.4vw, 66px);
+    line-height: min(5.4vw, 81px);
     margin-top: 4vw;
   }
   .hm-events-grid {
@@ -2074,17 +2074,17 @@ html.no-scroll nav.nav {
     border-bottom: none;
   }
   .hm-ev-cat {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .hm-ev-name {
-    font-size: 9vw;
+    font-size: min(9vw, 135px);
     margin: 2vw 0 3vw;
   }
   .hm-ev-meta {
-    font-size: 3.6vw;
+    font-size: min(3.6vw, 54px);
   }
   .hm-events-cta {
-    font-size: 5.5vw;
+    font-size: min(5.5vw, 82.5px);
     margin-top: 8vw;
   }
 
@@ -2094,15 +2094,15 @@ html.no-scroll nav.nav {
   .ev-kicker {
     flex-direction: column;
     gap: 1vw;
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ev-h1 {
-    font-size: 27vw;
+    font-size: min(27vw, 405px);
   }
   .ev-lead {
     max-width: 100%;
-    font-size: 4.6vw;
-    line-height: 5.6vw;
+    font-size: min(4.6vw, 69px);
+    line-height: min(5.6vw, 84px);
   }
   .ev-layout {
     grid-template-columns: 1fr;
@@ -2116,34 +2116,34 @@ html.no-scroll nav.nav {
     padding: 5vw;
   }
   .ev-cat {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ev-badge {
-    font-size: 2.6vw;
+    font-size: min(2.6vw, 39px);
     padding: 1vw 2.4vw;
     border-radius: 4vw;
   }
   .ev-title {
-    font-size: 8vw;
+    font-size: min(8vw, 120px);
     margin: 3vw 0 2.5vw;
   }
   .ev-desc {
-    font-size: 3.8vw;
-    line-height: 5vw;
+    font-size: min(3.8vw, 57px);
+    line-height: min(5vw, 75px);
     margin-bottom: 4vw;
   }
   .ev-meta {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
     padding-bottom: 4vw;
   }
   .ev-card-foot {
     margin-top: 4vw;
   }
   .ev-price {
-    font-size: 6vw;
+    font-size: min(6vw, 90px);
   }
   .ev-add {
-    font-size: 3.4vw;
+    font-size: min(3.4vw, 51px);
     padding: 2.4vw 5vw;
     border-radius: 8vw;
   }
@@ -2177,19 +2177,19 @@ html.no-scroll nav.nav {
   .ev-bar-count {
     text-transform: uppercase;
     font-family: "Canopee", sans-serif;
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
     opacity: 0.7;
   }
   .ev-bar-total {
     font-family: "Domaine Display", serif;
     font-weight: 500;
-    font-size: 6vw;
+    font-size: min(6vw, 90px);
   }
   .ev-bar-btn {
     width: auto;
     margin-top: 0;
     padding: 4vw 11vw;
-    font-size: 5vw;
+    font-size: min(5vw, 75px);
     border-color: #cdc6be;
   }
   .ev-modal {
@@ -2197,15 +2197,15 @@ html.no-scroll nav.nav {
     padding: 8vw 6vw;
   }
   .ev-modal-close {
-    font-size: 7vw;
+    font-size: min(7vw, 105px);
     top: 4vw;
     right: 5vw;
   }
   .ev-modal-kicker {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ev-modal-title {
-    font-size: 15vw;
+    font-size: min(15vw, 225px);
     margin: 1vw 0 5vw;
   }
   .ev-form {
@@ -2219,10 +2219,10 @@ html.no-scroll nav.nav {
     gap: 1.5vw;
   }
   .ev-field label {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ev-field input {
-    font-size: 4.4vw;
+    font-size: min(4.4vw, 66px);
     padding: 2vw 0;
   }
   .ev-order {
@@ -2230,37 +2230,37 @@ html.no-scroll nav.nav {
     padding-top: 4vw;
   }
   .ev-order-title {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ev-order-row {
-    font-size: 3.8vw;
+    font-size: min(3.8vw, 57px);
     padding: 1.5vw 0;
   }
   .ev-order-total {
-    font-size: 4vw;
+    font-size: min(4vw, 60px);
     margin-top: 2vw;
     padding-top: 3vw;
   }
   .ev-modal-note {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ev-pay-btn {
-    font-size: 5vw;
+    font-size: min(5vw, 75px);
     padding: 4.5vw;
     margin-top: 6vw;
   }
   .ev-success-mark {
     width: 18vw;
     height: 18vw;
-    font-size: 9vw;
+    font-size: min(9vw, 135px);
     margin-bottom: 5vw;
   }
   .ev-success-head {
-    font-size: 14vw;
+    font-size: min(14vw, 210px);
   }
   .ev-success-body {
-    font-size: 4.4vw;
-    line-height: 6vw;
+    font-size: min(4.4vw, 66px);
+    line-height: min(6vw, 90px);
     max-width: 100%;
   }
 }
@@ -2291,7 +2291,7 @@ html.no-scroll nav.nav {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
   letter-spacing: 0.1em;
-  font-size: 0.9vw;
+  font-size: min(0.9vw, 13.5px);
   color: #1d1d1b;
   opacity: 0.6;
   background-color: #c3bcb2;
@@ -2299,7 +2299,7 @@ html.no-scroll nav.nav {
 }
 @media (max-width: 767px) {
   .img-ph-label {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
     padding: 1vw 2.4vw;
   }
 }
@@ -2327,7 +2327,7 @@ html.no-scroll nav.nav {
 .cd-kicker {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   letter-spacing: 0.05em;
   opacity: 0.7;
 }
@@ -2335,7 +2335,7 @@ html.no-scroll nav.nav {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 3.6vw;
+  font-size: min(3.6vw, 54px);
   line-height: 1;
   margin-top: 0.3vw;
 }
@@ -2354,14 +2354,14 @@ html.no-scroll nav.nav {
 .cd-num {
   font-family: "Domaine Display", serif;
   font-weight: 500;
-  font-size: 4.6vw;
+  font-size: min(4.6vw, 69px);
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 .cd-label {
   text-transform: uppercase;
   font-family: "Canopee", sans-serif;
-  font-size: 0.85vw;
+  font-size: min(0.85vw, 12.75px);
   letter-spacing: 0.08em;
   opacity: 0.6;
   margin-top: 0.7vw;
@@ -2372,7 +2372,7 @@ html.no-scroll nav.nav {
   right: -0.3vw;
   font-family: "Domaine Display", serif;
   font-weight: 500;
-  font-size: 4.6vw;
+  font-size: min(4.6vw, 69px);
   line-height: 1;
   opacity: 0.4;
 }
@@ -2419,10 +2419,10 @@ body {
     padding: 8vw 6vw;
   }
   .cd-kicker {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .cd-date {
-    font-size: 10vw;
+    font-size: min(10vw, 150px);
   }
   .cd-grid {
     width: 100%;
@@ -2434,10 +2434,10 @@ body {
     padding: 0;
   }
   .cd-num {
-    font-size: 11vw;
+    font-size: min(11vw, 165px);
   }
   .cd-label {
-    font-size: 2.6vw;
+    font-size: min(2.6vw, 39px);
     margin-top: 2.4vw;
   }
   .cd-colon {
@@ -2538,10 +2538,10 @@ body {
   .ho-kicker {
     flex-direction: column;
     gap: 1vw;
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ho-title {
-    font-size: 27vw;
+    font-size: min(27vw, 405px);
     margin-top: 4vw;
   }
   .ho-hero-b {
@@ -2550,10 +2550,10 @@ body {
     margin-top: 6vw;
   }
   .ho-tagline {
-    font-size: 8vw;
+    font-size: min(8vw, 120px);
   }
   .ho-lead {
-    font-size: 4.4vw;
+    font-size: min(4.4vw, 66px);
     line-height: 1.45;
   }
   .ho-cta-row {
@@ -2561,7 +2561,7 @@ body {
     margin-top: 6vw;
   }
   .ho-cta {
-    font-size: 4vw;
+    font-size: min(4vw, 60px);
     padding: 3vw 7vw;
     border-radius: 12vw;
   }
@@ -2591,7 +2591,7 @@ body {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.02em;
-  font-size: 2vw;
+  font-size: min(2vw, 30px);
   line-height: 1;
   white-space: nowrap;
 }
@@ -2606,7 +2606,7 @@ body {
 }
 @media (max-width: 767px) {
   .cs-mq-item {
-    font-size: 6vw;
+    font-size: min(6vw, 90px);
   }
 }
 
@@ -2674,7 +2674,7 @@ body {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.03em;
-  font-size: 2vw;
+  font-size: min(2vw, 30px);
   line-height: 1;
   margin: 0.6vw 0 0;
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
@@ -2685,7 +2685,7 @@ body {
 .ho-rail-year {
   font-family: "Domaine Display", serif;
   font-weight: 500;
-  font-size: 1.1vw;
+  font-size: min(1.1vw, 16.5px);
   opacity: 0.55;
 }
 
@@ -2732,11 +2732,11 @@ body {
   font-family: "Canopee", sans-serif;
   text-transform: uppercase;
   letter-spacing: -0.02em;
-  font-size: 1.2vw;
+  font-size: min(1.2vw, 18px);
 }
 .ho-quote-role {
   font-family: "Editorial New", serif;
-  font-size: 1vw;
+  font-size: min(1vw, 15px);
   opacity: 0.6;
 }
 
@@ -2748,10 +2748,10 @@ body {
     padding-top: 6vw;
   }
   .ho-statement-head {
-    font-size: 15vw;
+    font-size: min(15vw, 225px);
   }
   .ho-statement-body {
-    font-size: 4.4vw;
+    font-size: min(4.4vw, 66px);
     line-height: 1.5;
   }
   .ho-rail {
@@ -2766,10 +2766,10 @@ body {
     margin-bottom: 3vw;
   }
   .ho-rail-name {
-    font-size: 8vw;
+    font-size: min(8vw, 120px);
   }
   .ho-rail-year {
-    font-size: 3.4vw;
+    font-size: min(3.4vw, 51px);
   }
   .ho-quotes {
     margin-top: 18vw;
@@ -2784,15 +2784,15 @@ body {
     min-height: 0;
   }
   .ho-quote-text {
-    font-size: 4.6vw;
+    font-size: min(4.6vw, 69px);
     line-height: 1.45;
     margin-bottom: 5vw;
   }
   .ho-quote-name {
-    font-size: 4vw;
+    font-size: min(4vw, 60px);
   }
   .ho-quote-role {
-    font-size: 3.2vw;
+    font-size: min(3.2vw, 48px);
   }
 }
 
@@ -2907,7 +2907,7 @@ body {
     gap: 2vw;
   }
   .ho-fact {
-    font-size: 3.4vw;
+    font-size: min(3.4vw, 51px);
   }
   .ho-cta.text {
     padding-left: 1vw;
@@ -3281,12 +3281,12 @@ button.nav-link {
     gap: 2.5vw;
   }
   .ev-signin-btn {
-    font-size: 4vw;
+    font-size: min(4vw, 60px);
     padding: 3vw 6vw;
     border-radius: 12vw;
   }
   .ev-signin-note {
-    font-size: 3.6vw;
+    font-size: min(3.6vw, 54px);
   }
   .ev-user {
     gap: 2.5vw;
@@ -3298,14 +3298,14 @@ button.nav-link {
     height: 9vw;
   }
   .ev-user-name {
-    font-size: 3.6vw;
+    font-size: min(3.6vw, 54px);
   }
   .ev-user-email {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
     max-width: 45vw;
   }
   .ev-user-signout {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ev-myregs {
     border-radius: 3vw;
@@ -3320,14 +3320,14 @@ button.nav-link {
   }
   .ev-myregs-status,
   .ev-myregs-qrbtn {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
   }
   .ev-qr {
     margin-top: 4vw;
     gap: 2vw;
   }
   .ev-qr-caption {
-    font-size: 3.2vw;
+    font-size: min(3.2vw, 48px);
   }
 }
 
@@ -3351,7 +3351,7 @@ button.nav-link {
 }
 @media (max-width: 767px) {
   .ev-clash {
-    font-size: 3.2vw;
+    font-size: min(3.2vw, 48px);
     margin-top: 1.5vw;
   }
 }
@@ -3510,7 +3510,7 @@ button.nav-link {
 @media (max-width: 767px) {
   .ev .ev-slots,
   .evx-slots {
-    font-size: 2.9vw;
+    font-size: min(2.9vw, 43.5px);
   }
 }
 
@@ -3536,17 +3536,17 @@ button.nav-link {
     gap: 2.5vw;
   }
   .evx-kicker {
-    font-size: 3vw;
+    font-size: min(3vw, 45px);
     padding-bottom: 2vw;
   }
   .evx-title {
-    font-size: 7.5vw;
+    font-size: min(7.5vw, 112.5px);
   }
   .evx-meta {
-    font-size: 3.2vw;
+    font-size: min(3.2vw, 48px);
   }
   .evx-desc {
-    font-size: 3.9vw;
+    font-size: min(3.9vw, 58.5px);
   }
   .evx-badge {
     top: 2.5vw;
@@ -3562,8 +3562,8 @@ button.nav-link {
    all six titles + socials fit the viewport, stagger 5 and 6 in.
    ============================================================ */
 .menu-title {
-  font-size: 15.5vh;
-  line-height: 11.5vh;
+  font-size: min(15.5vh, 131.75px);
+  line-height: min(11.5vh, 97.75px);
 }
 .nav.is-open .menu-link.m5 .menu-title {
   transition-delay: 0.54s;
@@ -3573,14 +3573,14 @@ button.nav-link {
 }
 @media (max-width: 991px) and (min-width: 768px) {
   .menu-title {
-    font-size: 12.5vh;
-    line-height: 9.5vh;
+    font-size: min(12.5vh, 106.25px);
+    line-height: min(9.5vh, 80.75px);
   }
 }
 @media (max-width: 767px) {
   .menu-title {
-    font-size: 13vw;
-    line-height: 12vw;
+    font-size: min(13vw, 195px);
+    line-height: min(12vw, 180px);
   }
 }
 
@@ -3737,7 +3737,7 @@ button.nav-link {
     padding: 14vh 4vw 8vw;
   }
   .evd-h1 {
-    font-size: 14vw;
+    font-size: min(14vw, 210px);
     margin-top: 4vw;
   }
   .evd-bar {
@@ -3763,7 +3763,7 @@ button.nav-link {
     margin-top: 10vw;
   }
   .ev-qr-download {
-    font-size: 3.4vw;
+    font-size: min(3.4vw, 51px);
   }
 }
 
