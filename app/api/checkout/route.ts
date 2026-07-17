@@ -115,6 +115,36 @@ export async function POST(req: Request) {
   }
 
   const service = getServiceSupabase();
+
+  // ---- One pass per person per event ----
+  // The UI greys out events you already hold a pass for; re-checked here so
+  // a stale tab or crafted request can't buy a duplicate.
+  if (service) {
+    let prior = service
+      .from("orders")
+      .select("event_slugs")
+      .eq("status", "paid")
+      .overlaps(
+        "event_slugs",
+        checkout.events.map((e) => e.slug)
+      );
+    prior = userId ? prior.eq("user_id", userId) : prior.eq("customer_email", checkout.email);
+    const { data: priorOrders, error: priorError } = await prior.limit(100);
+    if (!priorError && priorOrders) {
+      const ownedSlugs = new Set(priorOrders.flatMap((o) => o.event_slugs as string[]));
+      const dup = checkout.events.find((e) => ownedSlugs.has(e.slug));
+      if (dup) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: `You already have a pass for "${dup.title}" - find it on your profile.`,
+          },
+          { status: 409 }
+        );
+      }
+    }
+  }
+
   const orderBase = {
     amount: checkout.totalPaise,
     currency: "INR",

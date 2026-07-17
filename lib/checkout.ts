@@ -9,7 +9,8 @@ import { findClashesWithin } from "@/lib/events/clash";
 export type CheckoutInput = {
   name: string;
   email: string;
-  phone: string;
+  /** Optional - the form no longer collects it; validated when present. */
+  phone?: string;
   college?: string;
   eventSlugs: string[];
 };
@@ -50,7 +51,7 @@ export function validateCheckout(
   if (!EMAIL_RE.test(email) || email.length > 254) {
     return { ok: false, error: "Please enter a valid email address." };
   }
-  if (!PHONE_RE.test(phone)) {
+  if (phone && !PHONE_RE.test(phone)) {
     return { ok: false, error: "Please enter a valid 10-digit phone number." };
   }
   if (college.length > 200) {

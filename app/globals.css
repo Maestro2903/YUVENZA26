@@ -4044,3 +4044,32 @@ button.nav-link {
     margin-right: 2vw;
   }
 }
+
+/* ===================================================================
+   Event cards - "you already have a pass" state
+   =================================================================== */
+.ev-card.owned {
+  opacity: 0.92;
+}
+.ev-ownednote {
+  margin: 0.6vw 0 0;
+  font-family: "Editorial New", serif;
+  font-size: clamp(0.8rem, 0.95vw, 0.95rem);
+  opacity: 0.8;
+}
+.ev-ownednote a {
+  text-decoration: underline;
+}
+.ev-add.owned {
+  background: transparent;
+  color: #1d1d1b;
+  border-style: dashed;
+  cursor: default;
+  opacity: 0.75;
+}
+@media (max-width: 767px) {
+  .ev-ownednote {
+    font-size: min(3.2vw, 48px);
+    margin-top: 2vw;
+  }
+}

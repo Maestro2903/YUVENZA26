@@ -10,6 +10,7 @@ import { findClash, formatTimeRange } from "@/lib/events/clash";
 import { isSoldOut, slotsLabel } from "@/lib/events/capacity";
 import { useLiveSlots } from "@/lib/hooks/useLiveSlots";
 import MyRegistrations from "@/components/MyRegistrations";
+import { getBrowserSupabase } from "@/lib/supabase/client";
 
 /**
  * Events page frontend: sign in with a college Google account, browse the
@@ -102,7 +103,8 @@ export default function EventsClient({
   const [phase, setPhase] = useState<Phase>("idle");
   const [result, setResult] = useState<Result>(null);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", college: "" });
+  const [form, setForm] = useState({ name: "", email: "" });
+  const [owned, setOwned] = useState<Set<string>>(new Set());
 
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -159,11 +161,45 @@ export default function EventsClient({
     }));
   }, [user]);
 
+  // Which events does this visitor already hold a pass for? (own paid
+  // orders via RLS). Owned events show "pass bought" and can't be re-added.
+  useEffect(() => {
+    if (!user) {
+      setOwned(new Set());
+      return;
+    }
+    const supabase = getBrowserSupabase();
+    if (!supabase) return;
+    let cancelled = false;
+    supabase
+      .from("orders")
+      .select("event_slugs")
+      .eq("user_id", user.id)
+      .eq("status", "paid")
+      .then(({ data }) => {
+        if (cancelled || !data) return;
+        const ownedSlugs = new Set<string>(data.flatMap((o) => o.event_slugs as string[]));
+        setOwned(ownedSlugs);
+        if (ownedSlugs.size > 0) {
+          // Drop owned events from the cart (they may linger in localStorage).
+          setSelected((sel) => {
+            const next = { ...sel };
+            for (const slug of ownedSlugs) delete next[slug];
+            return next;
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
   const toggle = (slug: string) => {
     const event = events.find((e) => e.slug === slug);
     // Never allow selecting a sold-out entry or one that clashes with an
     // already-chosen event - the buttons are disabled too; this guards
     // keyboard/programmatic paths.
+    if (owned.has(slug)) return;
     if (event && !selected[slug] && (findClash(event, chosen) || isSoldOut(event, slotCounts[slug]))) return;
     setSelected((s) => ({ ...s, [slug]: !s[slug] }));
   };
@@ -252,8 +288,6 @@ export default function EventsClient({
         body: JSON.stringify({
           name: form.name,
           email: form.email,
-          phone: form.phone,
-          college: form.college,
           eventSlugs: chosen.map((c) => c.slug),
         }),
       });
@@ -293,8 +327,7 @@ export default function EventsClient({
         currency: data.currency,
         name: "Yuvenza",
         description: `${festName} · ${count} ${count === 1 ? "entry" : "entries"}`,
-        prefill: { name: form.name, email: form.email, contact: form.phone },
-        notes: { college: form.college },
+        prefill: { name: form.name, email: form.email },
         theme: { color: "#1d1d1b" },
         modal: {
           ondismiss: () => {
@@ -452,6 +485,7 @@ export default function EventsClient({
               selected={!!selected[ev.slug]}
               clashWith={!selected[ev.slug] ? findClash(ev, chosen)?.title ?? null : null}
               registered={slotCounts[ev.slug]}
+              owned={owned.has(ev.slug)}
               onToggle={() => toggle(ev.slug)}
             />
           ))}
@@ -561,55 +595,22 @@ export default function EventsClient({
                       disabled={busy}
                     />
                   </div>
-                  <div className="ev-field-row">
-                    <div className="ev-field">
-                      <label htmlFor="ev-email">Email</label>
-                      <input
-                        id="ev-email"
-                        type="email"
-                        required
-                        autoComplete="email"
-                        value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        placeholder="you@email.com"
-                        disabled={busy || (requireLogin && !!user)}
-                        readOnly={requireLogin && !!user}
-                      />
-                      {requireLogin && user && (
-                        <span className="ev-field-hint">Your Google account email is used.</span>
-                      )}
-                    </div>
-                    <div className="ev-field">
-                      <label htmlFor="ev-phone">Phone</label>
-                      <input
-                        id="ev-phone"
-                        type="tel"
-                        required
-                        inputMode="numeric"
-                        pattern="[0-9]{10}"
-                        maxLength={10}
-                        title="10-digit mobile number"
-                        autoComplete="tel-national"
-                        value={form.phone}
-                        onChange={(e) =>
-                          setForm({ ...form, phone: e.target.value.replace(/[^0-9]/g, "") })
-                        }
-                        placeholder="10-digit number"
-                        disabled={busy}
-                      />
-                    </div>
-                  </div>
                   <div className="ev-field">
-                    <label htmlFor="ev-college">College</label>
+                    <label htmlFor="ev-email">Email</label>
                     <input
-                      id="ev-college"
-                      maxLength={200}
-                      autoComplete="organization"
-                      value={form.college}
-                      onChange={(e) => setForm({ ...form, college: e.target.value })}
-                      placeholder="Institution name"
-                      disabled={busy}
+                      id="ev-email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="you@email.com"
+                      disabled={busy || (requireLogin && !!user)}
+                      readOnly={requireLogin && !!user}
                     />
+                    {requireLogin && user && (
+                      <span className="ev-field-hint">Your Google account email is used.</span>
+                    )}
                   </div>
 
                   <div className="ev-order">
@@ -668,6 +669,7 @@ function EventCard({
   selected,
   clashWith,
   registered,
+  owned = false,
   onToggle,
 }: {
   event: EventItem;
@@ -676,14 +678,23 @@ function EventCard({
   clashWith?: string | null;
   /** Live paid-registration count (Realtime). */
   registered?: number;
+  /** The signed-in visitor already holds a pass for this event. */
+  owned?: boolean;
   onToggle: () => void;
 }) {
   const timeRange = formatTimeRange(event.startTime, event.endTime);
-  const soldOut = isSoldOut(event, registered) && !selected;
-  const blocked = (Boolean(clashWith) || soldOut) && !selected;
+  const soldOut = isSoldOut(event, registered) && !selected && !owned;
+  const blocked = (Boolean(clashWith) || soldOut) && !selected && !owned;
 
   return (
-    <li className={"ev-card" + (selected ? " selected" : "") + (blocked ? " clashed" : "")}>
+    <li
+      className={
+        "ev-card" +
+        (selected ? " selected" : "") +
+        (blocked ? " clashed" : "") +
+        (owned ? " owned" : "")
+      }
+    >
       <div className="ev-card-top">
         <span className="ev-cat">{event.category}</span>
         {event.badge && <span className={"ev-badge " + event.badge.toLowerCase()}>{event.badge}</span>}
@@ -697,22 +708,43 @@ function EventCard({
         </span>
         <span className={"ev-slots" + (soldOut ? " out" : "")}>{slotsLabel(event, registered)}</span>
       </div>
-      {blocked && (
+      {blocked && !owned && (
         <p className="ev-clash" role="status">
           Clashes with {clashWith} - remove it to pick this one.
+        </p>
+      )}
+      {owned && (
+        <p className="ev-ownednote" role="status">
+          You&#x27;re registered - your pass is on <a href="/profile">your profile</a>.
         </p>
       )}
       <div className="ev-card-foot">
         <span className="ev-price">{INR(event.price)}</span>
         <button
           type="button"
-          className={"ev-add" + (selected ? " on" : "")}
+          className={"ev-add" + (selected ? " on" : "") + (owned ? " owned" : "")}
           onClick={onToggle}
           aria-pressed={selected}
-          disabled={blocked}
-          title={soldOut ? "No slots left" : blocked ? `Clashes with ${clashWith}` : undefined}
+          disabled={blocked || owned}
+          title={
+            owned
+              ? "You already have a pass for this event"
+              : soldOut
+                ? "No slots left"
+                : blocked
+                  ? `Clashes with ${clashWith}`
+                  : undefined
+          }
         >
-          {selected ? "Added ✓\uFE0E" : soldOut ? "Sold out" : blocked ? "Time clash" : "Add entry"}
+          {owned
+            ? "Pass bought ✓\uFE0E"
+            : selected
+              ? "Added ✓\uFE0E"
+              : soldOut
+                ? "Sold out"
+                : blocked
+                  ? "Time clash"
+                  : "Add entry"}
         </button>
       </div>
     </li>

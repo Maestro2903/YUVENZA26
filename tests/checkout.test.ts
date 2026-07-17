@@ -55,8 +55,12 @@ describe("validateCheckout", () => {
   it("validates contact fields", () => {
     expect(validateCheckout({ ...VALID, name: "A" }, CATALOG).ok).toBe(false);
     expect(validateCheckout({ ...VALID, email: "not-an-email" }, CATALOG).ok).toBe(false);
+    // Phone is optional now (the form only asks name + email), but when
+    // present it must still be a valid 10-digit number.
     expect(validateCheckout({ ...VALID, phone: "12345" }, CATALOG).ok).toBe(false);
     expect(validateCheckout({ ...VALID, phone: "98765 43210" }, CATALOG).ok).toBe(true); // spaces stripped
+    expect(validateCheckout({ ...VALID, phone: "" }, CATALOG).ok).toBe(true);
+    expect(validateCheckout({ ...VALID, phone: undefined }, CATALOG).ok).toBe(true);
   });
 
   it("rejects garbage bodies", () => {
